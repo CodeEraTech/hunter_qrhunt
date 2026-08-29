@@ -1,0 +1,1 @@
+<?php declare(strict_types=1);require __DIR__.'/_auth.php';require_post();$vendor=api_vendor();$d=json_input();try{json_response(true,'Gift redeemed',redeem_gift_code($vendor,(string)($d['code']??'')),201);}catch(RuntimeException $e){json_response(false,$e->getMessage(),null,409);}

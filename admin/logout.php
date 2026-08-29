@@ -1,0 +1,1 @@
+<?php declare(strict_types=1);require dirname(__DIR__).'/includes/bootstrap.php';require_admin();if(!is_post()){http_response_code(405);header('Allow: POST');exit('Method not allowed');}verify_csrf();logout_admin();redirect('/admin/login.php');

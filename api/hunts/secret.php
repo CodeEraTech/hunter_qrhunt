@@ -1,0 +1,1 @@
+<?php declare(strict_types=1);require dirname(__DIR__).'/_bootstrap.php';require_post();$user=api_user();api_rate_limit($user,'hunts.secret',12,600);$d=json_input();try{validate_secret_challenge($user,(int)($d['scan_id']??0),trim((string)($d['code']??'')));json_response(true,'Secret code accepted');}catch(RuntimeException $e){json_response(false,$e->getMessage(),null,422);}

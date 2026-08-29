@@ -1,0 +1,1 @@
+<?php declare(strict_types=1);require dirname(__DIR__).'/_bootstrap.php';require_post();$user=api_user();db()->prepare('UPDATE user_sessions SET revoked_at=NOW() WHERE id=?')->execute([$user['session_id']]);log_security((int)$user['id'],'LOGOUT','LOW','Mobile API session revoked',['device_id'=>$user['device_id']]);json_response(true,'Logged out');

@@ -1,0 +1,37 @@
+<?php declare(strict_types=1); require_admin(); $pageTitle=$pageTitle??'Dashboard'; $current=admin(); $brandName=setting_value('brand_name','Hunter Wallet'); $logo=setting_value('brand_logo_url',''); $favicon=setting_value('brand_favicon_url',''); $primary=setting_value('primary_color','#12304a'); $accent=setting_value('accent_color','#24c79a'); ?>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e($pageTitle)?> · <?=e($brandName)?></title><?php if($favicon):?><link rel="icon" href="<?=e($favicon)?>"><?php endif?><style>:root{--brand-primary:<?=e($primary)?>;--brand-accent:<?=e($accent)?>}</style><link rel="stylesheet" href="<?=e(app_url('/assets/css/style.css'))?>"></head>
+<style>.category-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.category-card{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:10px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fbfcff}.category-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eaf2ff;color:#2781f6;font-size:18px}.category-card strong,.category-card small{display:block}.category-card small{color:var(--muted);font-size:11px;margin-top:2px}.category-metric{font-weight:800;color:var(--ink);white-space:nowrap}.category-metric small{display:inline;color:var(--muted);font-weight:500}</style><body><div class="app-shell">
+<aside class="sidebar" id="sidebar"><a class="brand" href="<?=e(app_url('/admin/dashboard.php'))?>"><?php if($logo):?><img src="<?=e($logo)?>" alt="" style="width:34px;height:34px;object-fit:contain;border-radius:10px"><?php else:?><span>H</span><?php endif?> <?=e($brandName)?></a>
+<nav>
+<a href="<?=e(app_url('/admin/dashboard.php'))?>">Overview</a><a href="<?=e(app_url('/admin/admins/profile.php'))?>">My Profile</a>
+<?php if(can('users.view')):?><a href="<?=e(app_url('/admin/users/index.php'))?>">Users</a><?php endif?>
+<?php if(can('wallet.view')):?><a href="<?=e(app_url('/admin/wallets/index.php'))?>">Wallet & Ledger</a><?php endif?>
+<?php if(can('wallet.bonus')):?><a class="nav-sub" href="<?=e(app_url('/admin/wallet/bonus.php'))?>">Bonus & Promotions</a><?php endif?>
+<?php if(can('qr_campaigns.manage')):?><a href="<?=e(app_url('/admin/qr/index.php'))?>">QR Campaigns</a><?php endif?>
+<?php if(can('qr.generate')):?><a class="nav-sub" href="<?=e(app_url('/admin/qr/bulk.php'))?>">Bulk QR Generator</a><?php endif?>
+<?php if(can('video_categories.manage')):?><a href="<?=e(app_url('/admin/video/index.php'))?>">Video & Advertisements</a><?php endif?>
+<?php if(can('video_categories.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/categories/index.php'))?>">Category & Character Hub</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/manage.php'))?>">Manage Category Buckets</a><?php endif?>
+<?php if(can('withdrawals.view')):?><a href="<?=e(app_url('/admin/withdrawals/index.php'))?>">Withdrawals</a><?php endif?>
+<?php if(can('hunts.view')):?><a href="<?=e(app_url('/admin/hunts/index.php'))?>">Hunt Management</a><?php endif?>
+<?php if(can('campaigns.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/campaigns/index.php'))?>">Master Campaign Manager</a><?php endif?>
+<?php if(can('hunts.activate')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/activations.php'))?>">User Activations</a><?php endif?>
+<?php if(can('payments.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/payments/index.php'))?>">Hunt Payments</a><?php endif?>
+<?php if(can('rewards.view')):?><a href="<?=e(app_url('/admin/rewards/index.php'))?>">Reward Approvals</a><?php endif?>
+<?php if(can('vendors.view')):?><a href="<?=e(app_url('/admin/vendors/index.php'))?>">Vendors & Merchants</a><?php endif?>
+<?php if(can('gifts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/gifts/index.php'))?>">Gifts & Reward Codes</a><?php endif?>
+<?php if(can('gifts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/rewards/coupons.php'))?>">Coupons & Cart Rules</a><?php endif?>
+<?php if(can('security.view')):?><a href="<?=e(app_url('/admin/fraud/index.php'))?>">Security</a><?php endif?>
+<?php if(can('security.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/fraud/devices.php'))?>">Devices</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/login-attempts.php'))?>">Login attempts</a><?php endif?>
+<?php if(can('notifications.manage')):?><a href="<?=e(app_url('/admin/notifications/index.php'))?>">Notifications</a><?php endif?>
+<?php if(can('reports.view')):?><a href="<?=e(app_url('/admin/reports/transactions.php'))?>">Reports</a><?php endif?>
+<?php if(can('reports.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/users.php'))?>">User report</a><a class="nav-sub" href="<?=e(app_url('/admin/reports/withdrawals.php'))?>">Withdrawal report</a><a class="nav-sub" href="<?=e(app_url('/admin/reports/security.php'))?>">Security report</a><?php endif?>
+<?php if(can('reports.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/hunts.php'))?>">Hunt reports</a><?php endif?>
+<?php if(can('campaigns.audit')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/campaigns.php'))?>">Campaign audit</a><?php endif?>
+<?php if(can('admins.view')):?><a href="<?=e(app_url('/admin/admins/index.php'))?>">Administrators</a><?php endif?>
+<?php if(can('staff.kyc')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/staff.php'))?>">Staff Verification & OTP</a><?php endif?>
+<?php if(can('admins.edit')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/roles.php'))?>">Roles & Permissions</a><?php endif?>
+<?php if(can('audit.view')):?><a href="<?=e(app_url('/admin/audit/index.php'))?>">Audit & Activity Log</a><?php endif?>
+<?php if(can('settings.edit')):?><a href="<?=e(app_url('/admin/settings/index.php'))?>">System Settings</a><?php endif?>
+</nav><a class="sidebar-foot" href="<?=e(app_url('/admin/admins/profile.php'))?>"><div class="avatar"><?=e(strtoupper(substr($current['name'],0,1)))?></div><div><strong><?=e($current['name'])?></strong><small><?=e($current['role_name'])?></small></div></a></aside>
+<main><header class="topbar"><button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">☰</button><div class="topbar-search"><span>⌕</span><input type="search" placeholder="Search admin panel" aria-label="Search"></div><div class="topbar-tools"><span>◌</span><span>◎</span><span>♧</span></div><div><h1><?=e($pageTitle)?></h1><p><?=e($pageSubtitle??'Secure wallet operations center')?></p></div><?php if(isset($user['id'])&&can('users.edit')):?><a class="btn secondary" href="<?=e(app_url('/admin/users/edit.php?id='.$user['id']))?>">Edit user</a><?php endif?><form class="logout-form" method="post" action="<?=e(app_url('/admin/logout.php'))?>"><?=csrf_field()?><button class="btn secondary" type="submit">Sign out</button></form></header><section class="content">
+<?php foreach(take_flashes() as $notice):?><div class="alert <?=e($notice['type'])?>"><?=e($notice['message'])?></div><?php endforeach?>
