@@ -1,0 +1,2 @@
+-- Re-runnable category hub migration. Select the target database first.
+CREATE TABLE IF NOT EXISTS category_broadcasts (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,category_id BIGINT UNSIGNED NOT NULL,topic VARCHAR(120) NOT NULL,message VARCHAR(500) NOT NULL,status ENUM('QUEUED','SENT','FAILED') NOT NULL DEFAULT 'QUEUED',provider_reference VARCHAR(190) NULL,created_by INT UNSIGNED NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,sent_at DATETIME NULL,INDEX idx_category_broadcast(category_id,status,created_at)) ENGINE=InnoDB;

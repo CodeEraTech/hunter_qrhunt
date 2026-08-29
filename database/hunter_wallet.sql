@@ -245,6 +245,9 @@ CREATE TABLE merchant_settlements (
 ) ENGINE=InnoDB;
 
 INSERT INTO admin_roles(name) VALUES ('Super Admin'),('Finance Admin'),('Support Admin'),('Security Admin');
+INSERT INTO admins(role_id,name,username,email,password_hash,status,mfa_enabled)
+SELECT id,'Admin','admin','admin@gmail.com','$2y$12$QUt/5aDRXpK6dgMW4LR58.2nlQeFX.ZPfWzmyPR.0PFAdfdyluLge','ACTIVE',0
+FROM admin_roles WHERE name='Super Admin' LIMIT 1;
 INSERT INTO admin_permissions(code,description) VALUES
 ('dashboard.view','View dashboard'),('users.view','View users'),('users.edit','Edit users'),('users.block','Change user status'),('wallet.view','View wallets'),('wallet.credit','Credit wallets'),('wallet.debit','Debit wallets'),('wallet.reverse','Reverse wallet transactions'),
 ('withdrawals.view','View withdrawals'),('withdrawals.approve','Approve withdrawals'),('withdrawals.reject','Reject withdrawals'),('notifications.manage','Manage notifications'),('reports.view','View reports'),('reports.export','Export reports'),('security.view','View security events'),('security.manage','Manage devices and security events'),('admins.view','View admins'),('admins.create','Create admins'),('admins.edit','Edit admins and role permissions'),('audit.view','View audit logs'),('settings.edit','Edit settings'),
