@@ -10,14 +10,16 @@
 <?php if(can('qr_campaigns.manage')):?><a href="<?=e(app_url('/admin/qr/index.php'))?>">QR Campaigns</a><?php endif?>
 <?php if(can('qr.generate')):?><a class="nav-sub" href="<?=e(app_url('/admin/qr/bulk.php'))?>">Bulk QR Generator</a><?php endif?>
 <?php if(can('video_categories.manage')):?><a href="<?=e(app_url('/admin/video/index.php'))?>">Video & Advertisements</a><?php endif?>
-<?php if(can('video_categories.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/categories/index.php'))?>">Category & Character Hub</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/manage.php'))?>">Manage Category Buckets</a><?php endif?>
+<?php if(can('video_categories.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/categories/index.php'))?>">Category &amp; Character Hub</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/manage.php'))?>">Manage Category Buckets</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/commission.php'))?>">Shop Categories &amp; Commission</a><?php endif?>
 <?php if(can('withdrawals.view')):?><a href="<?=e(app_url('/admin/withdrawals/index.php'))?>">Withdrawals</a><?php endif?>
 <?php if(can('hunts.view')):?><a href="<?=e(app_url('/admin/hunts/index.php'))?>">Hunt Management</a><?php endif?>
+<?php if(can('hunts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions.php'))?>">Question Manager</a><?php endif?>
+<?php if(can('hunts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions_bulk.php'))?>">Bulk Question Upload</a><?php endif?><?php if(can('hunts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/collections.php'))?>">Question Collections</a><?php endif?>
 <?php if(can('campaigns.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/campaigns/index.php'))?>">Master Campaign Manager</a><?php endif?>
 <?php if(can('hunts.activate')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/activations.php'))?>">User Activations</a><?php endif?>
 <?php if(can('payments.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/payments/index.php'))?>">Hunt Payments</a><?php endif?>
 <?php if(can('rewards.view')):?><a href="<?=e(app_url('/admin/rewards/index.php'))?>">Reward Approvals</a><?php endif?>
-<?php if(can('vendors.view')):?><a href="<?=e(app_url('/admin/vendors/index.php'))?>">Vendors & Merchants</a><?php endif?>
+<?php if(can('vendors.view')):?><a href="<?=e(app_url('/admin/vendors/index.php'))?>">Vendors &amp; Merchants</a><?php if(can('vendors.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/onboarding.php'))?>">Master Vendor Onboarding &amp; KYC</a><?php endif?><?php endif?>
 <?php if(can('gifts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/gifts/index.php'))?>">Gifts & Reward Codes</a><?php endif?>
 <?php if(can('gifts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/rewards/coupons.php'))?>">Coupons & Cart Rules</a><?php endif?>
 <?php if(can('security.view')):?><a href="<?=e(app_url('/admin/fraud/index.php'))?>">Security</a><?php endif?>
@@ -27,6 +29,7 @@
 <?php if(can('reports.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/users.php'))?>">User report</a><a class="nav-sub" href="<?=e(app_url('/admin/reports/withdrawals.php'))?>">Withdrawal report</a><a class="nav-sub" href="<?=e(app_url('/admin/reports/security.php'))?>">Security report</a><?php endif?>
 <?php if(can('reports.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/hunts.php'))?>">Hunt reports</a><?php endif?>
 <?php if(can('campaigns.audit')):?><a class="nav-sub" href="<?=e(app_url('/admin/reports/campaigns.php'))?>">Campaign audit</a><?php endif?>
+<?php if(can('security.view')):?><div class="nav-section-label">SECURITY &amp; GOVERNANCE</div><a href="<?=e(app_url('/admin/security/index.php'))?>">Security Dashboard</a><?php if(can('staff.kyc')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/staff.php'))?>">Staff Management</a><?php endif?><a class="nav-sub" href="<?=e(app_url('/admin/admins/roles.php'))?>">Roles &amp; Permissions</a><a class="nav-sub" href="<?=e(app_url('/admin/audit/index.php'))?>">Staff Activity Logs</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/login-attempts.php'))?>">Login &amp; 2FA Logs</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/devices.php'))?>">Devices &amp; Sessions</a><?php endif?>
 <?php if(can('admins.view')):?><a href="<?=e(app_url('/admin/admins/index.php'))?>">Administrators</a><?php endif?>
 <?php if(can('staff.kyc')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/staff.php'))?>">Staff Verification & OTP</a><?php endif?>
 <?php if(can('admins.edit')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/roles.php'))?>">Roles & Permissions</a><?php endif?>

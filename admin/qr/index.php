@@ -1,5 +1,6 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
+// The complete four-section campaign workflow lives in the Master Campaign Manager.
+if ($_SERVER['REQUEST_METHOD'] === 'GET') { header('Location: ../campaigns/index.php'); exit; }
 require dirname(__DIR__,2).'/includes/bootstrap.php';
 require_permission('qr_campaigns.manage');
 if(is_post()){
