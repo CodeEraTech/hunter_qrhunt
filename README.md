@@ -73,7 +73,7 @@ Open `http://127.0.0.1:8080/admin/login.php`. Use `COOKIE_SECURE=0` only for loc
 - Device-bound bearer APIs for login/logout, balance, transactions, withdrawals, devices, and notifications
 - Hunt campaigns, QR master spots, geofence/device validation, server-generated rewards, verified payment activation, video clues, rotating secrets, questions, scratch sessions, reward approvals, vendors, gifts, and single-use reward codes
 - Dynamic video categories, normalized YouTube privacy embeds, clue text, QR linking, pre-roll/mid-roll/full-screen advertisements, skip timing, and sponsor CTA metadata
-- Field-by-field master campaign manager with spot binding IDs, category theme inheritance, public/whitelist targeting, city/venue, GPS radar and unlock radii, indoor breadcrumbs, riddle chains/synonyms, reward gates, TTL/reversal, frequency caps, and campaign audit history
+- Field-by-field Master Category Campaigns with spot binding IDs, category theme inheritance, public/whitelist targeting, city/venue, GPS radar and unlock radii, indoor breadcrumbs, riddle chains/synonyms, reward gates, TTL/reversal, frequency caps, and campaign audit history
 - Programmable QR campaigns with reward type/value, time lock, auto reversal, merchant binding, frequency, budget pool, operating window, and promo grant API
 - Bulk QR batch generation from the exact eight-column CSV specification, auto-count mode, batch history, mapping CSV, and downloadable print-card ZIP
 - Staff KYC profiles with protected document uploads, KYC status, passwordless OTP challenge flow, coupons with minimum-cart rules, and merchant settlement records
