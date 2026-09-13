@@ -161,3 +161,48 @@ Reusable HTTP smoke tests are in `tests/`. They require deliberately created tes
 - Backup scheduling, encrypted off-server replication, TLS termination, WAF, and platform-specific mobile screenshot protection are deployment responsibilities.
 - The project supplies wallet administration APIs, not a complete consumer registration/password-reset/payment-provider API suite.
 - Profile-image/document upload workflows are not exposed; when added, they must use the protected upload directory and MIME/size/renaming controls from the specification.
+
+
+## Vendor Store Portal
+
+Sign in at `/vendor/login.php` using an active `vendor_users` account linked to an active store. The financial dashboard is `/vendor/dashboard.php`; `/admin/vendors/index.php` remains the administrator's vendor directory. An admin session does not grant access to a vendor's Store Portal.
+
+The dashboard uses the authenticated vendor ID for every query. Its eight cards summarize all-time withdrawal requests, product approvals and wallet checkout payments. Histories are paginated independently, with 20 records per page. Successful wallet payments and settlement status are shown separately; commission and net amounts come from `merchant_settlements`, not estimated rates. Payment totals cover wallet checkouts only and include all statuses in the total card.
+
+Product and withdrawal modules require the existing `database/production_update.sql` changes on installations that do not yet have those tables. Missing modules display “Unavailable”, not zero balances. This redesign does not run database migrations. Withdrawal bank details are masked and reflect the current store account; the existing payout table does not record historical bank snapshots or transfer references. Product category is displayed from `metadata.category` when present.
+
+Run isolated dashboard query checks without an application database:
+
+```bash
+php tests/vendor_dashboard.php
+```
+
+## Wallet & Ledger
+
+The shared admin navigation has three financial entries:
+
+- **Admin Wallet** (`/admin/wallets/admin.php`): master account, recipient fund distribution/recall, wallet PIN setup, pool balances and the append-only master ledger. Existing customer adjustment and bonus tools are accessible within this screen.
+- **Transactions** (`/admin/wallets/index.php`): permission-scoped customer, bonus, vendor settlement/debit and master events with search, date/status/source filters and details.
+- **Withdrawals** (`/admin/withdrawals/index.php`): customer/vendor payouts, money-request review and settlement history as internal tabs, with details, bank references and filtered CSV export.
+
+After the existing production module migrations, run `php database/migrate_finance.php` (or import `database/admin_wallet_migration.sql`). The migration preserves existing balances and creates a **zero-balance** master account; it does not infer opening funds from customer/vendor balances or import unfinished legacy distribution records. `production_update.sql` remains the prerequisite for vendor modules. No migration runs during page requests.
+
+Master-wallet operations use the new `wallet.master.view`, `wallet.master.distribute` and `wallet.master.fund` permissions (granted to Super Admin by the migration). Set up administrator authenticator MFA using the existing `database/enable_admin_mfa.php` command and set a six-digit wallet PIN on Admin Wallet. PIN verification creates a five-minute, session-bound confirmation of the exact operation. The authenticator OTP is single-use for wallet operations within its validity window; failed PIN/OTP verification is persisted and locked after five failures. This uses authenticator OTP, not SMS/email delivery.
+
+Record received master funding with a unique bank/reference identifier, then distribute to a specific vendor ID or user ID. Distribution atomically debits the master and credits vendor escrow, user real cash, or the existing rupee-denominated bonus balance. Recall does the inverse. Qoin Bonus here is the existing bonus wallet, not a new coin conversion scheme. Funding records do not initiate bank charges. Master-funded user ledger entries must be recalled via Admin Wallet, not the old generic reversal action.
+
+Withdrawal approval debits once; marking Paid records a mandatory unique UTR/reference atomically with the status. Vendor approvals from before this migration without an associated debit record require reconciliation before progressing to payout. No automatic bank payout, IMPS synchronization, historical bank verification or maker-checker workflow is claimed. Money requests are review records; use Admin Wallet for the corresponding fund movement. CSV export masks payout destinations and reports the **current** wallet balance, not an invented balance-at-request snapshot.
+
+Run `php tests/finance_integration.php` with local MySQL credentials and CREATE/DROP DATABASE privileges. It creates an isolated randomly named test database, imports and reruns migrations, verifies money conservation, insufficient-fund rejection, idempotency, PIN/OTP locking and replay protection, immutable master entries, payout references and permission-scoped directories, then drops only its temporary database.
+
+### Customer Wallet Console and passbook
+
+Open **Admin Wallet → Customer Wallet Console** (`/admin/wallets/adjust.php`). Fetch a customer by numeric ID, `USR_` ID, or exact mobile number. Select Real Cash or Bonus, credit/debit, amount and a mandatory reason. The server displays the exact before/after balance; confirmation is session-bound, expires after five minutes, rejects a changed balance, and rechecks the operation's permissions. Bonus adjustments also require `wallet.bonus`. A reference is generated when omitted.
+
+The customer passbook (`/admin/wallets/customer.php?id=…`) keeps Real Cash, Bonus and Promo separate, paginates all records, and shows credit/debit classification from recorded balance changes, before/after amounts, reasons, references and the responsible administrator. Filters apply to both the screen and full CSV/XLSX exports. The global Transactions and Withdrawals screens support both formats. XLSX exports require PHP's ZipArchive extension; cells are stored as explicit text to preserve identifiers and prevent spreadsheet formulas. CSV exports neutralize formula prefixes. Exports retain access controls and mask payout destinations.
+
+Wallet adjustment/reversal operations use the original wallet bucket and row locks. Idempotency keys cannot be reused across different users, buckets or amounts. Immutable audit records record administrator, IP, old/new balances and reason. `PAID` represents completed withdrawals; bank transfers still require the existing provider/deployment integration and manual UTR recording where applicable. Account verification flags are displayed as recorded and do not imply an independent bank or penny-drop verification.
+
+Quotation wording:
+
+> **Wallet & Ledger Management:** Development of a secure customer wallet and transaction ledger system supporting Real Cash and Bonus balances, credit/debit transactions, automated balance updates, customer passbook, transaction history, admin balance adjustments, withdrawal management, UPI/Bank payout records, transaction search and filtering, audit logs, and Excel/CSV reporting. The module will include appropriate transaction validation and database-level controls to maintain accurate wallet balances and prevent duplicate or inconsistent transactions.

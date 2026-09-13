@@ -26,7 +26,7 @@ function valid_date(string $date): bool { $parsed=DateTimeImmutable::createFromF
 function safe_json(mixed $value): string { return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR); }
 function payment_account_mask(string $value): string { $clean=preg_replace('/\s+/','',trim($value))??'';$last=substr($clean,-4);return $last===''?'XXXX':'XXXX XXXX '.$last; }
 function csv_row(array $row): array { return array_map(static function(mixed $value): string {$text=(string)$value;return preg_match('/^[=+\-@\t\r]/',$text)?"'".$text:$text;},array_values($row)); }
-function decimal_to_cents(string $value): int { [$whole,$fraction]=array_pad(explode('.',$value,2),2,''); return ((int)$whole*100)+(int)str_pad(substr($fraction,0,2),2,'0'); }
+function decimal_to_cents(string $value): int { if(!preg_match('/^-?\d{1,16}(\.\d{1,2})?$/',$value))throw new InvalidArgumentException('Invalid decimal amount.'); $negative=str_starts_with($value,'-'); [$whole,$fraction]=array_pad(explode('.',ltrim($value,'-'),2),2,''); $cents=((int)$whole*100)+(int)str_pad($fraction,2,'0'); return $negative?-$cents:$cents; }
 function cents_to_decimal(int $cents): string { $sign=$cents<0?'-':'';$absolute=abs($cents);return $sign.sprintf('%d.%02d',intdiv($absolute,100),$absolute%100); }
 function decimal_add(string $a,string $b): string { return cents_to_decimal(decimal_to_cents($a)+decimal_to_cents($b)); }
 function decimal_subtract(string $a,string $b): string { return cents_to_decimal(decimal_to_cents($a)-decimal_to_cents($b)); }

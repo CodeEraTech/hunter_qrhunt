@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-function transition_withdrawal(int $id, string $target, ?string $reason, int $adminId): void
+function transition_withdrawal(int $id, string $target, ?string $reason, int $adminId, string $reference = ''): void
 {
     $allowed = ['PENDING'=>['UNDER_REVIEW','REJECTED','CANCELLED'],'UNDER_REVIEW'=>['APPROVED','REJECTED'],'APPROVED'=>['PROCESSING'],'PROCESSING'=>['PAID']];
     $pdo = db(); $pdo->beginTransaction();
     try {
-        $stmt=$pdo->prepare('SELECT w.*, wa.balance, u.status user_status FROM withdrawals w JOIN wallets wa ON wa.id=w.wallet_id JOIN users u ON u.id=w.user_id WHERE w.id=? FOR UPDATE');
+        $stmt=$pdo->prepare('SELECT w.*, wa.balance, wa.status wallet_status, u.status user_status FROM withdrawals w JOIN wallets wa ON wa.id=w.wallet_id JOIN users u ON u.id=w.user_id WHERE w.id=? FOR UPDATE');
         $stmt->execute([$id]); $wd=$stmt->fetch(); if (!$wd) throw new RuntimeException('Withdrawal not found.');
         if (!in_array($target, $allowed[$wd['status']] ?? [], true)) throw new RuntimeException('Invalid withdrawal status transition.');
         if ($target === 'REJECTED' && trim((string)$reason) === '') throw new InvalidArgumentException('Rejection reason is required.');
         if ($target === 'APPROVED') {
-            if ($wd['user_status'] !== 'ACTIVE' || decimal_compare((string)$wd['balance'], (string)$wd['amount']) < 0) throw new RuntimeException('User is inactive or balance is insufficient.');
+            if ($wd['wallet_status'] !== 'ACTIVE' || $wd['user_status'] !== 'ACTIVE' || decimal_compare((string)$wd['balance'], (string)$wd['amount']) < 0) throw new RuntimeException('User is inactive or balance is insufficient.');
             $limitStmt=$pdo->prepare('SELECT * FROM transaction_limits WHERE user_id=? OR user_id IS NULL ORDER BY user_id IS NULL ASC LIMIT 1');$limitStmt->execute([$wd['user_id']]);$limits=$limitStmt->fetch();
             if($limits&&(decimal_compare((string)$wd['amount'],(string)$limits['min_withdrawal'])<0||decimal_compare((string)$wd['amount'],(string)$limits['max_withdrawal'])>0)) throw new RuntimeException('Withdrawal no longer meets current transaction limits.');
             $daily=$pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE user_id=? AND id<>? AND reviewed_at>=CURDATE() AND status IN ('APPROVED','PROCESSING','PAID')");
@@ -25,6 +25,7 @@ function transition_withdrawal(int $id, string $target, ?string $reason, int $ad
             $pdo->prepare('INSERT INTO wallet_transactions (transaction_id,user_id,wallet_id,type,amount,previous_balance,new_balance,status,reference,description,created_by,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())')
                 ->execute([$txn,$wd['user_id'],$wd['wallet_id'],'WITHDRAWAL',$wd['amount'],$wd['balance'],$new,'SUCCESS',$wd['withdrawal_id'],'Withdrawal approved',$adminId]);
         }
+        if ($target === 'PAID') { require_once __DIR__.'/finance_withdrawals.php'; finance_payout_reference($pdo,'CUSTOMER',$id,$reference,(string)$reason,$adminId); }
         $reviewed = in_array($target,['UNDER_REVIEW','APPROVED','REJECTED'],true) ? date('Y-m-d H:i:s') : $wd['reviewed_at'];
         $processed = $target === 'PAID' ? date('Y-m-d H:i:s') : $wd['processed_at'];
         $pdo->prepare('UPDATE withdrawals SET status=?,rejection_reason=?,reviewed_at=?,processed_at=?,reviewed_by=?,updated_at=NOW() WHERE id=?')->execute([$target,$target==='REJECTED'?$reason:null,$reviewed,$processed,$adminId,$id]);

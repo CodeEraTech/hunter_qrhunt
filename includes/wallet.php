@@ -6,10 +6,13 @@ function wallet_apply_in_transaction(PDO $pdo, int $userId, string $type, string
 {
     if (!$pdo->inTransaction()) throw new LogicException('Wallet mutation requires an active transaction.');
     if (!in_array($type, ['CREDIT','DEBIT','WITHDRAWAL','REFUND','ADJUSTMENT'], true) || !preg_match('/^\d{1,16}(\.\d{1,2})?$/', $amount) || decimal_compare($amount, '0.00') <= 0 || strlen($idempotencyKey) < 12 || strlen($idempotencyKey) > 100) throw new InvalidArgumentException('Invalid transaction details.');
-    $prior=$pdo->prepare('SELECT id,transaction_id,previous_balance,new_balance FROM wallet_transactions WHERE idempotency_key=? FOR UPDATE');$prior->execute([$idempotencyKey]);
-    if($existing=$prior->fetch()) return $existing+['created'=>false];
     $stmt=$pdo->prepare('SELECT w.*,u.status user_status FROM wallets w JOIN users u ON u.id=w.user_id WHERE w.user_id=? FOR UPDATE');$stmt->execute([$userId]);$wallet=$stmt->fetch();
     if(!$wallet||$wallet['status']!=='ACTIVE'||$wallet['user_status']!=='ACTIVE')throw new RuntimeException('Wallet or user is not active.');
+    $prior=$pdo->prepare('SELECT * FROM wallet_transactions WHERE idempotency_key=? FOR UPDATE');$prior->execute([$idempotencyKey]);
+    if($existing=$prior->fetch()) {
+        if((int)$existing['user_id']!==$userId || $existing['type']!==$type || $existing['bucket']!=='REAL' || decimal_compare((string)$existing['amount'],$amount)!==0)throw new RuntimeException('Idempotency key belongs to different transaction details.');
+        return $existing+['created'=>false];
+    }
     $previous=(string)$wallet['balance'];$isCredit=in_array($type,['CREDIT','REFUND'],true);$new=$isCredit?decimal_add($previous,$amount):decimal_subtract($previous,$amount);
     if(decimal_compare($new,'0.00')<0)throw new RuntimeException('Insufficient wallet balance.');
     $txn=transaction_code('TXN');$pdo->prepare('UPDATE wallets SET balance=?,updated_at=NOW() WHERE id=?')->execute([$new,$wallet['id']]);
@@ -21,8 +24,14 @@ function wallet_bucket_apply_in_transaction(PDO $pdo,int $userId,string $bucket,
 {
     if(!$pdo->inTransaction())throw new LogicException('Wallet mutation requires an active transaction.');
     if(!in_array($bucket,['REAL','BONUS','PROMO'],true)||!preg_match('/^\d{1,16}(\.\d{1,2})?$/',$amount)||decimal_compare($amount,'0.00')<=0||strlen($idempotencyKey)<8)throw new InvalidArgumentException('Invalid bucket transaction.');
-    $prior=$pdo->prepare('SELECT id,transaction_id,previous_balance,new_balance FROM wallet_transactions WHERE idempotency_key=? FOR UPDATE');$prior->execute([$idempotencyKey]);if($old=$prior->fetch())return $old+['created'=>false];
     $s=$pdo->prepare('SELECT w.*,u.status user_status FROM wallets w JOIN users u ON u.id=w.user_id WHERE w.user_id=? FOR UPDATE');$s->execute([$userId]);$wallet=$s->fetch();if(!$wallet||$wallet['status']!=='ACTIVE'||$wallet['user_status']!=='ACTIVE')throw new RuntimeException('Wallet or user is not active.');
+    if(!in_array($operation,['CREDIT','DEBIT'],true))throw new InvalidArgumentException('Invalid wallet operation.');
+    $prior=$pdo->prepare('SELECT * FROM wallet_transactions WHERE idempotency_key=? FOR UPDATE');$prior->execute([$idempotencyKey]);
+    if($old=$prior->fetch()) {
+        $wasCredit=decimal_compare((string)$old['new_balance'],(string)$old['previous_balance'])>0;
+        if((int)$old['user_id']!==$userId || $old['bucket']!==$bucket || decimal_compare((string)$old['amount'],$amount)!==0 || $wasCredit!==($operation==='CREDIT'))throw new RuntimeException('Idempotency key belongs to different transaction details.');
+        return $old+['created'=>false];
+    }
     $column=['REAL'=>'balance','BONUS'=>'bonus_balance','PROMO'=>'promo_balance'][$bucket];$previous=(string)$wallet[$column];$credit=str_contains($operation,'CREDIT');$new=$credit?decimal_add($previous,$amount):decimal_subtract($previous,$amount);if(decimal_compare($new,'0.00')<0)throw new RuntimeException('Insufficient '.$bucket.' balance.');
     $txn=transaction_code('TXN');$pdo->prepare("UPDATE wallets SET {$column}=?,updated_at=NOW() WHERE id=?")->execute([$new,$wallet['id']]);$type=['REAL'=>'ADJUSTMENT','BONUS'=>'BONUS_'.($credit?'CREDIT':'DEBIT'),'PROMO'=>'PROMO_'.($credit?'CREDIT':'DEBIT')][$bucket];
     $pdo->prepare('INSERT INTO wallet_transactions(transaction_id,user_id,wallet_id,type,bucket,amount,previous_balance,new_balance,status,reference,description,idempotency_key,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())')->execute([$txn,$userId,$wallet['id'],$type,$bucket,$amount,$previous,$new,'SUCCESS',substr($reference,0,120),substr($description,0,500),$idempotencyKey,$adminId]);return ['id'=>(int)$pdo->lastInsertId(),'transaction_id'=>$txn,'previous_balance'=>$previous,'new_balance'=>$new,'created'=>true];
@@ -53,7 +62,7 @@ function process_wallet_expiries(int $limit=100): int
 
 function wallet_adjust(int $userId, string $type, string $amount, string $reference, string $description, int $adminId, string $idempotencyKey): array
 {
-    if (!in_array($type, ['CREDIT','DEBIT'], true) || !preg_match('/^\d{1,16}(\.\d{1,2})?$/', $amount) || decimal_compare($amount, '0.00') <= 0 || !preg_match('/^wallet-adjust:[a-f0-9]{48}$/', $idempotencyKey)) throw new InvalidArgumentException('Invalid transaction details.');
+    if (trim($description)==='' || strlen($description)>500 || !in_array($type, ['CREDIT','DEBIT'], true) || !preg_match('/^\d{1,16}(\.\d{1,2})?$/', $amount) || decimal_compare($amount, '0.00') <= 0 || !preg_match('/^wallet-adjust:[a-f0-9]{48}$/', $idempotencyKey)) throw new InvalidArgumentException('Invalid transaction details.');
     $pdo = db(); $pdo->beginTransaction();
     try {
         $result=wallet_apply_in_transaction($pdo,$userId,$type,$amount,$reference,$description,$adminId,$idempotencyKey);
@@ -65,12 +74,13 @@ function wallet_adjust(int $userId, string $type, string $amount, string $refere
 function wallet_reverse(int $transactionId, string $reason, int $adminId): array
 {
     if(trim($reason)==='')throw new InvalidArgumentException('A reversal reason is required.');$pdo=db();$pdo->beginTransaction();
-    try{$stmt=$pdo->prepare('SELECT t.*,w.balance,w.status wallet_status,u.status user_status FROM wallet_transactions t JOIN wallets w ON w.id=t.wallet_id JOIN users u ON u.id=t.user_id WHERE t.id=? FOR UPDATE');$stmt->execute([$transactionId]);$original=$stmt->fetch();
+    try{$stmt=$pdo->prepare('SELECT t.*,w.balance,w.bonus_balance,w.promo_balance,w.status wallet_status,u.status user_status FROM wallet_transactions t JOIN wallets w ON w.id=t.wallet_id JOIN users u ON u.id=t.user_id WHERE t.id=? FOR UPDATE');$stmt->execute([$transactionId]);$original=$stmt->fetch();
         if(!$original||$original['status']!=='SUCCESS'||$original['type']==='REVERSAL')throw new RuntimeException('Only successful, unreversed transactions can be reversed.');
+        if(str_starts_with((string)($original['idempotency_key']??''),'master:'))throw new RuntimeException('Use Admin Wallet to recall or redistribute master-funded balances.');
         $exists=$pdo->prepare('SELECT transaction_id FROM wallet_transactions WHERE original_transaction_id=?');$exists->execute([$transactionId]);if($exists->fetch())throw new RuntimeException('This transaction was already reversed.');
-        if($original['wallet_status']!=='ACTIVE')throw new RuntimeException('Wallet is not active.');$previous=(string)$original['balance'];$decrease=in_array($original['type'],['CREDIT','REFUND'],true);$new=$decrease?decimal_subtract($previous,(string)$original['amount']):decimal_add($previous,(string)$original['amount']);if(decimal_compare($new,'0.00')<0)throw new RuntimeException('The wallet does not have enough funds to reverse this credit.');
-        $txn=transaction_code('TXN');$pdo->prepare('UPDATE wallets SET balance=?,updated_at=NOW() WHERE id=?')->execute([$new,$original['wallet_id']]);$pdo->prepare("UPDATE wallet_transactions SET status='REVERSED' WHERE id=?")->execute([$transactionId]);
-        $pdo->prepare('INSERT INTO wallet_transactions(transaction_id,user_id,wallet_id,type,amount,previous_balance,new_balance,status,reference,description,original_transaction_id,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,NOW())')->execute([$txn,$original['user_id'],$original['wallet_id'],'REVERSAL',$original['amount'],$previous,$new,'SUCCESS',$original['transaction_id'],$reason,$transactionId,$adminId]);
+        if($original['wallet_status']!=='ACTIVE'||$original['user_status']!=='ACTIVE')throw new RuntimeException('Wallet is not active.');$column=['REAL'=>'balance','BONUS'=>'bonus_balance','PROMO'=>'promo_balance'][$original['bucket']];$previous=(string)$original[$column];$decrease=decimal_compare((string)$original['new_balance'],(string)$original['previous_balance'])>0;$new=$decrease?decimal_subtract($previous,(string)$original['amount']):decimal_add($previous,(string)$original['amount']);if(decimal_compare($new,'0.00')<0)throw new RuntimeException('The wallet does not have enough funds to reverse this credit.');
+        $txn=transaction_code('TXN');$pdo->prepare("UPDATE wallets SET {$column}=?,updated_at=NOW() WHERE id=?")->execute([$new,$original['wallet_id']]);$pdo->prepare("UPDATE wallet_transactions SET status='REVERSED' WHERE id=?")->execute([$transactionId]);
+        $pdo->prepare('INSERT INTO wallet_transactions(transaction_id,user_id,wallet_id,type,bucket,amount,previous_balance,new_balance,status,reference,description,original_transaction_id,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())')->execute([$txn,$original['user_id'],$original['wallet_id'],'REVERSAL',$original['bucket'],$original['amount'],$previous,$new,'SUCCESS',$original['transaction_id'],$reason,$transactionId,$adminId]);
         audit_log($adminId,'WALLET_REVERSAL','wallet',(string)$original['wallet_id'],['transaction_id'=>$original['transaction_id'],'balance'=>$previous],['transaction_id'=>$txn,'balance'=>$new,'reason'=>$reason]);$pdo->commit();return ['transaction_id'=>$txn,'previous_balance'=>$previous,'new_balance'=>$new];
     }catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
 }

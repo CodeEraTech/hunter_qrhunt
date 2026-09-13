@@ -5,7 +5,7 @@ $pdo=db();
 $stats=$pdo->query("SELECT COUNT(*) total,COALESCE(SUM(status='ACTIVE'),0) active,COALESCE(SUM(status='INACTIVE'),0) inactive,COALESCE(SUM(kyc_status='PENDING'),0) kyc_pending FROM vendors")->fetch();
 $withdrawals=(int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status IN ('PENDING','UNDER_REVIEW','PROCESSING')")->fetchColumn();
 $settlements=(int)$pdo->query("SELECT COUNT(*) FROM merchant_settlements WHERE status='PENDING'")->fetchColumn();
-$pageTitle='Vendor dashboard';$pageSubtitle='Master overview of onboarding, KYC and settlement activity';
+$pageTitle='Vendor management overview';$pageSubtitle='Master overview of onboarding, KYC and settlement activity';
 require APP_ROOT.'/includes/header.php';
 ?>
 <section class="panel">
