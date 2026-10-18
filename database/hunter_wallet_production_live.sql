@@ -15,6 +15,74 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+SET FOREIGN_KEY_CHECKS = 0;
+SET UNIQUE_CHECKS = 0;
+
+--
+-- Table structure for table `admin_roles`
+--
+
+DROP TABLE IF EXISTS `admin_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin_roles` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin_roles`
+--
+
+LOCK TABLES `admin_roles` WRITE;
+/*!40000 ALTER TABLE `admin_roles` DISABLE KEYS */;
+INSERT INTO `admin_roles` VALUES (1,'Super Admin','2026-08-23 19:08:10'),(2,'Finance Admin','2026-08-23 19:08:10'),(3,'Support Admin','2026-08-23 19:08:10'),(4,'Security Admin','2026-08-23 19:08:10');
+/*!40000 ALTER TABLE `admin_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `admins`
+--
+
+DROP TABLE IF EXISTS `admins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admins` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` int unsigned NOT NULL,
+  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('ACTIVE','BLOCKED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `mfa_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `mfa_secret_encrypted` text COLLATE utf8mb4_unicode_ci,
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `admin_roles` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admins`
+--
+
+LOCK TABLES `admins` WRITE;
+/*!40000 ALTER TABLE `admins` DISABLE KEYS */;
+INSERT INTO `admins` VALUES (1,1,'Integration Admin','integration-admin','integration-admin@example.test','$2y$12$94.eSalb80ArHPRjOKuoH.sySXbKwlHc6MONMG16KyfIgmkOpErWq','ACTIVE',0,NULL,NULL,NULL,'2026-08-23 19:08:21','2026-08-23 19:08:21'),(2,1,'Integration Admin','integration','integration@example.test','$2y$12$yLcCGdfWGDMkYnTV6YW98OYJKx3mKlBFQkus7d.ZjJ6mgohxU2OFq','ACTIVE',0,NULL,'2026-09-13 16:47:15','127.0.0.1','2026-08-23 19:08:37','2026-09-13 16:47:15'),(4,1,'Integration Admin','adm-8ce8ea53','adm-8ce8ea53@example.test','$2y$12$JrBy.4XL2CoXGQkBGiuUwesLFxIcQvFQbzeKZ8Edp.WbdXWRe0YkG','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:37:51','2026-10-17 18:37:51'),(5,1,'Integration Admin','adm-129b73ae','adm-129b73ae@example.test','$2y$12$mI4czl9nnKSh/70q.PfnfegUdcyEVy8DXkjowguK3KR.KWU3GS716','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:38:34','2026-10-17 18:38:34'),(6,1,'Integration Admin','adm-1bac2a6b','adm-1bac2a6b@example.test','$2y$12$A4JJ7PT11YvKfiP.sZyDK.71mi7X5YtXsR7wQwQbPagMNhLFqQlLi','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:38:56','2026-10-17 18:38:56'),(7,1,'Super Admin','superadmin','superadmin@hunterwallet.test','$2y$12$wfSWPKsDmZZHWrYv/9EcgOqa9zV28FdlrPT7JzA1wM7A/72lT05RG','ACTIVE',0,NULL,'2026-10-18 09:53:10','127.0.0.1','2026-10-17 18:55:29','2026-10-18 09:53:10'),(8,1,'Integration Admin','adm-97790886','adm-97790886@example.test','$2y$12$1A3xF8mk/WJC7qM7IVTzpOsKcvHejQnf9aU2prkTsRAqjR8gJVwam','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 19:57:24','2026-10-17 19:57:24'),(9,1,'Integration Admin','adm-6415b496','adm-6415b496@example.test','$2y$12$m6Z/KFVcGzTrz7KMP86ceeyw81lt/RAfxM.0SxRkZeOPo7SpDnMiO','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:21:24','2026-10-17 21:21:24'),(10,1,'Test Admin','adm-353d6fb1','adm-353d6fb1@example.test','$2y$12$RZwkrczo1G1vGcO8KAZyp.YAVlguTRv4iyuiCMqhqS/XLh4Bie/8m','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:32:33','2026-10-17 21:32:33'),(11,1,'Test Admin','adm-183d672e','adm-183d672e@example.test','$2y$12$7oSn.N0WiiSzh3XNuBu3iu8Dr3d5y12faUJ5jST4DN9rHxr30gboW','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:35:19','2026-10-17 21:35:19'),(12,1,'Test Admin','adm-4120c86a','adm-4120c86a@example.test','$2y$12$AlBYJgTH5XKSif3tfo1A6eh2Jq2n.H/o6SrIlPHhl/c5tut1c/V6q','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:37:27','2026-10-17 21:37:27'),(13,1,'Test Admin','adm-32a00416','adm-32a00416@example.test','$2y$12$QCuV.AKwPCI8BnDOXY9lROzINQcRPsr7mg7SXO1fkWdOt.GqC5IF.','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:38:31','2026-10-17 21:38:31'),(14,1,'Integration Admin','adm-d1411073','adm-d1411073@example.test','$2y$12$iuhr.rTvtFXbK6ybmS98y.tNODnXARLJ9n1T07pqQCHnYje.U0xQS','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(15,1,'Test Admin','adm-4f67df73','adm-4f67df73@example.test','$2y$12$zGr6VEMpnqQMjJDd.UEUAuAHQmJir/QSeTTfNOwn0iGV6fTNoHSiK','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 22:51:21','2026-10-17 22:51:21'),(16,1,'Integration Admin','adm-3439d2e2','adm-3439d2e2@example.test','$2y$12$.Oay0Q7yPKjVXCNiVhfAl.qrUiGpEQnqaLIrwXC9wlNgeYXOuiKfO','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 22:51:23','2026-10-17 22:51:23'),(17,1,'Test Admin','adm-2a0bf7e2','adm-2a0bf7e2@example.test','$2y$12$XDx/WwkYnkWRQElTqPxiUe.J1IxD./pLYlvcg7hrQZV4sEhtpqIqC','ACTIVE',0,NULL,NULL,NULL,'2026-10-18 09:25:15','2026-10-18 09:25:15'),(18,1,'Integration Admin','adm-86f7090e','adm-86f7090e@example.test','$2y$12$0MtpJVJM3eSX0F7bCYxOp.tIcVOW23OSyRXmZXyl4ImzL2l4m0PCu','ACTIVE',0,NULL,NULL,NULL,'2026-10-18 09:25:17','2026-10-18 09:25:17');
+/*!40000 ALTER TABLE `admins` ENABLE KEYS */;
+UNLOCK TABLES;
+
 --
 -- Table structure for table `admin_otp_challenges`
 --
@@ -103,68 +171,48 @@ INSERT INTO `admin_role_permissions` VALUES (1,1),(2,1),(3,1),(4,1),(1,2),(3,2),
 UNLOCK TABLES;
 
 --
--- Table structure for table `admin_roles`
+-- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `admin_roles`;
+DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `admin_roles` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `admin_roles`
---
-
-LOCK TABLES `admin_roles` WRITE;
-/*!40000 ALTER TABLE `admin_roles` DISABLE KEYS */;
-INSERT INTO `admin_roles` VALUES (1,'Super Admin','2026-08-23 19:08:10'),(2,'Finance Admin','2026-08-23 19:08:10'),(3,'Support Admin','2026-08-23 19:08:10'),(4,'Security Admin','2026-08-23 19:08:10');
-/*!40000 ALTER TABLE `admin_roles` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `admins`
---
-
-DROP TABLE IF EXISTS `admins`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `admins` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` int unsigned NOT NULL,
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mobile` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('ACTIVE','BLOCKED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `mfa_enabled` tinyint(1) NOT NULL DEFAULT '0',
-  `mfa_secret_encrypted` text COLLATE utf8mb4_unicode_ci,
-  `last_login_at` datetime DEFAULT NULL,
-  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('ACTIVE','BLOCKED','SUSPENDED','PENDING') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `status_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `balance_privacy_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `risk_level` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'LOW',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `settlement_upi` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_account_number` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_ifsc` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `mobile` (`mobile`),
   UNIQUE KEY `email` (`email`),
-  KEY `role_id` (`role_id`),
-  CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `admin_roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `idx_users_status` (`status`),
+  KEY `idx_users_created` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `admins`
+-- Dumping data for table `users`
 --
 
-LOCK TABLES `admins` WRITE;
-/*!40000 ALTER TABLE `admins` DISABLE KEYS */;
-INSERT INTO `admins` VALUES (1,1,'Integration Admin','integration-admin','integration-admin@example.test','$2y$12$94.eSalb80ArHPRjOKuoH.sySXbKwlHc6MONMG16KyfIgmkOpErWq','ACTIVE',0,NULL,NULL,NULL,'2026-08-23 19:08:21','2026-08-23 19:08:21'),(2,1,'Integration Admin','integration','integration@example.test','$2y$12$yLcCGdfWGDMkYnTV6YW98OYJKx3mKlBFQkus7d.ZjJ6mgohxU2OFq','ACTIVE',0,NULL,'2026-09-13 16:47:15','127.0.0.1','2026-08-23 19:08:37','2026-09-13 16:47:15'),(4,1,'Integration Admin','adm-8ce8ea53','adm-8ce8ea53@example.test','$2y$12$JrBy.4XL2CoXGQkBGiuUwesLFxIcQvFQbzeKZ8Edp.WbdXWRe0YkG','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:37:51','2026-10-17 18:37:51'),(5,1,'Integration Admin','adm-129b73ae','adm-129b73ae@example.test','$2y$12$mI4czl9nnKSh/70q.PfnfegUdcyEVy8DXkjowguK3KR.KWU3GS716','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:38:34','2026-10-17 18:38:34'),(6,1,'Integration Admin','adm-1bac2a6b','adm-1bac2a6b@example.test','$2y$12$A4JJ7PT11YvKfiP.sZyDK.71mi7X5YtXsR7wQwQbPagMNhLFqQlLi','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 18:38:56','2026-10-17 18:38:56'),(7,1,'Super Admin','superadmin','superadmin@hunterwallet.test','$2y$12$wfSWPKsDmZZHWrYv/9EcgOqa9zV28FdlrPT7JzA1wM7A/72lT05RG','ACTIVE',0,NULL,'2026-10-18 09:53:10','127.0.0.1','2026-10-17 18:55:29','2026-10-18 09:53:10'),(8,1,'Integration Admin','adm-97790886','adm-97790886@example.test','$2y$12$1A3xF8mk/WJC7qM7IVTzpOsKcvHejQnf9aU2prkTsRAqjR8gJVwam','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 19:57:24','2026-10-17 19:57:24'),(9,1,'Integration Admin','adm-6415b496','adm-6415b496@example.test','$2y$12$m6Z/KFVcGzTrz7KMP86ceeyw81lt/RAfxM.0SxRkZeOPo7SpDnMiO','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:21:24','2026-10-17 21:21:24'),(10,1,'Test Admin','adm-353d6fb1','adm-353d6fb1@example.test','$2y$12$RZwkrczo1G1vGcO8KAZyp.YAVlguTRv4iyuiCMqhqS/XLh4Bie/8m','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:32:33','2026-10-17 21:32:33'),(11,1,'Test Admin','adm-183d672e','adm-183d672e@example.test','$2y$12$7oSn.N0WiiSzh3XNuBu3iu8Dr3d5y12faUJ5jST4DN9rHxr30gboW','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:35:19','2026-10-17 21:35:19'),(12,1,'Test Admin','adm-4120c86a','adm-4120c86a@example.test','$2y$12$AlBYJgTH5XKSif3tfo1A6eh2Jq2n.H/o6SrIlPHhl/c5tut1c/V6q','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:37:27','2026-10-17 21:37:27'),(13,1,'Test Admin','adm-32a00416','adm-32a00416@example.test','$2y$12$QCuV.AKwPCI8BnDOXY9lROzINQcRPsr7mg7SXO1fkWdOt.GqC5IF.','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:38:31','2026-10-17 21:38:31'),(14,1,'Integration Admin','adm-d1411073','adm-d1411073@example.test','$2y$12$iuhr.rTvtFXbK6ybmS98y.tNODnXARLJ9n1T07pqQCHnYje.U0xQS','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(15,1,'Test Admin','adm-4f67df73','adm-4f67df73@example.test','$2y$12$zGr6VEMpnqQMjJDd.UEUAuAHQmJir/QSeTTfNOwn0iGV6fTNoHSiK','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 22:51:21','2026-10-17 22:51:21'),(16,1,'Integration Admin','adm-3439d2e2','adm-3439d2e2@example.test','$2y$12$.Oay0Q7yPKjVXCNiVhfAl.qrUiGpEQnqaLIrwXC9wlNgeYXOuiKfO','ACTIVE',0,NULL,NULL,NULL,'2026-10-17 22:51:23','2026-10-17 22:51:23'),(17,1,'Test Admin','adm-2a0bf7e2','adm-2a0bf7e2@example.test','$2y$12$XDx/WwkYnkWRQElTqPxiUe.J1IxD./pLYlvcg7hrQZV4sEhtpqIqC','ACTIVE',0,NULL,NULL,NULL,'2026-10-18 09:25:15','2026-10-18 09:25:15'),(18,1,'Integration Admin','adm-86f7090e','adm-86f7090e@example.test','$2y$12$0MtpJVJM3eSX0F7bCYxOp.tIcVOW23OSyRXmZXyl4ImzL2l4m0PCu','ACTIVE',0,NULL,NULL,NULL,'2026-10-18 09:25:17','2026-10-18 09:25:17');
-/*!40000 ALTER TABLE `admins` ENABLE KEYS */;
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Hunt User','9000000001','hunt-user@example.test','$2y$12$aJxjDah2o4ush8TkCsQ.I.dgMcGVRaSus55lCeZaBj2g7ex/RCRSS',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:21','2026-08-23 19:08:21',NULL,NULL,NULL,NULL,NULL,NULL),(2,'Paid User','9000000002','paid-user@example.test','$2y$12$UF1XKn0V3sqB6ietomUWSOV19sOi2T9RBE9A2Q4FV1SGgqQiUgIoe',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:22','2026-08-23 19:08:22',NULL,NULL,NULL,NULL,NULL,NULL),(3,'Bonus QR User','9000000099','bonus-qr@example.test','$2y$12$zKWIO8uJY7FRR2RSnMVkleHruTKPf/KdTwSYtMdUCYyg0PC.UMw8S',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:23','2026-08-23 19:08:23',NULL,NULL,NULL,NULL,NULL,NULL),(4,'Demo Customer','9000000003','customer.demo@example.test','$2y$12$77vNCiHbtcN/WMCqDMnmcumd.05N0tfONuDLzhw1kmMIg229nb.xm',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-29 11:29:07','2026-10-17 19:58:00','2026-10-17 19:58:00','127.0.0.1',NULL,NULL,NULL,NULL),(6,'Bonus QR User','9151874501','bonus-qr-b59f52db@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:36:24','2026-10-17 18:36:24',NULL,NULL,NULL,NULL,NULL,NULL),(7,'Hunt User','9351198761','hunt-user-8ce8ea53@example.test','$2y$12$wszlupqbNBEtGqNL4.kauOX4t1BVKmcjaQ/VqISiJ8YFvHAuDX5.y',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:37:51','2026-10-17 18:37:51',NULL,NULL,NULL,NULL,NULL,NULL),(8,'Paid User','9764784136','paid-user-8ce8ea53@example.test','$2y$12$2pde2VRudOIxLW9iTCuPbekW0rAo7CfJwqDL6UGecW9/TMvK5Meh6',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:37:51','2026-10-17 18:37:51',NULL,NULL,NULL,NULL,NULL,NULL),(9,'Hunt User','9794857634','hunt-user-129b73ae@example.test','$2y$12$n8cYsWFwPAlhxkqBkMwc7uJqnn5TwjWtKeA2P9xGKS0lrmniZooJ.',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:34','2026-10-17 18:38:34',NULL,NULL,NULL,NULL,NULL,NULL),(10,'Paid User','9505514906','paid-user-129b73ae@example.test','$2y$12$G6epx9w/SBY3...bwhrvxObyaOo9cnA4KUXCTO2z3wkIxchCW6gGS',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:34','2026-10-17 18:38:34',NULL,NULL,NULL,NULL,NULL,NULL),(11,'Hunt User','9893391939','hunt-user-1bac2a6b@example.test','$2y$12$RObUo2DzrFwUhhm5fev3s.VcvHz6XHcVSCGNDVWMUfAujDUtyF/QW',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:56','2026-10-17 18:38:56',NULL,NULL,NULL,NULL,NULL,NULL),(12,'Paid User','9289900374','paid-user-1bac2a6b@example.test','$2y$12$D0jRklkUhpcgoUuJT5so1eIU/fZ3Zp.AuExSkmj2zDN2OcndCnbT2',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:56','2026-10-17 18:38:56',NULL,NULL,NULL,NULL,NULL,NULL),(14,'Bonus QR User','9343327683','bonus-qr-93bd279a@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:16','2026-10-17 19:57:16',NULL,NULL,NULL,NULL,NULL,NULL),(15,'Hunt User','9841233522','hunt-user-97790886@example.test','$2y$12$Zwkz4YtnMdAiuks.yEdud.giFjQrY73tCDtoPzhYuW5/X7w2MSEs2',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:24','2026-10-17 19:57:24',NULL,NULL,NULL,NULL,NULL,NULL),(16,'Paid User','9361448607','paid-user-97790886@example.test','$2y$12$4flOImG9/BJz1VPYuF81B.TwV9U980kAlJhIWbnkvkYPs582Q5SlC',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:24','2026-10-17 19:57:24',NULL,NULL,NULL,NULL,NULL,NULL),(17,'Bonus QR User','9714817511','bonus-qr-84aaf380@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:24','2026-10-17 21:21:24',NULL,NULL,NULL,NULL,NULL,NULL),(18,'Hunt User','9207242091','hunt-user-6415b496@example.test','$2y$12$No5o.tLd4as6nahupPxgoe/UzwKLBZTj007VJ4ojmh.Nwut33y3qO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:25','2026-10-17 21:21:25',NULL,NULL,NULL,NULL,NULL,NULL),(19,'Paid User','9244910501','paid-user-6415b496@example.test','$2y$12$d2Y.oZ8jJYFUvbJD9tDmlueZCmOU51gBU6oar6XCZUqNFR9KJdraG',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:25','2026-10-17 21:21:25',NULL,NULL,NULL,NULL,NULL,NULL),(20,'Test Hunter User','9126476008','hunter-353d6fb1@example.test','$2y$12$R3QQaf0DA.uenYKMtx3uG.So4IBkh5Ka0uEWSwhCkBLk56vIFadWO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:32:33','2026-10-17 21:32:33',NULL,NULL,NULL,NULL,NULL,NULL),(21,'Test Hunter User','9912568339','hunter-183d672e@example.test','$2y$12$d/6FKG/oLsBEWlDSrmOJP.s3TebkpQu8H2ZQ5LtD9.mheT5QXkPXG',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:35:19','2026-10-17 21:35:19',NULL,NULL,NULL,NULL,NULL,NULL),(22,'Test Hunter User','9776647490','hunter-4120c86a@example.test','$2y$12$HH6oa7ydeuBJdo78o92ZTucu36.Dj.sFmOg31X8cEFOktZyOd/WkO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:37:26','2026-10-17 21:37:26',NULL,NULL,NULL,NULL,NULL,NULL),(23,'Test Hunter User','9618427617','hunter-32a00416@example.test','$2y$12$ddJRt7eeX3TUY3zgA34xqOumDwBk7x7aSBLV0Wav4icDgs2vxzYvq',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:31','2026-10-17 21:38:31',NULL,NULL,NULL,NULL,NULL,NULL),(24,'Bonus QR User','9707941641','bonus-qr-eefa6591@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:32','2026-10-17 21:38:32',NULL,NULL,NULL,NULL,NULL,NULL),(25,'Hunt User','9357672963','hunt-user-d1411073@example.test','$2y$12$fbgNb4Q4L1CTZyt4O4jFn.xtvq66N/lXqi1.Xa0qzt1Dbbaz1Ja92',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:33','2026-10-17 21:38:33',NULL,NULL,NULL,NULL,NULL,NULL),(26,'Paid User','9655108464','paid-user-d1411073@example.test','$2y$12$.6N.SfjAZFa4T6SpUGh3uu3a4JqgtZbzPrRuDzPxGJzDEFJb/ql1O',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:33','2026-10-17 21:38:33',NULL,NULL,NULL,NULL,NULL,NULL),(27,'Test Hunter User','9493748861','hunter-4f67df73@example.test','$2y$12$GnglaHurz0iXt39ZO9qWjeOnLzkz6fHpNDCLJXjtJCB9vtwhklH7i',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:21','2026-10-17 22:51:21',NULL,NULL,NULL,NULL,NULL,NULL),(28,'Bonus QR User','9997246256','bonus-qr-c4b8a794@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:23','2026-10-17 22:51:23',NULL,NULL,NULL,NULL,NULL,NULL),(29,'Hunt User','9253513119','hunt-user-3439d2e2@example.test','$2y$12$U4i0ao50kNcOIXSgZeeZVuSIuCj8naRR1ZyFBF0bvkpNurKP38QAa',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:24','2026-10-17 22:51:24',NULL,NULL,NULL,NULL,NULL,NULL),(30,'Paid User','9297591627','paid-user-3439d2e2@example.test','$2y$12$ekBqxV2AaODJEdTwxTdLcuBR3XGBCgq5oegxzHvH7Vp8yzm9XEZcC',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:24','2026-10-17 22:51:24',NULL,NULL,NULL,NULL,NULL,NULL),(31,'Test Hunter User','9555157815','hunter-2a0bf7e2@example.test','$2y$12$ZqsE2PPhAjqFjGcYvW5eUuuvL8x1HdkyFSJ2SCzWr6Mz24pbyrdF6',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:15','2026-10-18 09:25:15',NULL,NULL,NULL,NULL,NULL,NULL),(32,'Bonus QR User','9218912204','bonus-qr-8d4dc97f@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:16','2026-10-18 09:25:16',NULL,NULL,NULL,NULL,NULL,NULL),(33,'Hunt User','9450325936','hunt-user-86f7090e@example.test','$2y$12$Yb1feA2khTG1k.O8jqBNGeQhmCg8YwndKITydhvNXv4UqyLmrtblK',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:17','2026-10-18 09:25:17',NULL,NULL,NULL,NULL,NULL,NULL),(34,'Paid User','9802126334','paid-user-86f7090e@example.test','$2y$12$3qr1dTBc8pOQAfFVVbDx8OMB0sALyzJ9Hd0Oxo08y2CAOr.PT/sTa',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:18','2026-10-18 09:25:18',NULL,NULL,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -295,6 +343,49 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `video_categories`
+--
+
+DROP TABLE IF EXISTS `video_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `video_categories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `commission_type` enum('PERCENTAGE','FIXED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PERCENTAGE',
+  `platform_commission_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `customer_reward_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `character_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `character_asset_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `channel_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `teaser_video_id` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `broadcast_message` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `overlay_asset_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_limit` int unsigned NOT NULL DEFAULT '500',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  KEY `created_by` (`created_by`),
+  KEY `idx_video_category_status` (`status`),
+  CONSTRAINT `video_categories_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `video_categories`
+--
+
+LOCK TABLES `video_categories` WRITE;
+/*!40000 ALTER TABLE `video_categories` DISABLE KEYS */;
+INSERT INTO `video_categories` VALUES (1,'Shopping Mall & Retail Hunt','shopping-mall','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Shopping Robot Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,1000),(2,'Patna Zoo & Wildlife Safari','patna-zoo','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Zoo Explorer Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,500),(3,'Mobile Recharge & Utility Deals','recharge','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Recharge Lightning Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,2000);
+/*!40000 ALTER TABLE `video_categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `category_broadcasts`
 --
 
@@ -327,6 +418,74 @@ LOCK TABLES `category_broadcasts` WRITE;
 /*!40000 ALTER TABLE `category_broadcasts` DISABLE KEYS */;
 INSERT INTO `category_broadcasts` VALUES (1,3,'category_3','Demo notice: hidden reward spots are live!','QUEUED',NULL,2,'2026-08-29 12:44:33',NULL);
 /*!40000 ALTER TABLE `category_broadcasts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `vendors`
+--
+
+DROP TABLE IF EXISTS `vendors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vendors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `vendor_code` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `shop_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `business_category` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `owner_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `owner_address` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gstin` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gst_document_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `identity_proof_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_proof_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cancelled_cheque_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_account_holder` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_account_number` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_ifsc` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_branch` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `settlement_upi` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `commission_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `commission_type` enum('PERCENTAGE','CUSTOM_RULE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PERCENTAGE',
+  `commission_rule` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `onboarding_notes` text COLLATE utf8mb4_unicode_ci,
+  `vendor_qr_payload` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `escrow_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `settlement_cycle` enum('DAILY','WEEKLY','MONTHLY') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DAILY',
+  `bank_verification_status` enum('PENDING','VERIFIED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_otp_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `address` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `proximity_radius_m` int unsigned NOT NULL DEFAULT '300',
+  `logo_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cover_image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `youtube_promo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('DRAFT','PENDING_KYC','PENDING_BANK','PENDING_APPROVAL','VERIFIED','ACTIVE','REJECTED','SUSPENDED','CLOSED','BLOCKED','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `kyc_status` enum('PENDING','APPROVED','VERIFIED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `kyc_document_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `vendor_code` (`vendor_code`),
+  KEY `idx_vendor_status` (`status`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `vendors_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vendors`
+--
+
+LOCK TABLES `vendors` WRITE;
+/*!40000 ALTER TABLE `vendors` DISABLE KEYS */;
+INSERT INTO `vendors` VALUES (1,'VND-TEST','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-08-23 19:08:23','2026-08-23 19:08:23','PENDING',NULL,NULL),(2,'DEMO-VENDOR','Demo Merchant','Demo Retail Counter',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING','merchant.demo@example.test','9000000099',0,'Patna Central Mall',NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','APPROVED',NULL,NULL),(3,'VND-TEST-001','Demo Retail Counter','Demo Retail Counter','Retail','Rajesh Kumar','Shop #12, Ground Floor, Central Plaza, Frazer Road, Patna','10ABCDE1234F1Z5',NULL,NULL,NULL,NULL,'Demo Retail Counter','50100456789123','HDFC0001234','Frazer Road, Patna','demoretail@hdfcbank',2.00,'PERCENTAGE',NULL,NULL,NULL,14500.00,'DAILY','VERIFIED','store@democounter.com','9876543210',0,'Demo retail counter for testing',NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-09-11 19:51:13','2026-10-18 09:50:53','VERIFIED',NULL,'HDFC Bank'),(4,'VND-1BAC2A6B','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',6,'2026-10-17 18:38:57','2026-10-17 18:38:57','PENDING',NULL,NULL),(5,'VND-97790886','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',8,'2026-10-17 19:57:25','2026-10-17 19:57:25','PENDING',NULL,NULL),(6,'VND-6415B496','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',9,'2026-10-17 21:21:26','2026-10-17 21:21:26','PENDING',NULL,NULL),(7,'VND-D1411073','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',14,'2026-10-17 21:38:34','2026-10-17 21:38:34','PENDING',NULL,NULL),(8,'VND-3439D2E2','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',16,'2026-10-17 22:51:25','2026-10-17 22:51:25','PENDING',NULL,NULL),(9,'VND-86F7090E','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18','PENDING',NULL,NULL);
+/*!40000 ALTER TABLE `vendors` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -567,6 +726,36 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `vendor_payout_requests`
+--
+
+DROP TABLE IF EXISTS `vendor_payout_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vendor_payout_requests` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `vendor_id` bigint unsigned NOT NULL,
+  `amount` decimal(18,2) NOT NULL,
+  `status` enum('PENDING','UNDER_REVIEW','APPROVED','PROCESSING','PAID','REJECTED','HELD') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `requested_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `paid_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_vendor_payout_status` (`vendor_id`,`status`),
+  CONSTRAINT `vendor_payout_requests_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vendor_payout_requests`
+--
+
+LOCK TABLES `vendor_payout_requests` WRITE;
+/*!40000 ALTER TABLE `vendor_payout_requests` DISABLE KEYS */;
+INSERT INTO `vendor_payout_requests` VALUES (1,1,500.00,'PENDING','2026-10-17 19:44:06',NULL);
+/*!40000 ALTER TABLE `vendor_payout_requests` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `finance_vendor_debits`
 --
 
@@ -630,6 +819,44 @@ LOCK TABLES `finance_vendor_payout_events` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `vendor_users`
+--
+
+DROP TABLE IF EXISTS `vendor_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vendor_users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `vendor_id` bigint unsigned NOT NULL,
+  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('ACTIVE','BLOCKED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mfa_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `mfa_secret_encrypted` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `vendor_id` (`vendor_id`),
+  CONSTRAINT `vendor_users_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vendor_users`
+--
+
+LOCK TABLES `vendor_users` WRITE;
+/*!40000 ALTER TABLE `vendor_users` DISABLE KEYS */;
+INSERT INTO `vendor_users` VALUES (1,1,'Clerk','clerk-test',NULL,'$2y$12$/WR382F6PBlX8.tP/BKDbum2SEF/mIzzCeEPjV3pBgmNIyuXGbLa6','ACTIVE',NULL,NULL,'2026-08-23 19:08:23',0,NULL),(2,3,'Demo Vendor User','vendor.test','vendor.test@hunterwallet.test','$2y$12$GWbW297o.LMekrFP4ivSyOJRHTP9LFRdy.ZMYR5ktWLjOio2FJiPW','ACTIVE','2026-10-18 10:44:37','127.0.0.1','2026-09-11 19:51:13',0,NULL),(3,4,'Clerk','clerk-1bac2a6b',NULL,'$2y$12$5vIFsx3Z0Fha1yLx8DrVh.z9Ls2443y4V5l8z7TaCxJSrUV.eJP36','ACTIVE',NULL,NULL,'2026-10-17 18:38:58',0,NULL),(4,5,'Clerk','clerk-97790886',NULL,'$2y$12$ijUWm1j00kPSm02O7SREeOaSrwH6IHPtdJilTY2T0/So7RRR2ySDS','ACTIVE',NULL,NULL,'2026-10-17 19:57:26',0,NULL),(5,6,'Clerk','clerk-6415b496',NULL,'$2y$12$lQOoMUvU.pjRPqt90POS2e62VowpIxaKegZRnc4UycTgelFZ5oV96','ACTIVE',NULL,NULL,'2026-10-17 21:21:26',0,NULL),(6,7,'Clerk','clerk-d1411073',NULL,'$2y$12$tlPzaelFQs5Bb5fxxe72cO9ps/OYvUuA7jkyWQ3Uw8vl.1BS5vX36','ACTIVE',NULL,NULL,'2026-10-17 21:38:34',0,NULL),(7,8,'Clerk','clerk-3439d2e2',NULL,'$2y$12$MTOIa67MXoUDMZ5c9gxBo.5WpOSLELnl0iHWz.qVSdeaGgp8DOmEW','ACTIVE',NULL,NULL,'2026-10-17 22:51:25',0,NULL),(8,9,'Clerk','clerk-86f7090e',NULL,'$2y$12$2u9N5u5H0Fhwo8QEqW2a9eNp/Tvf83TESzX9sXtvMtwZbMTpo9lq.','ACTIVE',NULL,NULL,'2026-10-18 09:25:19',0,NULL);
+/*!40000 ALTER TABLE `vendor_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `gift_redemption_attempts`
 --
 
@@ -662,47 +889,6 @@ LOCK TABLES `gift_redemption_attempts` WRITE;
 /*!40000 ALTER TABLE `gift_redemption_attempts` DISABLE KEYS */;
 INSERT INTO `gift_redemption_attempts` VALUES (1,1,1,'GFT-VALID','6aede01191b0eeecebceb0e169f2ef12e930648fbabed460bb6c21564fd513be','127.0.0.1','REDEEMED',NULL,'2026-08-23 19:08:23'),(2,1,1,'GFT-VALID','6aede01191b0eeecebceb0e169f2ef12e930648fbabed460bb6c21564fd513be','127.0.0.1','REJECTED','Code is not active.','2026-08-23 19:08:23'),(3,1,1,'GFT-EXPIRED','b36bd8ba65928f5db9f879878cd37d0fd9753ef32962876208a3a6a3e54d0e76','127.0.0.1','REJECTED','Code has expired.','2026-08-23 19:08:23'),(4,4,3,'GFT-VAL-1BAC2A6B','4c881a8cd62d77eb868e23ef3ea1bc4910b10b54e4e240f656dcee24306c52a3','127.0.0.1','REDEEMED',NULL,'2026-10-17 18:38:58'),(5,4,3,'GFT-VAL-1BAC2A6B','4c881a8cd62d77eb868e23ef3ea1bc4910b10b54e4e240f656dcee24306c52a3','127.0.0.1','REJECTED','Code is not active.','2026-10-17 18:38:58'),(6,4,3,'GFT-EXP-1BAC2A6B','307a9d128f34cce09b18172002a4e273c3e1a70254d8325bc7cca0bba30e7e99','127.0.0.1','REJECTED','Code has expired.','2026-10-17 18:38:58'),(7,5,4,'GFT-VAL-97790886','19135d650ac346d0f2207fce3b4c46a53a13fd8435f7739de1535d30b84ddb6a','127.0.0.1','REDEEMED',NULL,'2026-10-17 19:57:26'),(8,5,4,'GFT-VAL-97790886','19135d650ac346d0f2207fce3b4c46a53a13fd8435f7739de1535d30b84ddb6a','127.0.0.1','REJECTED','Code is not active.','2026-10-17 19:57:26'),(9,5,4,'GFT-EXP-97790886','450d0508dfe5cb912d2d256ca6c5329bd97006e73983e13cdce3406aa18a2bc7','127.0.0.1','REJECTED','Code has expired.','2026-10-17 19:57:26'),(10,6,5,'GFT-VAL-6415B496','c8a347e37257a3ad19262be976cd472c305755ca673425a06f259b7199e8ba71','127.0.0.1','REDEEMED',NULL,'2026-10-17 21:21:26'),(11,6,5,'GFT-VAL-6415B496','c8a347e37257a3ad19262be976cd472c305755ca673425a06f259b7199e8ba71','127.0.0.1','REJECTED','Code is not active.','2026-10-17 21:21:26'),(12,6,5,'GFT-EXP-6415B496','f8678842558b61460e5524845c553fdea9bedf07d058b56a424a5ee43a05bb32','127.0.0.1','REJECTED','Code has expired.','2026-10-17 21:21:26'),(13,7,6,'GFT-VAL-D1411073','810dbeeff86390eeae0442d1fc9942829b679cf363d191d569e3ebc407525ca5','127.0.0.1','REDEEMED',NULL,'2026-10-17 21:38:34'),(14,7,6,'GFT-VAL-D1411073','810dbeeff86390eeae0442d1fc9942829b679cf363d191d569e3ebc407525ca5','127.0.0.1','REJECTED','Code is not active.','2026-10-17 21:38:34'),(15,7,6,'GFT-EXP-D1411073','9426b6d8e22a1c21b9826be1b10bbdb3f8ef05a02adb7f29c5e7462cf7f39a85','127.0.0.1','REJECTED','Code has expired.','2026-10-17 21:38:34'),(16,8,7,'GFT-VAL-3439D2E2','ea5adf3afa19b336c8f9c27bdffa3c0776965dd459429918dfdd39c1f21604df','127.0.0.1','REDEEMED',NULL,'2026-10-17 22:51:25'),(17,8,7,'GFT-VAL-3439D2E2','ea5adf3afa19b336c8f9c27bdffa3c0776965dd459429918dfdd39c1f21604df','127.0.0.1','REJECTED','Code is not active.','2026-10-17 22:51:25'),(18,8,7,'GFT-EXP-3439D2E2','c5f5c29856df7e43341cd7d8817b1b036c13b5cb9061b6d476cc61ff2869ed2a','127.0.0.1','REJECTED','Code has expired.','2026-10-17 22:51:25'),(19,9,8,'GFT-VAL-86F7090E','07a8f5fa36eb368eadfdca03f35bcb06ebc0fa40fa33003240ff695b0996b1d1','127.0.0.1','REDEEMED',NULL,'2026-10-18 09:25:19'),(20,9,8,'GFT-VAL-86F7090E','07a8f5fa36eb368eadfdca03f35bcb06ebc0fa40fa33003240ff695b0996b1d1','127.0.0.1','REJECTED','Code is not active.','2026-10-18 09:25:19'),(21,9,8,'GFT-EXP-86F7090E','c7ed0d983ae0e937a595e79d942c8da514ad7b357109078bf7bcf6ff8c34a06a','127.0.0.1','REJECTED','Code has expired.','2026-10-18 09:25:19');
 /*!40000 ALTER TABLE `gift_redemption_attempts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gift_redemptions`
---
-
-DROP TABLE IF EXISTS `gift_redemptions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `gift_redemptions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `redemption_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reward_code_id` bigint unsigned NOT NULL,
-  `gift_id` bigint unsigned NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
-  `vendor_user_id` bigint unsigned NOT NULL,
-  `redeemed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `redemption_id` (`redemption_id`),
-  UNIQUE KEY `reward_code_id` (`reward_code_id`),
-  KEY `idx_redemption_vendor_date` (`vendor_id`,`redeemed_at`),
-  KEY `gift_id` (`gift_id`),
-  KEY `user_id` (`user_id`),
-  KEY `vendor_user_id` (`vendor_user_id`),
-  CONSTRAINT `gift_redemptions_ibfk_1` FOREIGN KEY (`reward_code_id`) REFERENCES `reward_codes` (`id`),
-  CONSTRAINT `gift_redemptions_ibfk_2` FOREIGN KEY (`gift_id`) REFERENCES `gifts` (`id`),
-  CONSTRAINT `gift_redemptions_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `gift_redemptions_ibfk_4` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`),
-  CONSTRAINT `gift_redemptions_ibfk_5` FOREIGN KEY (`vendor_user_id`) REFERENCES `vendor_users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `gift_redemptions`
---
-
-LOCK TABLES `gift_redemptions` WRITE;
-/*!40000 ALTER TABLE `gift_redemptions` DISABLE KEYS */;
-INSERT INTO `gift_redemptions` VALUES (1,'RED-20260823-CC1584DD',1,1,1,1,1,'2026-08-23 19:08:23'),(2,'RED-20261017-18929A1C',3,2,11,4,3,'2026-10-17 18:38:58'),(3,'RED-20261017-19286762',5,3,15,5,4,'2026-10-17 19:57:26'),(4,'RED-20261017-67A54CA2',7,4,18,6,5,'2026-10-17 21:21:26'),(5,'RED-20261017-99A091E0',9,5,25,7,6,'2026-10-17 21:38:34'),(6,'RED-20261017-57A6E0DC',11,6,29,8,7,'2026-10-17 22:51:25'),(7,'RED-20261018-E7F74323',13,7,33,9,8,'2026-10-18 09:25:19');
-/*!40000 ALTER TABLE `gift_redemptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -745,40 +931,84 @@ INSERT INTO `gifts` VALUES (1,'Test Gift',NULL,NULL,NULL,2,1,'2026-08-22 19:08:2
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_broadcast_claims`
+-- Table structure for table `reward_codes`
 --
 
-DROP TABLE IF EXISTS `hunt_broadcast_claims`;
+DROP TABLE IF EXISTS `reward_codes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_broadcast_claims` (
+CREATE TABLE `reward_codes` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `broadcast_id` bigint unsigned NOT NULL,
+  `code_reference` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint unsigned NOT NULL,
-  `qr_token_scanned` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pin_verified` tinyint(1) NOT NULL DEFAULT '0',
-  `reward_type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reward_amount` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `status` enum('SUCCESS','INVALID_PIN','EXPIRED','DUPLICATE','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idempotency_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `claimed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gift_id` bigint unsigned NOT NULL,
+  `status` enum('ACTIVE','REDEEMED','EXPIRED','CANCELLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `expires_at` datetime DEFAULT NULL,
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `redeemed_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idempotency_key` (`idempotency_key`),
-  KEY `broadcast_id` (`broadcast_id`),
-  KEY `idx_hbc_user` (`user_id`),
-  KEY `idx_hbc_token` (`qr_token_scanned`),
-  CONSTRAINT `hunt_broadcast_claims_ibfk_1` FOREIGN KEY (`broadcast_id`) REFERENCES `hunt_broadcasts` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `code_reference` (`code_reference`),
+  UNIQUE KEY `code_hash` (`code_hash`),
+  KEY `idx_reward_code_user` (`user_id`,`status`),
+  KEY `gift_id` (`gift_id`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `reward_codes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reward_codes_ibfk_2` FOREIGN KEY (`gift_id`) REFERENCES `gifts` (`id`),
+  CONSTRAINT `reward_codes_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hunt_broadcast_claims`
+-- Dumping data for table `reward_codes`
 --
 
-LOCK TABLES `hunt_broadcast_claims` WRITE;
-/*!40000 ALTER TABLE `hunt_broadcast_claims` DISABLE KEYS */;
-INSERT INTO `hunt_broadcast_claims` VALUES (1,1,22,'HBQR_bdb83edba1023510f47e839f130efc8f7b6574ec282006d7',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:fe79a718','2026-10-17 21:37:28'),(2,1,22,'HBQR_bdb83edba1023510f47e839f130efc8f7b6574ec282006d7',1,'COINS',200.00,'SUCCESS','claim-valid-4120c86a','2026-10-17 21:37:28'),(3,2,23,'HBQR_828df387039c1ec525bbde3af12b933dfcb34e23cdadb801',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:04ee4fe4','2026-10-17 21:38:32'),(4,2,23,'HBQR_828df387039c1ec525bbde3af12b933dfcb34e23cdadb801',1,'COINS',200.00,'SUCCESS','claim-valid-32a00416','2026-10-17 21:38:32'),(5,3,27,'HBQR_67b047a72a2c2fc3f6a365a0a53b5debb1d4728b554b316a',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:42e4918f','2026-10-17 22:51:23'),(6,3,27,'HBQR_67b047a72a2c2fc3f6a365a0a53b5debb1d4728b554b316a',1,'COINS',200.00,'SUCCESS','claim-valid-4f67df73','2026-10-17 22:51:23'),(7,4,31,'HBQR_b781df148b0b3260b9eee80c1abe9bb67a8f48ffb0ac6165',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:a242f5ed','2026-10-18 09:25:16'),(8,4,31,'HBQR_b781df148b0b3260b9eee80c1abe9bb67a8f48ffb0ac6165',1,'COINS',200.00,'SUCCESS','claim-valid-2a0bf7e2','2026-10-18 09:25:16');
-/*!40000 ALTER TABLE `hunt_broadcast_claims` ENABLE KEYS */;
+LOCK TABLES `reward_codes` WRITE;
+/*!40000 ALTER TABLE `reward_codes` DISABLE KEYS */;
+INSERT INTO `reward_codes` VALUES (1,'GFT-VALID','6aede01191b0eeecebceb0e169f2ef12e930648fbabed460bb6c21564fd513be',1,1,'REDEEMED','2026-08-24 19:08:23',1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'GFT-EXPIRED','b36bd8ba65928f5db9f879878cd37d0fd9753ef32962876208a3a6a3e54d0e76',1,1,'ACTIVE','2026-08-22 19:08:23',1,'2026-08-23 19:08:23',NULL),(3,'GFT-VAL-1BAC2A6B','4c881a8cd62d77eb868e23ef3ea1bc4910b10b54e4e240f656dcee24306c52a3',11,2,'REDEEMED','2026-10-18 18:38:58',6,'2026-10-17 18:38:58','2026-10-17 18:38:58'),(4,'GFT-EXP-1BAC2A6B','307a9d128f34cce09b18172002a4e273c3e1a70254d8325bc7cca0bba30e7e99',11,2,'ACTIVE','2026-10-16 18:38:58',6,'2026-10-17 18:38:58',NULL),(5,'GFT-VAL-97790886','19135d650ac346d0f2207fce3b4c46a53a13fd8435f7739de1535d30b84ddb6a',15,3,'REDEEMED','2026-10-18 19:57:26',8,'2026-10-17 19:57:26','2026-10-17 19:57:26'),(6,'GFT-EXP-97790886','450d0508dfe5cb912d2d256ca6c5329bd97006e73983e13cdce3406aa18a2bc7',15,3,'ACTIVE','2026-10-16 19:57:26',8,'2026-10-17 19:57:26',NULL),(7,'GFT-VAL-6415B496','c8a347e37257a3ad19262be976cd472c305755ca673425a06f259b7199e8ba71',18,4,'REDEEMED','2026-10-18 21:21:26',9,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(8,'GFT-EXP-6415B496','f8678842558b61460e5524845c553fdea9bedf07d058b56a424a5ee43a05bb32',18,4,'ACTIVE','2026-10-16 21:21:26',9,'2026-10-17 21:21:26',NULL),(9,'GFT-VAL-D1411073','810dbeeff86390eeae0442d1fc9942829b679cf363d191d569e3ebc407525ca5',25,5,'REDEEMED','2026-10-18 21:38:34',14,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(10,'GFT-EXP-D1411073','9426b6d8e22a1c21b9826be1b10bbdb3f8ef05a02adb7f29c5e7462cf7f39a85',25,5,'ACTIVE','2026-10-16 21:38:34',14,'2026-10-17 21:38:34',NULL),(11,'GFT-VAL-3439D2E2','ea5adf3afa19b336c8f9c27bdffa3c0776965dd459429918dfdd39c1f21604df',29,6,'REDEEMED','2026-10-18 22:51:25',16,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(12,'GFT-EXP-3439D2E2','c5f5c29856df7e43341cd7d8817b1b036c13b5cb9061b6d476cc61ff2869ed2a',29,6,'ACTIVE','2026-10-16 22:51:25',16,'2026-10-17 22:51:25',NULL),(13,'GFT-VAL-86F7090E','07a8f5fa36eb368eadfdca03f35bcb06ebc0fa40fa33003240ff695b0996b1d1',33,7,'REDEEMED','2026-10-19 09:25:19',18,'2026-10-18 09:25:19','2026-10-18 09:25:19'),(14,'GFT-EXP-86F7090E','c7ed0d983ae0e937a595e79d942c8da514ad7b357109078bf7bcf6ff8c34a06a',33,7,'ACTIVE','2026-10-17 09:25:19',18,'2026-10-18 09:25:19',NULL);
+/*!40000 ALTER TABLE `reward_codes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `gift_redemptions`
+--
+
+DROP TABLE IF EXISTS `gift_redemptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gift_redemptions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `redemption_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reward_code_id` bigint unsigned NOT NULL,
+  `gift_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `vendor_id` bigint unsigned NOT NULL,
+  `vendor_user_id` bigint unsigned NOT NULL,
+  `redeemed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `redemption_id` (`redemption_id`),
+  UNIQUE KEY `reward_code_id` (`reward_code_id`),
+  KEY `idx_redemption_vendor_date` (`vendor_id`,`redeemed_at`),
+  KEY `gift_id` (`gift_id`),
+  KEY `user_id` (`user_id`),
+  KEY `vendor_user_id` (`vendor_user_id`),
+  CONSTRAINT `gift_redemptions_ibfk_1` FOREIGN KEY (`reward_code_id`) REFERENCES `reward_codes` (`id`),
+  CONSTRAINT `gift_redemptions_ibfk_2` FOREIGN KEY (`gift_id`) REFERENCES `gifts` (`id`),
+  CONSTRAINT `gift_redemptions_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `gift_redemptions_ibfk_4` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`),
+  CONSTRAINT `gift_redemptions_ibfk_5` FOREIGN KEY (`vendor_user_id`) REFERENCES `vendor_users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gift_redemptions`
+--
+
+LOCK TABLES `gift_redemptions` WRITE;
+/*!40000 ALTER TABLE `gift_redemptions` DISABLE KEYS */;
+INSERT INTO `gift_redemptions` VALUES (1,'RED-20260823-CC1584DD',1,1,1,1,1,'2026-08-23 19:08:23'),(2,'RED-20261017-18929A1C',3,2,11,4,3,'2026-10-17 18:38:58'),(3,'RED-20261017-19286762',5,3,15,5,4,'2026-10-17 19:57:26'),(4,'RED-20261017-67A54CA2',7,4,18,6,5,'2026-10-17 21:21:26'),(5,'RED-20261017-99A091E0',9,5,25,7,6,'2026-10-17 21:38:34'),(6,'RED-20261017-57A6E0DC',11,6,29,8,7,'2026-10-17 22:51:25'),(7,'RED-20261018-E7F74323',13,7,33,9,8,'2026-10-18 09:25:19');
+/*!40000 ALTER TABLE `gift_redemptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -827,75 +1057,91 @@ INSERT INTO `hunt_broadcasts` VALUES (1,'BC-7F536C34','SPOT_4120c86a','PROMOTER'
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_challenge_attempts`
+-- Table structure for table `hunt_broadcast_claims`
 --
 
-DROP TABLE IF EXISTS `hunt_challenge_attempts`;
+DROP TABLE IF EXISTS `hunt_broadcast_claims`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_challenge_attempts` (
+CREATE TABLE `hunt_broadcast_claims` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `scan_id` bigint unsigned NOT NULL,
+  `broadcast_id` bigint unsigned NOT NULL,
   `user_id` bigint unsigned NOT NULL,
-  `challenge_type` enum('SECRET','QUESTION') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `challenge_id` bigint unsigned NOT NULL,
-  `successful` tinyint(1) NOT NULL,
-  `answer_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attempted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `qr_token_scanned` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pin_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `reward_type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reward_amount` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `status` enum('SUCCESS','INVALID_PIN','EXPIRED','DUPLICATE','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idempotency_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `claimed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_challenge_rate` (`user_id`,`challenge_type`,`attempted_at`),
-  KEY `idx_challenge_success` (`scan_id`,`challenge_type`,`challenge_id`,`successful`),
-  CONSTRAINT `hunt_challenge_attempts_ibfk_1` FOREIGN KEY (`scan_id`) REFERENCES `hunt_scans` (`id`),
-  CONSTRAINT `hunt_challenge_attempts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `idempotency_key` (`idempotency_key`),
+  KEY `broadcast_id` (`broadcast_id`),
+  KEY `idx_hbc_user` (`user_id`),
+  KEY `idx_hbc_token` (`qr_token_scanned`),
+  CONSTRAINT `hunt_broadcast_claims_ibfk_1` FOREIGN KEY (`broadcast_id`) REFERENCES `hunt_broadcasts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hunt_challenge_attempts`
+-- Dumping data for table `hunt_broadcast_claims`
 --
 
-LOCK TABLES `hunt_challenge_attempts` WRITE;
-/*!40000 ALTER TABLE `hunt_challenge_attempts` DISABLE KEYS */;
-INSERT INTO `hunt_challenge_attempts` VALUES (1,1,1,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-1','2026-08-23 19:08:22'),(2,1,1,'SECRET',1,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-1','2026-08-23 19:08:23'),(3,1,1,'QUESTION',1,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-1','2026-08-23 19:08:23'),(4,1,1,'QUESTION',1,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-1','2026-08-23 19:08:23'),(5,2,7,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-7','2026-10-17 18:37:52'),(6,2,7,'SECRET',2,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-7','2026-10-17 18:37:52'),(7,2,7,'QUESTION',2,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-7','2026-10-17 18:37:52'),(8,2,7,'QUESTION',2,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-7','2026-10-17 18:37:52'),(9,3,9,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-9','2026-10-17 18:38:35'),(10,3,9,'SECRET',3,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-9','2026-10-17 18:38:35'),(11,3,9,'QUESTION',3,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-9','2026-10-17 18:38:35'),(12,3,9,'QUESTION',3,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-9','2026-10-17 18:38:35'),(13,4,11,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-11','2026-10-17 18:38:57'),(14,4,11,'SECRET',4,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-11','2026-10-17 18:38:57'),(15,4,11,'QUESTION',4,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-11','2026-10-17 18:38:57'),(16,4,11,'QUESTION',4,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-11','2026-10-17 18:38:57'),(17,5,15,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-15','2026-10-17 19:57:25'),(18,5,15,'SECRET',5,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-15','2026-10-17 19:57:25'),(19,5,15,'QUESTION',5,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-15','2026-10-17 19:57:25'),(20,5,15,'QUESTION',5,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-15','2026-10-17 19:57:25'),(21,6,18,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-18','2026-10-17 21:21:25'),(22,6,18,'SECRET',6,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-18','2026-10-17 21:21:26'),(23,6,18,'QUESTION',6,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-18','2026-10-17 21:21:26'),(24,6,18,'QUESTION',6,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-18','2026-10-17 21:21:26'),(25,7,25,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-25','2026-10-17 21:38:34'),(26,7,25,'SECRET',7,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-25','2026-10-17 21:38:34'),(27,7,25,'QUESTION',7,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-25','2026-10-17 21:38:34'),(28,7,25,'QUESTION',7,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-25','2026-10-17 21:38:34'),(29,8,29,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-29','2026-10-17 22:51:25'),(30,8,29,'SECRET',8,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-29','2026-10-17 22:51:25'),(31,8,29,'QUESTION',8,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-29','2026-10-17 22:51:25'),(32,8,29,'QUESTION',8,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-29','2026-10-17 22:51:25'),(33,9,33,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-33','2026-10-18 09:25:18'),(34,9,33,'SECRET',9,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-33','2026-10-18 09:25:18'),(35,9,33,'QUESTION',9,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-33','2026-10-18 09:25:18'),(36,9,33,'QUESTION',9,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-33','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `hunt_challenge_attempts` ENABLE KEYS */;
+LOCK TABLES `hunt_broadcast_claims` WRITE;
+/*!40000 ALTER TABLE `hunt_broadcast_claims` DISABLE KEYS */;
+INSERT INTO `hunt_broadcast_claims` VALUES (1,1,22,'HBQR_bdb83edba1023510f47e839f130efc8f7b6574ec282006d7',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:fe79a718','2026-10-17 21:37:28'),(2,1,22,'HBQR_bdb83edba1023510f47e839f130efc8f7b6574ec282006d7',1,'COINS',200.00,'SUCCESS','claim-valid-4120c86a','2026-10-17 21:37:28'),(3,2,23,'HBQR_828df387039c1ec525bbde3af12b933dfcb34e23cdadb801',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:04ee4fe4','2026-10-17 21:38:32'),(4,2,23,'HBQR_828df387039c1ec525bbde3af12b933dfcb34e23cdadb801',1,'COINS',200.00,'SUCCESS','claim-valid-32a00416','2026-10-17 21:38:32'),(5,3,27,'HBQR_67b047a72a2c2fc3f6a365a0a53b5debb1d4728b554b316a',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:42e4918f','2026-10-17 22:51:23'),(6,3,27,'HBQR_67b047a72a2c2fc3f6a365a0a53b5debb1d4728b554b316a',1,'COINS',200.00,'SUCCESS','claim-valid-4f67df73','2026-10-17 22:51:23'),(7,4,31,'HBQR_b781df148b0b3260b9eee80c1abe9bb67a8f48ffb0ac6165',0,'COINS',0.00,'INVALID_PIN','claim-wrong-pin:fail:a242f5ed','2026-10-18 09:25:16'),(8,4,31,'HBQR_b781df148b0b3260b9eee80c1abe9bb67a8f48ffb0ac6165',1,'COINS',200.00,'SUCCESS','claim-valid-2a0bf7e2','2026-10-18 09:25:16');
+/*!40000 ALTER TABLE `hunt_broadcast_claims` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_completions`
+-- Table structure for table `hunts`
 --
 
-DROP TABLE IF EXISTS `hunt_completions`;
+DROP TABLE IF EXISTS `hunts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_completions` (
+CREATE TABLE `hunts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `hunt_id` bigint unsigned NOT NULL,
-  `activation_id` bigint unsigned NOT NULL,
-  `reward_id` bigint unsigned DEFAULT NULL,
-  `completed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `rules` text COLLATE utf8mb4_unicode_ci,
+  `tutorial_video_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tutorial_video_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `featured_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT '25.5940950',
+  `longitude` decimal(10,7) DEFAULT '85.1375660',
+  `allowed_radius_meters` int unsigned NOT NULL DEFAULT '20',
+  `qr_token` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `start_at` datetime NOT NULL,
+  `end_at` datetime NOT NULL,
+  `activation_fee` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `reward_min` decimal(18,2) NOT NULL,
+  `reward_max` decimal(18,2) NOT NULL,
+  `status` enum('DRAFT','ACTIVE','INACTIVE','ENDED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_hunt_completion` (`user_id`,`hunt_id`),
-  KEY `hunt_id` (`hunt_id`),
-  KEY `activation_id` (`activation_id`),
-  KEY `reward_id` (`reward_id`),
-  CONSTRAINT `hunt_completions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `hunt_completions_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `hunt_completions_ibfk_3` FOREIGN KEY (`activation_id`) REFERENCES `hunt_user_activations` (`id`),
-  CONSTRAINT `hunt_completions_ibfk_4` FOREIGN KEY (`reward_id`) REFERENCES `rewards` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `slug` (`slug`),
+  KEY `idx_hunts_status_dates` (`status`,`start_at`,`end_at`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `hunts_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
+  CONSTRAINT `hunts_chk_1` CHECK ((`end_at` > `start_at`)),
+  CONSTRAINT `hunts_chk_2` CHECK ((`activation_fee` >= 0)),
+  CONSTRAINT `hunts_chk_3` CHECK ((`reward_min` > 0)),
+  CONSTRAINT `hunts_chk_4` CHECK ((`reward_max` >= `reward_min`))
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hunt_completions`
+-- Dumping data for table `hunts`
 --
 
-LOCK TABLES `hunt_completions` WRITE;
-/*!40000 ALTER TABLE `hunt_completions` DISABLE KEYS */;
-INSERT INTO `hunt_completions` VALUES (1,1,1,1,1,'2026-08-23 19:08:23'),(2,7,5,4,2,'2026-10-17 18:37:52'),(3,9,6,5,3,'2026-10-17 18:38:35'),(4,11,7,6,4,'2026-10-17 18:38:57'),(5,15,9,8,5,'2026-10-17 19:57:25'),(6,18,11,10,6,'2026-10-17 21:21:26'),(7,25,13,12,7,'2026-10-17 21:38:34'),(8,29,15,14,8,'2026-10-17 22:51:25'),(9,33,17,16,9,'2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `hunt_completions` ENABLE KEYS */;
+LOCK TABLES `hunts` WRITE;
+/*!40000 ALTER TABLE `hunts` DISABLE KEYS */;
+INSERT INTO `hunts` VALUES (1,'Integration Hunt','integration-hunt','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-22 19:08:22','2026-08-25 19:08:22',100.00,500.00,500.00,'ACTIVE',1,'2026-08-23 19:08:22','2026-08-23 19:08:22'),(2,'QR Campaign Hunt','qr-campaign-hunt',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-23 18:08:23','2026-08-23 20:08:23',0.00,1.00,1.00,'ACTIVE',1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(3,'Demo City Treasure Hunt','demo-city-hunt','Seeded campaign for testing the complete admin workflow.','One scan per device.',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-28 11:29:07','2026-09-28 11:29:07',0.00,15.00,500.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07'),(4,'QR Campaign Hunt','qr-hunt-b59f52db',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 17:36:24','2026-10-17 19:36:24',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 18:36:24','2026-10-17 18:36:24'),(5,'Integration Hunt','hunt-8ce8ea53','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:37:51','2026-10-19 18:37:51',100.00,500.00,500.00,'ACTIVE',4,'2026-10-17 18:37:51','2026-10-17 18:37:51'),(6,'Integration Hunt','hunt-129b73ae','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:38:34','2026-10-19 18:38:34',100.00,500.00,500.00,'ACTIVE',5,'2026-10-17 18:38:34','2026-10-17 18:38:34'),(7,'Integration Hunt','hunt-1bac2a6b','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:38:56','2026-10-19 18:38:56',100.00,500.00,500.00,'ACTIVE',6,'2026-10-17 18:38:56','2026-10-17 18:38:56'),(8,'QR Campaign Hunt','qr-hunt-93bd279a',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 18:57:16','2026-10-17 20:57:16',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 19:57:16','2026-10-17 19:57:16'),(9,'Integration Hunt','hunt-97790886','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 19:57:24','2026-10-19 19:57:24',100.00,500.00,500.00,'ACTIVE',8,'2026-10-17 19:57:24','2026-10-17 19:57:24'),(10,'QR Campaign Hunt','qr-hunt-84aaf380',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 20:21:24','2026-10-17 22:21:24',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 21:21:24','2026-10-17 21:21:24'),(11,'Integration Hunt','hunt-6415b496','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 21:21:25','2026-10-19 21:21:25',100.00,500.00,500.00,'ACTIVE',9,'2026-10-17 21:21:25','2026-10-17 21:21:25'),(12,'QR Campaign Hunt','qr-hunt-eefa6591',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 20:38:32','2026-10-17 22:38:32',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 21:38:32','2026-10-17 21:38:32'),(13,'Integration Hunt','hunt-d1411073','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 21:38:33','2026-10-19 21:38:33',100.00,500.00,500.00,'ACTIVE',14,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(14,'QR Campaign Hunt','qr-hunt-c4b8a794',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 21:51:23','2026-10-17 23:51:23',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 22:51:23','2026-10-17 22:51:23'),(15,'Integration Hunt','hunt-3439d2e2','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 22:51:24','2026-10-19 22:51:24',100.00,500.00,500.00,'ACTIVE',16,'2026-10-17 22:51:24','2026-10-17 22:51:24'),(16,'QR Campaign Hunt','qr-hunt-8d4dc97f',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-18 08:25:17','2026-10-18 10:25:17',0.00,1.00,1.00,'ACTIVE',1,'2026-10-18 09:25:17','2026-10-18 09:25:17'),(17,'Integration Hunt','hunt-86f7090e','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 09:25:18','2026-10-20 09:25:18',100.00,500.00,500.00,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `hunts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -979,116 +1225,87 @@ INSERT INTO `hunt_qr_codes` VALUES (1,1,1,'7899e858e002186475bb5ba58ed629cfc6e9a
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_question_options`
+-- Table structure for table `payment_transactions`
 --
 
-DROP TABLE IF EXISTS `hunt_question_options`;
+DROP TABLE IF EXISTS `payment_transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_question_options` (
+CREATE TABLE `payment_transactions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `question_id` bigint unsigned NOT NULL,
-  `option_text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sort_order` int unsigned NOT NULL DEFAULT '0',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_option_question_order` (`question_id`,`sort_order`),
-  CONSTRAINT `hunt_question_options_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `hunt_questions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hunt_question_options`
---
-
-LOCK TABLES `hunt_question_options` WRITE;
-/*!40000 ALTER TABLE `hunt_question_options` DISABLE KEYS */;
-/*!40000 ALTER TABLE `hunt_question_options` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `hunt_questions`
---
-
-DROP TABLE IF EXISTS `hunt_questions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_questions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `payment_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
   `hunt_id` bigint unsigned NOT NULL,
-  `location_id` bigint unsigned DEFAULT NULL,
-  `question_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_type` enum('TEXT','MCQ') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `correct_answer_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sort_order` int unsigned NOT NULL DEFAULT '0',
-  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `created_by` int unsigned NOT NULL,
+  `provider` enum('RAZORPAY','PHONEPE','COUNTER') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `provider_order_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider_payment_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` decimal(18,2) NOT NULL,
+  `currency` char(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INR',
+  `status` enum('CREATED','PENDING','VERIFIED','FAILED','REFUNDED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'CREATED',
+  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `signature_verified_at` datetime DEFAULT NULL,
+  `failure_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_question_hunt_order` (`hunt_id`,`location_id`,`sort_order`),
-  KEY `location_id` (`location_id`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `hunt_questions_ibfk_1` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `hunt_questions_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `hunt_locations` (`id`),
-  CONSTRAINT `hunt_questions_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+  UNIQUE KEY `payment_id` (`payment_id`),
+  UNIQUE KEY `uq_payment_user_key` (`user_id`,`idempotency_key`),
+  UNIQUE KEY `uq_provider_payment` (`provider`,`provider_payment_id`),
+  KEY `idx_payment_hunt_status` (`hunt_id`,`status`),
+  CONSTRAINT `payment_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `payment_transactions_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `payment_transactions_chk_1` CHECK ((`amount` >= 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hunt_questions`
+-- Dumping data for table `payment_transactions`
 --
 
-LOCK TABLES `hunt_questions` WRITE;
-/*!40000 ALTER TABLE `hunt_questions` DISABLE KEYS */;
-INSERT INTO `hunt_questions` VALUES (1,1,1,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',1,'2026-08-23 19:08:22','2026-08-23 19:08:22'),(2,5,5,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',4,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,6,6,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',5,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,7,7,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',6,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,9,9,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',8,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,11,11,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',9,'2026-10-17 21:21:25','2026-10-17 21:21:25'),(7,13,13,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',14,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(8,15,15,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',16,'2026-10-17 22:51:24','2026-10-17 22:51:24'),(9,17,17,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `hunt_questions` ENABLE KEYS */;
+LOCK TABLES `payment_transactions` WRITE;
+/*!40000 ALTER TABLE `payment_transactions` DISABLE KEYS */;
+INSERT INTO `payment_transactions` VALUES (1,'PAY-20260823-4D6276ED',2,1,'RAZORPAY','HUNTER-PAY-20260823-4D6276ED','provider-pay-1',100.00,'INR','VERIFIED','payment-integration-key-0001','2026-08-23 19:08:23',NULL,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'PAY-20261017-5EFB5DEF',8,5,'RAZORPAY','HUNTER-PAY-20261017-5EFB5DEF',NULL,100.00,'INR','PENDING','pay-key-8ce8ea53',NULL,NULL,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,'PAY-20261017-B663FE68',10,6,'RAZORPAY','HUNTER-PAY-20261017-B663FE68',NULL,100.00,'INR','PENDING','pay-key-129b73ae',NULL,NULL,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,'PAY-20261017-6E0CDF8F',12,7,'RAZORPAY','HUNTER-PAY-20261017-6E0CDF8F','provider-pay-1bac2a6b',100.00,'INR','VERIFIED','pay-key-1bac2a6b','2026-10-17 18:38:57',NULL,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,'PAY-20261017-80A971C4',16,9,'RAZORPAY','HUNTER-PAY-20261017-80A971C4','provider-pay-97790886',100.00,'INR','VERIFIED','pay-key-97790886','2026-10-17 19:57:25',NULL,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,'PAY-20261017-F19886DF',19,11,'RAZORPAY','HUNTER-PAY-20261017-F19886DF','provider-pay-6415b496',100.00,'INR','VERIFIED','pay-key-6415b496','2026-10-17 21:21:26',NULL,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(7,'PAY-20261017-A95839D8',26,13,'RAZORPAY','HUNTER-PAY-20261017-A95839D8','provider-pay-d1411073',100.00,'INR','VERIFIED','pay-key-d1411073','2026-10-17 21:38:34',NULL,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(8,'PAY-20261017-85075765',30,15,'RAZORPAY','HUNTER-PAY-20261017-85075765','provider-pay-3439d2e2',100.00,'INR','VERIFIED','pay-key-3439d2e2','2026-10-17 22:51:25',NULL,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(9,'PAY-20261018-506FC994',34,17,'RAZORPAY','HUNTER-PAY-20261018-506FC994','provider-pay-86f7090e',100.00,'INR','VERIFIED','pay-key-86f7090e','2026-10-18 09:25:18',NULL,'2026-10-18 09:25:18','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `payment_transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_scan_attempts`
+-- Table structure for table `hunt_user_activations`
 --
 
-DROP TABLE IF EXISTS `hunt_scan_attempts`;
+DROP TABLE IF EXISTS `hunt_user_activations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_scan_attempts` (
+CREATE TABLE `hunt_user_activations` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `hunt_id` bigint unsigned DEFAULT NULL,
-  `location_id` bigint unsigned DEFAULT NULL,
-  `qr_code_id` bigint unsigned DEFAULT NULL,
-  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(10,7) DEFAULT NULL,
-  `distance_meters` decimal(12,2) DEFAULT NULL,
-  `result` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `risk_level` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `metadata` json DEFAULT NULL,
-  `attempted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` bigint unsigned NOT NULL,
+  `hunt_id` bigint unsigned NOT NULL,
+  `activation_type` enum('ONLINE','COUNTER','ADMIN') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_transaction_id` bigint unsigned DEFAULT NULL,
+  `activated_by` int unsigned DEFAULT NULL,
+  `status` enum('ACTIVE','REVOKED','COMPLETED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `activated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` datetime DEFAULT NULL,
+  `revoked_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_scan_attempt_user_date` (`user_id`,`attempted_at`),
-  KEY `idx_scan_attempt_risk` (`risk_level`,`attempted_at`),
-  KEY `hunt_id` (`hunt_id`),
-  KEY `location_id` (`location_id`),
-  KEY `qr_code_id` (`qr_code_id`),
-  CONSTRAINT `hunt_scan_attempts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `hunt_scan_attempts_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `hunt_scan_attempts_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `hunt_locations` (`id`),
-  CONSTRAINT `hunt_scan_attempts_ibfk_4` FOREIGN KEY (`qr_code_id`) REFERENCES `hunt_qr_codes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `uq_user_hunt_activation` (`user_id`,`hunt_id`),
+  KEY `idx_activation_hunt_status` (`hunt_id`,`status`),
+  KEY `payment_transaction_id` (`payment_transaction_id`),
+  KEY `activated_by` (`activated_by`),
+  CONSTRAINT `hunt_user_activations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `hunt_user_activations_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `hunt_user_activations_ibfk_3` FOREIGN KEY (`payment_transaction_id`) REFERENCES `payment_transactions` (`id`),
+  CONSTRAINT `hunt_user_activations_ibfk_4` FOREIGN KEY (`activated_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hunt_scan_attempts`
+-- Dumping data for table `hunt_user_activations`
 --
 
-LOCK TABLES `hunt_scan_attempts` WRITE;
-/*!40000 ALTER TABLE `hunt_scan_attempts` DISABLE KEYS */;
-INSERT INTO `hunt_scan_attempts` VALUES (1,1,1,1,1,'device-1','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-08-23 19:08:22'),(2,1,1,1,1,'device-1','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-08-23 19:08:22'),(3,1,1,1,1,'device-1','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-08-23 19:08:22'),(4,7,5,5,5,'device-7','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:37:52'),(5,7,5,5,5,'device-7','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:37:52'),(6,7,5,5,5,'device-7','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:37:52'),(7,9,6,6,6,'device-9','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:38:35'),(8,9,6,6,6,'device-9','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:38:35'),(9,9,6,6,6,'device-9','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:38:35'),(10,11,7,7,7,'device-11','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:38:57'),(11,11,7,7,7,'device-11','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:38:57'),(12,11,7,7,7,'device-11','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:38:57'),(13,15,9,9,9,'device-15','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 19:57:25'),(14,15,9,9,9,'device-15','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 19:57:25'),(15,15,9,9,9,'device-15','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 19:57:25'),(16,18,11,11,11,'device-18','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 21:21:25'),(17,18,11,11,11,'device-18','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 21:21:25'),(18,18,11,11,11,'device-18','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 21:21:25'),(19,25,13,13,13,'device-25','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 21:38:34'),(20,25,13,13,13,'device-25','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 21:38:34'),(21,25,13,13,13,'device-25','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 21:38:34'),(22,29,15,15,15,'device-29','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 22:51:24'),(23,29,15,15,15,'device-29','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 22:51:24'),(24,29,15,15,15,'device-29','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 22:51:24'),(25,33,17,17,17,'device-33','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-18 09:25:18'),(26,33,17,17,17,'device-33','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-18 09:25:18'),(27,33,17,17,17,'device-33','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `hunt_scan_attempts` ENABLE KEYS */;
+LOCK TABLES `hunt_user_activations` WRITE;
+/*!40000 ALTER TABLE `hunt_user_activations` DISABLE KEYS */;
+INSERT INTO `hunt_user_activations` VALUES (1,1,1,'COUNTER',NULL,1,'COMPLETED','2026-08-23 19:08:22','2026-08-25 19:08:22',NULL),(2,2,1,'ONLINE',1,NULL,'ACTIVE','2026-08-23 19:08:23','2026-08-25 19:08:22',NULL),(3,1,3,'ADMIN',NULL,1,'ACTIVE','2026-08-29 11:29:07','2026-09-28 11:29:07',NULL),(4,7,5,'COUNTER',NULL,4,'COMPLETED','2026-10-17 18:37:52','2026-10-19 18:37:51',NULL),(5,9,6,'COUNTER',NULL,5,'COMPLETED','2026-10-17 18:38:35','2026-10-19 18:38:34',NULL),(6,11,7,'COUNTER',NULL,6,'COMPLETED','2026-10-17 18:38:57','2026-10-19 18:38:56',NULL),(7,12,7,'ONLINE',4,NULL,'ACTIVE','2026-10-17 18:38:57','2026-10-19 18:38:56',NULL),(8,15,9,'COUNTER',NULL,8,'COMPLETED','2026-10-17 19:57:25','2026-10-19 19:57:24',NULL),(9,16,9,'ONLINE',5,NULL,'ACTIVE','2026-10-17 19:57:25','2026-10-19 19:57:24',NULL),(10,18,11,'COUNTER',NULL,9,'COMPLETED','2026-10-17 21:21:25','2026-10-19 21:21:25',NULL),(11,19,11,'ONLINE',6,NULL,'ACTIVE','2026-10-17 21:21:26','2026-10-19 21:21:25',NULL),(12,25,13,'COUNTER',NULL,14,'COMPLETED','2026-10-17 21:38:33','2026-10-19 21:38:33',NULL),(13,26,13,'ONLINE',7,NULL,'ACTIVE','2026-10-17 21:38:34','2026-10-19 21:38:33',NULL),(14,29,15,'COUNTER',NULL,16,'COMPLETED','2026-10-17 22:51:24','2026-10-19 22:51:24',NULL),(15,30,15,'ONLINE',8,NULL,'ACTIVE','2026-10-17 22:51:25','2026-10-19 22:51:24',NULL),(16,33,17,'COUNTER',NULL,18,'COMPLETED','2026-10-18 09:25:18','2026-10-20 09:25:18',NULL),(17,34,17,'ONLINE',9,NULL,'ACTIVE','2026-10-18 09:25:18','2026-10-20 09:25:18',NULL);
+/*!40000 ALTER TABLE `hunt_user_activations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1142,6 +1359,42 @@ INSERT INTO `hunt_scans` VALUES (1,1,1,1,1,1,'device-1',12.9716100,77.5946100,10
 UNLOCK TABLES;
 
 --
+-- Table structure for table `hunt_challenge_attempts`
+--
+
+DROP TABLE IF EXISTS `hunt_challenge_attempts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hunt_challenge_attempts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `scan_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `challenge_type` enum('SECRET','QUESTION') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `challenge_id` bigint unsigned NOT NULL,
+  `successful` tinyint(1) NOT NULL,
+  `answer_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attempted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_challenge_rate` (`user_id`,`challenge_type`,`attempted_at`),
+  KEY `idx_challenge_success` (`scan_id`,`challenge_type`,`challenge_id`,`successful`),
+  CONSTRAINT `hunt_challenge_attempts_ibfk_1` FOREIGN KEY (`scan_id`) REFERENCES `hunt_scans` (`id`),
+  CONSTRAINT `hunt_challenge_attempts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hunt_challenge_attempts`
+--
+
+LOCK TABLES `hunt_challenge_attempts` WRITE;
+/*!40000 ALTER TABLE `hunt_challenge_attempts` DISABLE KEYS */;
+INSERT INTO `hunt_challenge_attempts` VALUES (1,1,1,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-1','2026-08-23 19:08:22'),(2,1,1,'SECRET',1,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-1','2026-08-23 19:08:23'),(3,1,1,'QUESTION',1,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-1','2026-08-23 19:08:23'),(4,1,1,'QUESTION',1,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-1','2026-08-23 19:08:23'),(5,2,7,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-7','2026-10-17 18:37:52'),(6,2,7,'SECRET',2,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-7','2026-10-17 18:37:52'),(7,2,7,'QUESTION',2,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-7','2026-10-17 18:37:52'),(8,2,7,'QUESTION',2,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-7','2026-10-17 18:37:52'),(9,3,9,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-9','2026-10-17 18:38:35'),(10,3,9,'SECRET',3,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-9','2026-10-17 18:38:35'),(11,3,9,'QUESTION',3,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-9','2026-10-17 18:38:35'),(12,3,9,'QUESTION',3,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-9','2026-10-17 18:38:35'),(13,4,11,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-11','2026-10-17 18:38:57'),(14,4,11,'SECRET',4,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-11','2026-10-17 18:38:57'),(15,4,11,'QUESTION',4,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-11','2026-10-17 18:38:57'),(16,4,11,'QUESTION',4,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-11','2026-10-17 18:38:57'),(17,5,15,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-15','2026-10-17 19:57:25'),(18,5,15,'SECRET',5,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-15','2026-10-17 19:57:25'),(19,5,15,'QUESTION',5,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-15','2026-10-17 19:57:25'),(20,5,15,'QUESTION',5,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-15','2026-10-17 19:57:25'),(21,6,18,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-18','2026-10-17 21:21:25'),(22,6,18,'SECRET',6,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-18','2026-10-17 21:21:26'),(23,6,18,'QUESTION',6,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-18','2026-10-17 21:21:26'),(24,6,18,'QUESTION',6,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-18','2026-10-17 21:21:26'),(25,7,25,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-25','2026-10-17 21:38:34'),(26,7,25,'SECRET',7,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-25','2026-10-17 21:38:34'),(27,7,25,'QUESTION',7,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-25','2026-10-17 21:38:34'),(28,7,25,'QUESTION',7,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-25','2026-10-17 21:38:34'),(29,8,29,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-29','2026-10-17 22:51:25'),(30,8,29,'SECRET',8,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-29','2026-10-17 22:51:25'),(31,8,29,'QUESTION',8,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-29','2026-10-17 22:51:25'),(32,8,29,'QUESTION',8,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-29','2026-10-17 22:51:25'),(33,9,33,'SECRET',0,0,'8810ad581e59f2bc3928b261707a71308f7e139eb04820366dc4d5c18d980225','127.0.0.1','device-33','2026-10-18 09:25:18'),(34,9,33,'SECRET',9,1,'962411f188765b8d7ccee697298e15184e524a54a3d58f1124ecd92d0c7702b3','127.0.0.1','device-33','2026-10-18 09:25:18'),(35,9,33,'QUESTION',9,0,'b289f80a9a07f8f89930f70cae5317b6179a3b42dd825cec68d978657f8900d3','127.0.0.1','device-33','2026-10-18 09:25:18'),(36,9,33,'QUESTION',9,1,'6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8','127.0.0.1','device-33','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `hunt_challenge_attempts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `hunt_scratch_sessions`
 --
 
@@ -1176,6 +1429,290 @@ LOCK TABLES `hunt_scratch_sessions` WRITE;
 /*!40000 ALTER TABLE `hunt_scratch_sessions` DISABLE KEYS */;
 INSERT INTO `hunt_scratch_sessions` VALUES (1,'SCR-20260823-6B789270',1,1,'3d2f3406a6ad76ef5525b029272af6bdb84991771a3c5884bfce2ec25e2c9743','REVEALED','2026-08-23 19:23:23','2026-08-23 19:08:23',NULL),(2,'SCR-20261017-356C266F',2,7,'7c39f81b2c7509bdda9051ada4218b99810762d1f6ffdb63b04ce1cd9f85a72d','REVEALED','2026-10-17 18:52:52','2026-10-17 18:37:52',NULL),(3,'SCR-20261017-5AE5F6A8',3,9,'8b307721ca6562d230a59d3564b54c3b4ee0535ec8f513405fabd1971b8c4056','REVEALED','2026-10-17 18:53:35','2026-10-17 18:38:35',NULL),(4,'SCR-20261017-EACE2AFF',4,11,'2c7d62cb4a759a9e2367f59b6925467cc699322ba904332ef8b116d52d195f96','REVEALED','2026-10-17 18:53:57','2026-10-17 18:38:57',NULL),(5,'SCR-20261017-60D188D5',5,15,'478aafb4cfe8a1dfd46fb18c718934429e856b23e79354aa1df769c53ef10f78','REVEALED','2026-10-17 20:12:25','2026-10-17 19:57:25',NULL),(6,'SCR-20261017-97F41C8E',6,18,'a0720b3a585272df645721a857a95eda4acbb09797bebda2b4ce9a98ea92cb8a','REVEALED','2026-10-17 21:36:26','2026-10-17 21:21:26',NULL),(7,'SCR-20261017-51C73487',7,25,'f16955001fb602a4f6a80621a83980fee113632f7eb78e1972a65f3687746a67','REVEALED','2026-10-17 21:53:34','2026-10-17 21:38:34',NULL),(8,'SCR-20261017-7ECC1479',8,29,'b525b9ab32cc12d5f676f2cc0136c7772ff39ae8444e9d6df5da69601837cfcf','REVEALED','2026-10-17 23:06:25','2026-10-17 22:51:25',NULL),(9,'SCR-20261018-8CC5C240',9,33,'6d449fe2cf2cc0367b2275785bbd8e72a7281dd4474fed49e316e1a112ee8b5a','REVEALED','2026-10-18 09:40:18','2026-10-18 09:25:18',NULL);
 /*!40000 ALTER TABLE `hunt_scratch_sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `wallets`
+--
+
+DROP TABLE IF EXISTS `wallets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `wallets` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `balance` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `bonus_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `promo_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `bonus_expires_at` datetime DEFAULT NULL,
+  `promo_expires_at` datetime DEFAULT NULL,
+  `currency` char(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INR',
+  `status` enum('ACTIVE','FROZEN','CLOSED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  CONSTRAINT `wallets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `wallets_chk_1` CHECK ((`balance` >= 0)),
+  CONSTRAINT `wallets_chk_2` CHECK ((`bonus_balance` >= 0)),
+  CONSTRAINT `wallets_chk_3` CHECK ((`promo_balance` >= 0))
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `wallets`
+--
+
+LOCK TABLES `wallets` WRITE;
+/*!40000 ALTER TABLE `wallets` DISABLE KEYS */;
+INSERT INTO `wallets` VALUES (1,1,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:21','2026-08-23 19:08:23'),(2,2,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:22','2026-08-23 19:08:22'),(3,3,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:23','2026-10-17 18:36:24'),(6,4,500.00,25.00,115.00,NULL,NULL,'INR','ACTIVE','2026-08-29 11:29:07','2026-10-17 18:58:25'),(10,6,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:36:24','2026-10-17 19:57:16'),(11,7,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:37:51','2026-10-17 18:37:52'),(12,8,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:37:51','2026-10-17 18:37:51'),(13,9,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:34','2026-10-17 18:38:35'),(14,10,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:34','2026-10-17 18:38:34'),(15,11,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:56','2026-10-17 18:38:57'),(16,12,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:56','2026-10-17 18:38:56'),(18,14,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:16','2026-10-17 21:21:24'),(19,15,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:24','2026-10-17 19:57:25'),(20,16,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:24','2026-10-17 19:57:24'),(21,17,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:24','2026-10-17 22:51:23'),(22,18,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:25','2026-10-17 21:21:26'),(23,19,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:25','2026-10-17 21:21:25'),(24,20,100.00,20.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:32:33','2026-10-17 21:32:33'),(25,21,100.00,20.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:35:19','2026-10-17 21:35:19'),(26,22,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:37:26','2026-10-17 21:37:28'),(27,23,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:31','2026-10-17 21:38:32'),(28,24,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:32','2026-10-17 22:51:23'),(29,25,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:33','2026-10-17 21:38:34'),(30,26,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:33','2026-10-17 21:38:33'),(31,27,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:21','2026-10-17 22:51:23'),(32,28,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:23','2026-10-18 09:25:17'),(33,29,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:24','2026-10-17 22:51:25'),(34,30,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:24','2026-10-17 22:51:24'),(35,31,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:15','2026-10-18 09:25:16'),(36,32,25.00,0.00,0.00,NULL,'2026-10-18 10:25:16','INR','ACTIVE','2026-10-18 09:25:16','2026-10-18 09:25:17'),(37,33,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:17','2026-10-18 09:25:18'),(38,34,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:18','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `wallets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `wallet_transactions`
+--
+
+DROP TABLE IF EXISTS `wallet_transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `wallet_transactions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `wallet_id` bigint unsigned NOT NULL,
+  `type` enum('CREDIT','DEBIT','WITHDRAWAL','REFUND','ADJUSTMENT','REVERSAL','BONUS_CREDIT','PROMO_CREDIT','PROMO_DEBIT','BONUS_DEBIT','CHECKOUT','PROMO_REVERSAL') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bucket` enum('REAL','BONUS','PROMO') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'REAL',
+  `amount` decimal(18,2) NOT NULL,
+  `previous_balance` decimal(18,2) NOT NULL,
+  `new_balance` decimal(18,2) NOT NULL,
+  `status` enum('PENDING','PROCESSING','SUCCESS','FAILED','REVERSED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `original_transaction_id` bigint unsigned DEFAULT NULL,
+  `created_by` int unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transaction_id` (`transaction_id`),
+  UNIQUE KEY `uq_wallet_idempotency` (`idempotency_key`),
+  UNIQUE KEY `uq_reversal_original` (`original_transaction_id`),
+  KEY `idx_txn_user_date` (`user_id`,`created_at`),
+  KEY `idx_txn_status` (`status`),
+  KEY `wallet_id` (`wallet_id`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `wallet_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `wallet_transactions_ibfk_2` FOREIGN KEY (`wallet_id`) REFERENCES `wallets` (`id`),
+  CONSTRAINT `wallet_transactions_ibfk_3` FOREIGN KEY (`original_transaction_id`) REFERENCES `wallet_transactions` (`id`),
+  CONSTRAINT `wallet_transactions_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
+  CONSTRAINT `wallet_transactions_chk_1` CHECK ((`amount` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `wallet_transactions`
+--
+
+LOCK TABLES `wallet_transactions` WRITE;
+/*!40000 ALTER TABLE `wallet_transactions` DISABLE KEYS */;
+INSERT INTO `wallet_transactions` VALUES (1,'TXN-20260823-2F5BDF11',1,1,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20260823-B77B5D1F','Approved Hunt reward','reward-credit:1',NULL,1,'2026-08-23 19:08:23'),(2,'TXN-20260823-E6E17A3E',1,1,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20260823-480AADBC','Withdrawal approved',NULL,NULL,1,'2026-08-23 19:08:23'),(3,'TXN-20260823-1DF87A39',3,3,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus','Signup bonus','bonus-integration-key-01',NULL,1,'2026-08-23 19:08:23'),(4,'TXN-20260823-3FC6DBC3',3,3,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo','QR promo','promo-integration-key-01',NULL,1,'2026-08-23 19:08:23'),(5,'TXN-20260823-EB18996B',3,3,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20260823-EBFDB531','Promo cash checkout','checkout-integration-key-01:promo',NULL,NULL,'2026-08-23 19:08:23'),(6,'TXN-20260823-AE9289A9',3,3,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20260823-EBFDB531','Bonus balance checkout','checkout-integration-key-01:bonus',NULL,NULL,'2026-08-23 19:08:23'),(7,'TXN-20260823-2A2FE0A1',3,3,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20260823-EBFDB531','Real cash checkout','checkout-integration-key-01:real',NULL,NULL,'2026-08-23 19:08:23'),(8,'TXN-20260823-9DB4A201',3,3,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus','Expired BONUS balance','expiry-wallet:1',NULL,NULL,'2026-08-23 19:08:23'),(9,'TXN-20260829-28D93928',4,6,'PROMO_CREDIT','PROMO',100.00,15.00,115.00,'SUCCESS','admin-grant:d76969cf7e034f4b','Administrator PROMO grant','wallet-bonus:37ea6bb98eeb88838ada4712cb5bec0aa624e3fccc44293f',NULL,2,'2026-08-29 11:53:08'),(10,'TXN-20261017-F62672BC',6,10,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-b59f52db','Signup bonus','bonus-key-b59f52db',NULL,1,'2026-10-17 18:36:24'),(11,'TXN-20261017-F868BCF4',6,10,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-b59f52db','QR promo','promo-key-b59f52db',NULL,1,'2026-10-17 18:36:24'),(12,'TXN-20261017-A17EF19F',6,10,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-64FFEBEF','Promo cash checkout','checkout-key-b59f52db:promo',NULL,NULL,'2026-10-17 18:36:24'),(13,'TXN-20261017-1BEF6CF1',6,10,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-64FFEBEF','Bonus balance checkout','checkout-key-b59f52db:bonus',NULL,NULL,'2026-10-17 18:36:24'),(14,'TXN-20261017-31106199',6,10,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-64FFEBEF','Real cash checkout','checkout-key-b59f52db:real',NULL,NULL,'2026-10-17 18:36:24'),(15,'TXN-20261017-6E941F7A',6,10,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-b59f52db','Expired BONUS balance','expiry-wallet:3',NULL,NULL,'2026-10-17 18:36:24'),(16,'TXN-20261017-31C7DB0B',7,11,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-4702DB16','Approved Hunt reward','reward-credit:2',NULL,4,'2026-10-17 18:37:52'),(17,'TXN-20261017-ED440090',7,11,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-F2A348B4','Withdrawal approved',NULL,NULL,4,'2026-10-17 18:37:52'),(18,'TXN-20261017-F9317167',9,13,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-6E570504','Approved Hunt reward','reward-credit:3',NULL,5,'2026-10-17 18:38:35'),(19,'TXN-20261017-7F7FC787',9,13,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-E12F6F02','Withdrawal approved',NULL,NULL,5,'2026-10-17 18:38:35'),(20,'TXN-20261017-BA281808',11,15,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-67F876EC','Approved Hunt reward','reward-credit:4',NULL,6,'2026-10-17 18:38:57'),(21,'TXN-20261017-17A09476',11,15,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-77212D11','Withdrawal approved',NULL,NULL,6,'2026-10-17 18:38:57'),(22,'TXN-20261017-FAB881E0',14,18,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-93bd279a','Signup bonus','bonus-key-93bd279a',NULL,1,'2026-10-17 19:57:16'),(23,'TXN-20261017-91BAA4CC',14,18,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-93bd279a','QR promo','promo-key-93bd279a',NULL,1,'2026-10-17 19:57:16'),(24,'TXN-20261017-2C068BCB',14,18,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-3ABC9757','Promo cash checkout','checkout-key-93bd279a:promo',NULL,NULL,'2026-10-17 19:57:16'),(25,'TXN-20261017-38EF6D16',14,18,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-3ABC9757','Bonus balance checkout','checkout-key-93bd279a:bonus',NULL,NULL,'2026-10-17 19:57:16'),(26,'TXN-20261017-FE7A332A',14,18,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-3ABC9757','Real cash checkout','checkout-key-93bd279a:real',NULL,NULL,'2026-10-17 19:57:16'),(27,'TXN-20261017-D5AE036C',14,18,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-93bd279a','Expired BONUS balance','expiry-wallet:5',NULL,NULL,'2026-10-17 19:57:16'),(28,'TXN-20261017-3199843E',15,19,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-CBFDBB1D','Approved Hunt reward','reward-credit:5',NULL,8,'2026-10-17 19:57:25'),(29,'TXN-20261017-B130BF75',15,19,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-321A1E1D','Withdrawal approved',NULL,NULL,8,'2026-10-17 19:57:25'),(30,'TXN-20261017-773BBD40',17,21,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-84aaf380','Signup bonus','bonus-key-84aaf380',NULL,1,'2026-10-17 21:21:24'),(31,'TXN-20261017-D77A4180',17,21,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-84aaf380','QR promo','promo-key-84aaf380',NULL,1,'2026-10-17 21:21:24'),(32,'TXN-20261017-FA994048',17,21,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-E6443186','Promo cash checkout','checkout-key-84aaf380:promo',NULL,NULL,'2026-10-17 21:21:24'),(33,'TXN-20261017-91BF8390',17,21,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-E6443186','Bonus balance checkout','checkout-key-84aaf380:bonus',NULL,NULL,'2026-10-17 21:21:24'),(34,'TXN-20261017-23220CC1',17,21,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-E6443186','Real cash checkout','checkout-key-84aaf380:real',NULL,NULL,'2026-10-17 21:21:24'),(35,'TXN-20261017-B120E840',17,21,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-84aaf380','Expired BONUS balance','expiry-wallet:7',NULL,NULL,'2026-10-17 21:21:24'),(36,'TXN-20261017-A3A615C0',18,22,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-52C89046','Approved Hunt reward','reward-credit:6',NULL,9,'2026-10-17 21:21:26'),(37,'TXN-20261017-4EDB0FF4',18,22,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-369DF997','Withdrawal approved',NULL,NULL,9,'2026-10-17 21:21:26'),(38,'TXN-20261017-E6F9D1D4',22,26,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-3','Reward for solving riddle #3','attempt-correct-4120c86a:reward',NULL,NULL,'2026-10-17 21:37:27'),(39,'TXN-20261017-8C1FBB19',22,26,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-3','Negative marking penalty for wrong answer on riddle #3','attempt-wrong1-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(40,'TXN-20261017-5A8D59EF',22,26,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-4','Negative marking penalty for wrong answer on riddle #4','attempt-wrong2-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(41,'TXN-20261017-D024BCDF',22,26,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-4','Negative marking penalty for wrong answer on riddle #4','attempt-wrong-cap-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(42,'TXN-20261017-BECE13B5',22,26,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-7F536C34','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-4120c86a:credit',NULL,NULL,'2026-10-17 21:37:28'),(43,'TXN-20261017-FB1322C5',23,27,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-5','Reward for solving riddle #5','attempt-correct-32a00416:reward',NULL,NULL,'2026-10-17 21:38:31'),(44,'TXN-20261017-23A9C839',23,27,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-5','Negative marking penalty for wrong answer on riddle #5','attempt-wrong1-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(45,'TXN-20261017-33F14E5D',23,27,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-6','Negative marking penalty for wrong answer on riddle #6','attempt-wrong2-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(46,'TXN-20261017-800E769B',23,27,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-6','Negative marking penalty for wrong answer on riddle #6','attempt-wrong-cap-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(47,'TXN-20261017-4B10523C',23,27,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-18E583C6','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-32a00416:credit',NULL,NULL,'2026-10-17 21:38:32'),(48,'TXN-20261017-0C4A423C',24,28,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-eefa6591','Signup bonus','bonus-key-eefa6591',NULL,1,'2026-10-17 21:38:32'),(49,'TXN-20261017-44ED7031',24,28,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-eefa6591','QR promo','promo-key-eefa6591',NULL,1,'2026-10-17 21:38:32'),(50,'TXN-20261017-E706E141',24,28,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-3B503ED1','Promo cash checkout','checkout-key-eefa6591:promo',NULL,NULL,'2026-10-17 21:38:32'),(51,'TXN-20261017-9C0F1DE0',24,28,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-3B503ED1','Bonus balance checkout','checkout-key-eefa6591:bonus',NULL,NULL,'2026-10-17 21:38:32'),(52,'TXN-20261017-5C876CF0',24,28,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-3B503ED1','Real cash checkout','checkout-key-eefa6591:real',NULL,NULL,'2026-10-17 21:38:32'),(53,'TXN-20261017-C89F7A5B',24,28,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-eefa6591','Expired BONUS balance','expiry-wallet:9',NULL,NULL,'2026-10-17 21:38:32'),(54,'TXN-20261017-B496FCDB',25,29,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-B5094C11','Approved Hunt reward','reward-credit:7',NULL,14,'2026-10-17 21:38:34'),(55,'TXN-20261017-D395C43B',25,29,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-5345617E','Withdrawal approved',NULL,NULL,14,'2026-10-17 21:38:34'),(56,'TXN-20261017-1D6E3B99',27,31,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-7','Reward for solving riddle #7','attempt-correct-4f67df73:reward',NULL,NULL,'2026-10-17 22:51:21'),(57,'TXN-20261017-91D8A83F',27,31,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-7','Negative marking penalty for wrong answer on riddle #7','attempt-wrong1-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(58,'TXN-20261017-D572E843',27,31,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-8','Negative marking penalty for wrong answer on riddle #8','attempt-wrong2-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(59,'TXN-20261017-063DCF5A',27,31,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-8','Negative marking penalty for wrong answer on riddle #8','attempt-wrong-cap-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(60,'TXN-20261017-A5FE85F5',27,31,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-1BF16619','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-4f67df73:credit',NULL,NULL,'2026-10-17 22:51:23'),(61,'TXN-20261017-86F76CA9',28,32,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-c4b8a794','Signup bonus','bonus-key-c4b8a794',NULL,1,'2026-10-17 22:51:23'),(62,'TXN-20261017-8A09FDD6',28,32,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-c4b8a794','QR promo','promo-key-c4b8a794',NULL,1,'2026-10-17 22:51:23'),(63,'TXN-20261017-4FCD5A0E',28,32,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-87D55E18','Promo cash checkout','checkout-key-c4b8a794:promo',NULL,NULL,'2026-10-17 22:51:23'),(64,'TXN-20261017-1D443967',28,32,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-87D55E18','Bonus balance checkout','checkout-key-c4b8a794:bonus',NULL,NULL,'2026-10-17 22:51:23'),(65,'TXN-20261017-ECB55418',28,32,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-87D55E18','Real cash checkout','checkout-key-c4b8a794:real',NULL,NULL,'2026-10-17 22:51:23'),(66,'TXN-20261017-42F9745C',28,32,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-c4b8a794','Expired BONUS balance','expiry-wallet:11',NULL,NULL,'2026-10-17 22:51:23'),(67,'TXN-20261017-CDAFC903',29,33,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-2FD64895','Approved Hunt reward','reward-credit:8',NULL,16,'2026-10-17 22:51:25'),(68,'TXN-20261017-BB60EC00',29,33,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-81EBCEA0','Withdrawal approved',NULL,NULL,16,'2026-10-17 22:51:25'),(69,'TXN-20261018-8FB5F447',31,35,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-9','Reward for solving riddle #9','attempt-correct-2a0bf7e2:reward',NULL,NULL,'2026-10-18 09:25:15'),(70,'TXN-20261018-DEE763D5',31,35,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-9','Negative marking penalty for wrong answer on riddle #9','attempt-wrong1-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(71,'TXN-20261018-133F4B0F',31,35,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-10','Negative marking penalty for wrong answer on riddle #10','attempt-wrong2-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(72,'TXN-20261018-B4DB91C9',31,35,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-10','Negative marking penalty for wrong answer on riddle #10','attempt-wrong-cap-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(73,'TXN-20261018-82BDB0E0',31,35,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-CA3EC623','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-2a0bf7e2:credit',NULL,NULL,'2026-10-18 09:25:16'),(74,'TXN-20261018-5483EA3B',32,36,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-8d4dc97f','Signup bonus','bonus-key-8d4dc97f',NULL,1,'2026-10-18 09:25:16'),(75,'TXN-20261018-141B60AC',32,36,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-8d4dc97f','QR promo','promo-key-8d4dc97f',NULL,1,'2026-10-18 09:25:16'),(76,'TXN-20261018-31FD1D5F',32,36,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261018-9DD2DC45','Promo cash checkout','checkout-key-8d4dc97f:promo',NULL,NULL,'2026-10-18 09:25:17'),(77,'TXN-20261018-7C65934F',32,36,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261018-9DD2DC45','Bonus balance checkout','checkout-key-8d4dc97f:bonus',NULL,NULL,'2026-10-18 09:25:17'),(78,'TXN-20261018-807078A2',32,36,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261018-9DD2DC45','Real cash checkout','checkout-key-8d4dc97f:real',NULL,NULL,'2026-10-18 09:25:17'),(79,'TXN-20261018-0608CA73',32,36,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-8d4dc97f','Expired BONUS balance','expiry-wallet:13',NULL,NULL,'2026-10-18 09:25:17'),(80,'TXN-20261018-D28353E8',33,37,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261018-E32C8E21','Approved Hunt reward','reward-credit:9',NULL,18,'2026-10-18 09:25:18'),(81,'TXN-20261018-78DAC312',33,37,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261018-430336C2','Withdrawal approved',NULL,NULL,18,'2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `wallet_transactions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rewards`
+--
+
+DROP TABLE IF EXISTS `rewards`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rewards` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `reward_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `hunt_id` bigint unsigned NOT NULL,
+  `scan_id` bigint unsigned NOT NULL,
+  `scratch_session_id` bigint unsigned NOT NULL,
+  `amount` decimal(18,2) NOT NULL,
+  `status` enum('PENDING','APPROVED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `rejection_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `wallet_transaction_id` bigint unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `decided_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reward_id` (`reward_id`),
+  UNIQUE KEY `scan_id` (`scan_id`),
+  UNIQUE KEY `scratch_session_id` (`scratch_session_id`),
+  UNIQUE KEY `wallet_transaction_id` (`wallet_transaction_id`),
+  KEY `idx_reward_status_date` (`status`,`created_at`),
+  KEY `user_id` (`user_id`),
+  KEY `hunt_id` (`hunt_id`),
+  CONSTRAINT `rewards_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `rewards_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `rewards_ibfk_3` FOREIGN KEY (`scan_id`) REFERENCES `hunt_scans` (`id`),
+  CONSTRAINT `rewards_ibfk_4` FOREIGN KEY (`scratch_session_id`) REFERENCES `hunt_scratch_sessions` (`id`),
+  CONSTRAINT `rewards_ibfk_5` FOREIGN KEY (`wallet_transaction_id`) REFERENCES `wallet_transactions` (`id`),
+  CONSTRAINT `rewards_chk_1` CHECK ((`amount` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rewards`
+--
+
+LOCK TABLES `rewards` WRITE;
+/*!40000 ALTER TABLE `rewards` DISABLE KEYS */;
+INSERT INTO `rewards` VALUES (1,'RWD-20260823-B77B5D1F',1,1,1,1,500.00,'APPROVED',NULL,1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'RWD-20261017-4702DB16',7,5,2,2,500.00,'APPROVED',NULL,16,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,'RWD-20261017-6E570504',9,6,3,3,500.00,'APPROVED',NULL,18,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,'RWD-20261017-67F876EC',11,7,4,4,500.00,'APPROVED',NULL,20,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,'RWD-20261017-CBFDBB1D',15,9,5,5,500.00,'APPROVED',NULL,28,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,'RWD-20261017-52C89046',18,11,6,6,500.00,'APPROVED',NULL,36,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(7,'RWD-20261017-B5094C11',25,13,7,7,500.00,'APPROVED',NULL,54,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(8,'RWD-20261017-2FD64895',29,15,8,8,500.00,'APPROVED',NULL,67,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(9,'RWD-20261018-E32C8E21',33,17,9,9,500.00,'APPROVED',NULL,80,'2026-10-18 09:25:18','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `rewards` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hunt_completions`
+--
+
+DROP TABLE IF EXISTS `hunt_completions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hunt_completions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `hunt_id` bigint unsigned NOT NULL,
+  `activation_id` bigint unsigned NOT NULL,
+  `reward_id` bigint unsigned DEFAULT NULL,
+  `completed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_hunt_completion` (`user_id`,`hunt_id`),
+  KEY `hunt_id` (`hunt_id`),
+  KEY `activation_id` (`activation_id`),
+  KEY `reward_id` (`reward_id`),
+  CONSTRAINT `hunt_completions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `hunt_completions_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `hunt_completions_ibfk_3` FOREIGN KEY (`activation_id`) REFERENCES `hunt_user_activations` (`id`),
+  CONSTRAINT `hunt_completions_ibfk_4` FOREIGN KEY (`reward_id`) REFERENCES `rewards` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hunt_completions`
+--
+
+LOCK TABLES `hunt_completions` WRITE;
+/*!40000 ALTER TABLE `hunt_completions` DISABLE KEYS */;
+INSERT INTO `hunt_completions` VALUES (1,1,1,1,1,'2026-08-23 19:08:23'),(2,7,5,4,2,'2026-10-17 18:37:52'),(3,9,6,5,3,'2026-10-17 18:38:35'),(4,11,7,6,4,'2026-10-17 18:38:57'),(5,15,9,8,5,'2026-10-17 19:57:25'),(6,18,11,10,6,'2026-10-17 21:21:26'),(7,25,13,12,7,'2026-10-17 21:38:34'),(8,29,15,14,8,'2026-10-17 22:51:25'),(9,33,17,16,9,'2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `hunt_completions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hunt_questions`
+--
+
+DROP TABLE IF EXISTS `hunt_questions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hunt_questions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hunt_id` bigint unsigned NOT NULL,
+  `location_id` bigint unsigned DEFAULT NULL,
+  `question_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_type` enum('TEXT','MCQ') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `correct_answer_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sort_order` int unsigned NOT NULL DEFAULT '0',
+  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_question_hunt_order` (`hunt_id`,`location_id`,`sort_order`),
+  KEY `location_id` (`location_id`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `hunt_questions_ibfk_1` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `hunt_questions_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `hunt_locations` (`id`),
+  CONSTRAINT `hunt_questions_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hunt_questions`
+--
+
+LOCK TABLES `hunt_questions` WRITE;
+/*!40000 ALTER TABLE `hunt_questions` DISABLE KEYS */;
+INSERT INTO `hunt_questions` VALUES (1,1,1,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',1,'2026-08-23 19:08:22','2026-08-23 19:08:22'),(2,5,5,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',4,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,6,6,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',5,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,7,7,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',6,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,9,9,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',8,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,11,11,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',9,'2026-10-17 21:21:25','2026-10-17 21:21:25'),(7,13,13,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',14,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(8,15,15,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',16,'2026-10-17 22:51:24','2026-10-17 22:51:24'),(9,17,17,'Capital of Karnataka?','TEXT','6b465516e7221fc65d4c48330a398de95ce1b11089f185d2e4874499ae96f1c8',0,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `hunt_questions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hunt_question_options`
+--
+
+DROP TABLE IF EXISTS `hunt_question_options`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hunt_question_options` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `question_id` bigint unsigned NOT NULL,
+  `option_text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sort_order` int unsigned NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_option_question_order` (`question_id`,`sort_order`),
+  CONSTRAINT `hunt_question_options_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `hunt_questions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hunt_question_options`
+--
+
+LOCK TABLES `hunt_question_options` WRITE;
+/*!40000 ALTER TABLE `hunt_question_options` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hunt_question_options` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hunt_scan_attempts`
+--
+
+DROP TABLE IF EXISTS `hunt_scan_attempts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hunt_scan_attempts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `hunt_id` bigint unsigned DEFAULT NULL,
+  `location_id` bigint unsigned DEFAULT NULL,
+  `qr_code_id` bigint unsigned DEFAULT NULL,
+  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `distance_meters` decimal(12,2) DEFAULT NULL,
+  `result` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `risk_level` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `metadata` json DEFAULT NULL,
+  `attempted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_scan_attempt_user_date` (`user_id`,`attempted_at`),
+  KEY `idx_scan_attempt_risk` (`risk_level`,`attempted_at`),
+  KEY `hunt_id` (`hunt_id`),
+  KEY `location_id` (`location_id`),
+  KEY `qr_code_id` (`qr_code_id`),
+  CONSTRAINT `hunt_scan_attempts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `hunt_scan_attempts_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
+  CONSTRAINT `hunt_scan_attempts_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `hunt_locations` (`id`),
+  CONSTRAINT `hunt_scan_attempts_ibfk_4` FOREIGN KEY (`qr_code_id`) REFERENCES `hunt_qr_codes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hunt_scan_attempts`
+--
+
+LOCK TABLES `hunt_scan_attempts` WRITE;
+/*!40000 ALTER TABLE `hunt_scan_attempts` DISABLE KEYS */;
+INSERT INTO `hunt_scan_attempts` VALUES (1,1,1,1,1,'device-1','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-08-23 19:08:22'),(2,1,1,1,1,'device-1','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-08-23 19:08:22'),(3,1,1,1,1,'device-1','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-08-23 19:08:22'),(4,7,5,5,5,'device-7','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:37:52'),(5,7,5,5,5,'device-7','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:37:52'),(6,7,5,5,5,'device-7','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:37:52'),(7,9,6,6,6,'device-9','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:38:35'),(8,9,6,6,6,'device-9','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:38:35'),(9,9,6,6,6,'device-9','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:38:35'),(10,11,7,7,7,'device-11','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 18:38:57'),(11,11,7,7,7,'device-11','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 18:38:57'),(12,11,7,7,7,'device-11','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 18:38:57'),(13,15,9,9,9,'device-15','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 19:57:25'),(14,15,9,9,9,'device-15','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 19:57:25'),(15,15,9,9,9,'device-15','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 19:57:25'),(16,18,11,11,11,'device-18','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 21:21:25'),(17,18,11,11,11,'device-18','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 21:21:25'),(18,18,11,11,11,'device-18','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 21:21:25'),(19,25,13,13,13,'device-25','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 21:38:34'),(20,25,13,13,13,'device-25','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 21:38:34'),(21,25,13,13,13,'device-25','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 21:38:34'),(22,29,15,15,15,'device-29','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-17 22:51:24'),(23,29,15,15,15,'device-29','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-17 22:51:24'),(24,29,15,15,15,'device-29','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-17 22:51:24'),(25,33,17,17,17,'device-33','127.0.0.1',13.0500000,77.7000000,14366.39,'REJECTED','User is outside the allowed GPS radius.','HIGH','[]','2026-10-18 09:25:18'),(26,33,17,17,17,'device-33','127.0.0.1',12.9716100,77.5946100,1.55,'VALIDATED','Scan validated','LOW','[]','2026-10-18 09:25:18'),(27,33,17,17,17,'device-33','127.0.0.1',12.9716100,77.5946100,1.55,'DUPLICATE','QR was already claimed by this user','HIGH','[]','2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `hunt_scan_attempts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1217,46 +1754,6 @@ INSERT INTO `hunt_secret_codes` VALUES (1,1,1,'$2y$12$krci.9yIZx9Bw6ugos59he12x8
 UNLOCK TABLES;
 
 --
--- Table structure for table `hunt_user_activations`
---
-
-DROP TABLE IF EXISTS `hunt_user_activations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunt_user_activations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `hunt_id` bigint unsigned NOT NULL,
-  `activation_type` enum('ONLINE','COUNTER','ADMIN') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payment_transaction_id` bigint unsigned DEFAULT NULL,
-  `activated_by` int unsigned DEFAULT NULL,
-  `status` enum('ACTIVE','REVOKED','COMPLETED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `activated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `expires_at` datetime DEFAULT NULL,
-  `revoked_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_user_hunt_activation` (`user_id`,`hunt_id`),
-  KEY `idx_activation_hunt_status` (`hunt_id`,`status`),
-  KEY `payment_transaction_id` (`payment_transaction_id`),
-  KEY `activated_by` (`activated_by`),
-  CONSTRAINT `hunt_user_activations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `hunt_user_activations_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `hunt_user_activations_ibfk_3` FOREIGN KEY (`payment_transaction_id`) REFERENCES `payment_transactions` (`id`),
-  CONSTRAINT `hunt_user_activations_ibfk_4` FOREIGN KEY (`activated_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hunt_user_activations`
---
-
-LOCK TABLES `hunt_user_activations` WRITE;
-/*!40000 ALTER TABLE `hunt_user_activations` DISABLE KEYS */;
-INSERT INTO `hunt_user_activations` VALUES (1,1,1,'COUNTER',NULL,1,'COMPLETED','2026-08-23 19:08:22','2026-08-25 19:08:22',NULL),(2,2,1,'ONLINE',1,NULL,'ACTIVE','2026-08-23 19:08:23','2026-08-25 19:08:22',NULL),(3,1,3,'ADMIN',NULL,1,'ACTIVE','2026-08-29 11:29:07','2026-09-28 11:29:07',NULL),(4,7,5,'COUNTER',NULL,4,'COMPLETED','2026-10-17 18:37:52','2026-10-19 18:37:51',NULL),(5,9,6,'COUNTER',NULL,5,'COMPLETED','2026-10-17 18:38:35','2026-10-19 18:38:34',NULL),(6,11,7,'COUNTER',NULL,6,'COMPLETED','2026-10-17 18:38:57','2026-10-19 18:38:56',NULL),(7,12,7,'ONLINE',4,NULL,'ACTIVE','2026-10-17 18:38:57','2026-10-19 18:38:56',NULL),(8,15,9,'COUNTER',NULL,8,'COMPLETED','2026-10-17 19:57:25','2026-10-19 19:57:24',NULL),(9,16,9,'ONLINE',5,NULL,'ACTIVE','2026-10-17 19:57:25','2026-10-19 19:57:24',NULL),(10,18,11,'COUNTER',NULL,9,'COMPLETED','2026-10-17 21:21:25','2026-10-19 21:21:25',NULL),(11,19,11,'ONLINE',6,NULL,'ACTIVE','2026-10-17 21:21:26','2026-10-19 21:21:25',NULL),(12,25,13,'COUNTER',NULL,14,'COMPLETED','2026-10-17 21:38:33','2026-10-19 21:38:33',NULL),(13,26,13,'ONLINE',7,NULL,'ACTIVE','2026-10-17 21:38:34','2026-10-19 21:38:33',NULL),(14,29,15,'COUNTER',NULL,16,'COMPLETED','2026-10-17 22:51:24','2026-10-19 22:51:24',NULL),(15,30,15,'ONLINE',8,NULL,'ACTIVE','2026-10-17 22:51:25','2026-10-19 22:51:24',NULL),(16,33,17,'COUNTER',NULL,18,'COMPLETED','2026-10-18 09:25:18','2026-10-20 09:25:18',NULL),(17,34,17,'ONLINE',9,NULL,'ACTIVE','2026-10-18 09:25:18','2026-10-20 09:25:18',NULL);
-/*!40000 ALTER TABLE `hunt_user_activations` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `hunt_videos`
 --
 
@@ -1292,57 +1789,6 @@ CREATE TABLE `hunt_videos` (
 LOCK TABLES `hunt_videos` WRITE;
 /*!40000 ALTER TABLE `hunt_videos` DISABLE KEYS */;
 /*!40000 ALTER TABLE `hunt_videos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `hunts`
---
-
-DROP TABLE IF EXISTS `hunts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `hunts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `rules` text COLLATE utf8mb4_unicode_ci,
-  `tutorial_video_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tutorial_video_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `featured_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT '25.5940950',
-  `longitude` decimal(10,7) DEFAULT '85.1375660',
-  `allowed_radius_meters` int unsigned NOT NULL DEFAULT '20',
-  `qr_token` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `start_at` datetime NOT NULL,
-  `end_at` datetime NOT NULL,
-  `activation_fee` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `reward_min` decimal(18,2) NOT NULL,
-  `reward_max` decimal(18,2) NOT NULL,
-  `status` enum('DRAFT','ACTIVE','INACTIVE','ENDED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
-  `created_by` int unsigned NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  KEY `idx_hunts_status_dates` (`status`,`start_at`,`end_at`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `hunts_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
-  CONSTRAINT `hunts_chk_1` CHECK ((`end_at` > `start_at`)),
-  CONSTRAINT `hunts_chk_2` CHECK ((`activation_fee` >= 0)),
-  CONSTRAINT `hunts_chk_3` CHECK ((`reward_min` > 0)),
-  CONSTRAINT `hunts_chk_4` CHECK ((`reward_max` >= `reward_min`))
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hunts`
---
-
-LOCK TABLES `hunts` WRITE;
-/*!40000 ALTER TABLE `hunts` DISABLE KEYS */;
-INSERT INTO `hunts` VALUES (1,'Integration Hunt','integration-hunt','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-22 19:08:22','2026-08-25 19:08:22',100.00,500.00,500.00,'ACTIVE',1,'2026-08-23 19:08:22','2026-08-23 19:08:22'),(2,'QR Campaign Hunt','qr-campaign-hunt',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-23 18:08:23','2026-08-23 20:08:23',0.00,1.00,1.00,'ACTIVE',1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(3,'Demo City Treasure Hunt','demo-city-hunt','Seeded campaign for testing the complete admin workflow.','One scan per device.',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-08-28 11:29:07','2026-09-28 11:29:07',0.00,15.00,500.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07'),(4,'QR Campaign Hunt','qr-hunt-b59f52db',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 17:36:24','2026-10-17 19:36:24',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 18:36:24','2026-10-17 18:36:24'),(5,'Integration Hunt','hunt-8ce8ea53','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:37:51','2026-10-19 18:37:51',100.00,500.00,500.00,'ACTIVE',4,'2026-10-17 18:37:51','2026-10-17 18:37:51'),(6,'Integration Hunt','hunt-129b73ae','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:38:34','2026-10-19 18:38:34',100.00,500.00,500.00,'ACTIVE',5,'2026-10-17 18:38:34','2026-10-17 18:38:34'),(7,'Integration Hunt','hunt-1bac2a6b','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 18:38:56','2026-10-19 18:38:56',100.00,500.00,500.00,'ACTIVE',6,'2026-10-17 18:38:56','2026-10-17 18:38:56'),(8,'QR Campaign Hunt','qr-hunt-93bd279a',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 18:57:16','2026-10-17 20:57:16',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 19:57:16','2026-10-17 19:57:16'),(9,'Integration Hunt','hunt-97790886','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 19:57:24','2026-10-19 19:57:24',100.00,500.00,500.00,'ACTIVE',8,'2026-10-17 19:57:24','2026-10-17 19:57:24'),(10,'QR Campaign Hunt','qr-hunt-84aaf380',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 20:21:24','2026-10-17 22:21:24',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 21:21:24','2026-10-17 21:21:24'),(11,'Integration Hunt','hunt-6415b496','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 21:21:25','2026-10-19 21:21:25',100.00,500.00,500.00,'ACTIVE',9,'2026-10-17 21:21:25','2026-10-17 21:21:25'),(12,'QR Campaign Hunt','qr-hunt-eefa6591',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 20:38:32','2026-10-17 22:38:32',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 21:38:32','2026-10-17 21:38:32'),(13,'Integration Hunt','hunt-d1411073','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 21:38:33','2026-10-19 21:38:33',100.00,500.00,500.00,'ACTIVE',14,'2026-10-17 21:38:33','2026-10-17 21:38:33'),(14,'QR Campaign Hunt','qr-hunt-c4b8a794',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 21:51:23','2026-10-17 23:51:23',0.00,1.00,1.00,'ACTIVE',1,'2026-10-17 22:51:23','2026-10-17 22:51:23'),(15,'Integration Hunt','hunt-3439d2e2','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-16 22:51:24','2026-10-19 22:51:24',100.00,500.00,500.00,'ACTIVE',16,'2026-10-17 22:51:24','2026-10-17 22:51:24'),(16,'QR Campaign Hunt','qr-hunt-8d4dc97f',NULL,NULL,NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-18 08:25:17','2026-10-18 10:25:17',0.00,1.00,1.00,'ACTIVE',1,'2026-10-18 09:25:17','2026-10-18 09:25:17'),(17,'Integration Hunt','hunt-86f7090e','Test','Rules',NULL,NULL,NULL,25.5940950,85.1375660,20,NULL,'2026-10-17 09:25:18','2026-10-20 09:25:18',100.00,500.00,500.00,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `hunts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1413,36 +1859,6 @@ INSERT INTO `merchant_settlements` VALUES (1,'SET-33587bf2','CHK-7e9b9bd2',3,149
 UNLOCK TABLES;
 
 --
--- Table structure for table `notification_logs`
---
-
-DROP TABLE IF EXISTS `notification_logs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notification_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `notification_id` bigint unsigned NOT NULL,
-  `provider` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `provider_reference` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `response_summary` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_notification_log` (`notification_id`,`created_at`),
-  CONSTRAINT `notification_logs_ibfk_1` FOREIGN KEY (`notification_id`) REFERENCES `notifications` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `notification_logs`
---
-
-LOCK TABLES `notification_logs` WRITE;
-/*!40000 ALTER TABLE `notification_logs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notification_logs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `notifications`
 --
 
@@ -1476,47 +1892,33 @@ INSERT INTO `notifications` VALUES (1,1,'DEMO','IN_APP','Welcome to Hunter Walle
 UNLOCK TABLES;
 
 --
--- Table structure for table `payment_transactions`
+-- Table structure for table `notification_logs`
 --
 
-DROP TABLE IF EXISTS `payment_transactions`;
+DROP TABLE IF EXISTS `notification_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `payment_transactions` (
+CREATE TABLE `notification_logs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `payment_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `hunt_id` bigint unsigned NOT NULL,
-  `provider` enum('RAZORPAY','PHONEPE','COUNTER') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `provider_order_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `provider_payment_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `amount` decimal(18,2) NOT NULL,
-  `currency` char(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INR',
-  `status` enum('CREATED','PENDING','VERIFIED','FAILED','REFUNDED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'CREATED',
-  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `signature_verified_at` datetime DEFAULT NULL,
-  `failure_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notification_id` bigint unsigned NOT NULL,
+  `provider` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider_reference` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `response_summary` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `payment_id` (`payment_id`),
-  UNIQUE KEY `uq_payment_user_key` (`user_id`,`idempotency_key`),
-  UNIQUE KEY `uq_provider_payment` (`provider`,`provider_payment_id`),
-  KEY `idx_payment_hunt_status` (`hunt_id`,`status`),
-  CONSTRAINT `payment_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `payment_transactions_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `payment_transactions_chk_1` CHECK ((`amount` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `idx_notification_log` (`notification_id`,`created_at`),
+  CONSTRAINT `notification_logs_ibfk_1` FOREIGN KEY (`notification_id`) REFERENCES `notifications` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `payment_transactions`
+-- Dumping data for table `notification_logs`
 --
 
-LOCK TABLES `payment_transactions` WRITE;
-/*!40000 ALTER TABLE `payment_transactions` DISABLE KEYS */;
-INSERT INTO `payment_transactions` VALUES (1,'PAY-20260823-4D6276ED',2,1,'RAZORPAY','HUNTER-PAY-20260823-4D6276ED','provider-pay-1',100.00,'INR','VERIFIED','payment-integration-key-0001','2026-08-23 19:08:23',NULL,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'PAY-20261017-5EFB5DEF',8,5,'RAZORPAY','HUNTER-PAY-20261017-5EFB5DEF',NULL,100.00,'INR','PENDING','pay-key-8ce8ea53',NULL,NULL,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,'PAY-20261017-B663FE68',10,6,'RAZORPAY','HUNTER-PAY-20261017-B663FE68',NULL,100.00,'INR','PENDING','pay-key-129b73ae',NULL,NULL,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,'PAY-20261017-6E0CDF8F',12,7,'RAZORPAY','HUNTER-PAY-20261017-6E0CDF8F','provider-pay-1bac2a6b',100.00,'INR','VERIFIED','pay-key-1bac2a6b','2026-10-17 18:38:57',NULL,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,'PAY-20261017-80A971C4',16,9,'RAZORPAY','HUNTER-PAY-20261017-80A971C4','provider-pay-97790886',100.00,'INR','VERIFIED','pay-key-97790886','2026-10-17 19:57:25',NULL,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,'PAY-20261017-F19886DF',19,11,'RAZORPAY','HUNTER-PAY-20261017-F19886DF','provider-pay-6415b496',100.00,'INR','VERIFIED','pay-key-6415b496','2026-10-17 21:21:26',NULL,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(7,'PAY-20261017-A95839D8',26,13,'RAZORPAY','HUNTER-PAY-20261017-A95839D8','provider-pay-d1411073',100.00,'INR','VERIFIED','pay-key-d1411073','2026-10-17 21:38:34',NULL,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(8,'PAY-20261017-85075765',30,15,'RAZORPAY','HUNTER-PAY-20261017-85075765','provider-pay-3439d2e2',100.00,'INR','VERIFIED','pay-key-3439d2e2','2026-10-17 22:51:25',NULL,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(9,'PAY-20261018-506FC994',34,17,'RAZORPAY','HUNTER-PAY-20261018-506FC994','provider-pay-86f7090e',100.00,'INR','VERIFIED','pay-key-86f7090e','2026-10-18 09:25:18',NULL,'2026-10-18 09:25:18','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `payment_transactions` ENABLE KEYS */;
+LOCK TABLES `notification_logs` WRITE;
+/*!40000 ALTER TABLE `notification_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notification_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1550,6 +1952,88 @@ LOCK TABLES `payment_webhook_events` WRITE;
 /*!40000 ALTER TABLE `payment_webhook_events` DISABLE KEYS */;
 INSERT INTO `payment_webhook_events` VALUES (1,'RAZORPAY','evt-integration-1','e5669fed65bb9d53cbbdba846db165500a952bc5ae7ffe723e7faf2595fae936','2cebbe1229c01297316b991cba67d98295254d8eb3ebcf8babbe50f36c005481',1,'ACCEPTED','2026-08-23 19:08:23'),(2,'RAZORPAY','evt-1bac2a6b','50b6a54f300924525ef786d694eeecee752043a8b43000e17039735ef18d8b08','dce7c03efc5105151c47959e82d6c5a0149e9c01b1229037f707e0e7552420c8',4,'ACCEPTED','2026-10-17 18:38:57'),(3,'RAZORPAY','evt-97790886','fa83d336005c92cebf69377610820365e09f851ad90698429a829731b102fd37','7ffb8404e61d3f98249af0dc608e2d731c0920cd6018a9a784fb8738daec51fa',5,'ACCEPTED','2026-10-17 19:57:25'),(4,'RAZORPAY','evt-6415b496','7ba2bd4f1572e3c06f08a0228e8a519f79ebc3dbe61293c9fa08905627ed9cf6','3f97168c03857f7b66953a1f2abe5cc6fe708ba922e24cb6f3c9f12af97d6410',6,'ACCEPTED','2026-10-17 21:21:26'),(5,'RAZORPAY','evt-d1411073','9a9bdd33afa812f6b107ae111fb0e24ff44805fd18873259ddfea022c3df207c','02f5e38a0b42e1a8a56cdf3349bf9a3c4f5b4ee4a6423fe65c12109f92eff275',7,'ACCEPTED','2026-10-17 21:38:34'),(6,'RAZORPAY','evt-3439d2e2','b541edace96e72d34006b1ec2d13a8b654a65bb752295ed3506042f011cdaac9','8d1b6ac0dfed45d4a8e1a5fd1a4a13003e067125406e2f6c87720dd70fea8b01',8,'ACCEPTED','2026-10-17 22:51:25'),(7,'RAZORPAY','evt-86f7090e','7fe01711cf9e18547af6af58dfbb24d83582169252d86c568038c44e3c959638','5f754efca559ca2d21c55eff4df1f76dc50b6e9eceea7848d42e4eb4f7e062a1',9,'ACCEPTED','2026-10-18 09:25:18');
 /*!40000 ALTER TABLE `payment_webhook_events` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_categories`
+--
+
+DROP TABLE IF EXISTS `product_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_categories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `icon_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `sort_order` int unsigned NOT NULL DEFAULT '0',
+  `created_by` int unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `created_by` (`created_by`),
+  KEY `idx_product_cat_status` (`status`),
+  KEY `idx_product_cat_code` (`code`),
+  CONSTRAINT `product_categories_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_categories`
+--
+
+LOCK TABLES `product_categories` WRITE;
+/*!40000 ALTER TABLE `product_categories` DISABLE KEYS */;
+INSERT INTO `product_categories` VALUES (1,'Electronics','ELECTRONICS',NULL,'ACTIVE','Electronic devices and accessories',10,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(2,'Clothing & Apparel','CLOTHING',NULL,'ACTIVE','Fashion, clothing and wearables',20,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(3,'Food & Beverages','FOOD',NULL,'ACTIVE','Food items, beverages and groceries',30,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(4,'Health & Beauty','HEALTH_BEAUTY',NULL,'ACTIVE','Healthcare, cosmetics and personal care',40,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(5,'Home & Garden','HOME_GARDEN',NULL,'ACTIVE','Home decor, furniture and garden supplies',50,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(6,'Sports & Outdoors','SPORTS',NULL,'ACTIVE','Sports equipment and outdoor gear',60,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(7,'Books & Media','BOOKS_MEDIA',NULL,'ACTIVE','Books, digital media and entertainment',70,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(8,'Automotive','AUTOMOTIVE',NULL,'ACTIVE','Vehicle parts, accessories and tools',80,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(9,'Toys & Games','TOYS_GAMES',NULL,'ACTIVE','Toys, games and children products',90,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(10,'Other','OTHER',NULL,'ACTIVE','Miscellaneous products',999,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51');
+/*!40000 ALTER TABLE `product_categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `vendor_products`
+--
+
+DROP TABLE IF EXISTS `vendor_products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vendor_products` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `vendor_id` bigint unsigned NOT NULL,
+  `category_id` bigint unsigned DEFAULT NULL,
+  `product_code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `price` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `metadata` json DEFAULT NULL,
+  `status` enum('PENDING_REVIEW','APPROVED','REJECTED','DISABLED','RESUBMITTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING_REVIEW',
+  `admin_note` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moderated_by` int unsigned DEFAULT NULL,
+  `moderated_at` datetime DEFAULT NULL,
+  `submitted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `product_code` (`product_code`),
+  KEY `moderated_by` (`moderated_by`),
+  KEY `idx_vendor_product_status` (`status`,`submitted_at`),
+  KEY `idx_vendor_product_vendor` (`vendor_id`),
+  KEY `fk_vendor_product_category` (`category_id`),
+  CONSTRAINT `fk_vendor_product_category` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `vendor_products_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`),
+  CONSTRAINT `vendor_products_ibfk_2` FOREIGN KEY (`moderated_by`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vendor_products`
+--
+
+LOCK TABLES `vendor_products` WRITE;
+/*!40000 ALTER TABLE `vendor_products` DISABLE KEYS */;
+INSERT INTO `vendor_products` VALUES (1,3,NULL,'PRD-TEST-001','Test Product 1','Sample fixture product',299.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-17 19:53:19','2026-10-17 19:53:19'),(2,3,NULL,'PRD-FIT-001','Smart Fitness Tracker Band','Real-time heart rate and step tracking with OLED screen.',1499.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(3,3,NULL,'PRD-EAR-002','Wireless Noise-Canceling Earbuds','Bluetooth 5.3 with 30-hour playback and deep bass.',2299.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(4,3,NULL,'PRD-TEA-003','Organic Green Tea Herbal Pack','100% natural Darjeeling whole leaf herbal green tea.',350.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(5,3,NULL,'PRD-TSH-004','Premium Cotton Graphic T-Shirt','Breathable combed cotton tee with modern minimalist print.',699.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53');
+/*!40000 ALTER TABLE `vendor_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1595,43 +2079,6 @@ CREATE TABLE `product_audit_log` (
 LOCK TABLES `product_audit_log` WRITE;
 /*!40000 ALTER TABLE `product_audit_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `product_audit_log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `product_categories`
---
-
-DROP TABLE IF EXISTS `product_categories`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `product_categories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `icon_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `sort_order` int unsigned NOT NULL DEFAULT '0',
-  `created_by` int unsigned DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`),
-  KEY `created_by` (`created_by`),
-  KEY `idx_product_cat_status` (`status`),
-  KEY `idx_product_cat_code` (`code`),
-  CONSTRAINT `product_categories_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `product_categories`
---
-
-LOCK TABLES `product_categories` WRITE;
-/*!40000 ALTER TABLE `product_categories` DISABLE KEYS */;
-INSERT INTO `product_categories` VALUES (1,'Electronics','ELECTRONICS',NULL,'ACTIVE','Electronic devices and accessories',10,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(2,'Clothing & Apparel','CLOTHING',NULL,'ACTIVE','Fashion, clothing and wearables',20,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(3,'Food & Beverages','FOOD',NULL,'ACTIVE','Food items, beverages and groceries',30,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(4,'Health & Beauty','HEALTH_BEAUTY',NULL,'ACTIVE','Healthcare, cosmetics and personal care',40,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(5,'Home & Garden','HOME_GARDEN',NULL,'ACTIVE','Home decor, furniture and garden supplies',50,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(6,'Sports & Outdoors','SPORTS',NULL,'ACTIVE','Sports equipment and outdoor gear',60,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(7,'Books & Media','BOOKS_MEDIA',NULL,'ACTIVE','Books, digital media and entertainment',70,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(8,'Automotive','AUTOMOTIVE',NULL,'ACTIVE','Vehicle parts, accessories and tools',80,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(9,'Toys & Games','TOYS_GAMES',NULL,'ACTIVE','Toys, games and children products',90,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51'),(10,'Other','OTHER',NULL,'ACTIVE','Miscellaneous products',999,NULL,'2026-09-13 12:04:51','2026-09-13 12:04:51');
-/*!40000 ALTER TABLE `product_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1750,48 +2197,6 @@ LOCK TABLES `product_upload_records` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `qr_batch_items`
---
-
-DROP TABLE IF EXISTS `qr_batch_items`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `qr_batch_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `batch_id` bigint unsigned NOT NULL,
-  `spot_id` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `spot_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category_tag` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `riddle_text` text COLLATE utf8mb4_unicode_ci,
-  `youtube_video_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `correct_answer_hash` char(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reward_type` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reward_value` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `timer_ttl_minutes` int unsigned DEFAULT NULL,
-  `qr_code_id` bigint unsigned DEFAULT NULL,
-  `encrypted_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('ACTIVE','PAUSED','DEACTIVATED','SCANNED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `scanned_count` int unsigned NOT NULL DEFAULT '0',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `spot_id` (`spot_id`),
-  KEY `idx_qr_batch_item` (`batch_id`,`status`),
-  KEY `qr_code_id` (`qr_code_id`),
-  CONSTRAINT `qr_batch_items_ibfk_1` FOREIGN KEY (`batch_id`) REFERENCES `qr_batches` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `qr_batch_items_ibfk_2` FOREIGN KEY (`qr_code_id`) REFERENCES `hunt_qr_codes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `qr_batch_items`
---
-
-LOCK TABLES `qr_batch_items` WRITE;
-/*!40000 ALTER TABLE `qr_batch_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `qr_batch_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `qr_batches`
 --
 
@@ -1834,6 +2239,48 @@ CREATE TABLE `qr_batches` (
 LOCK TABLES `qr_batches` WRITE;
 /*!40000 ALTER TABLE `qr_batches` DISABLE KEYS */;
 /*!40000 ALTER TABLE `qr_batches` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `qr_batch_items`
+--
+
+DROP TABLE IF EXISTS `qr_batch_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `qr_batch_items` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `batch_id` bigint unsigned NOT NULL,
+  `spot_id` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `spot_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_tag` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `riddle_text` text COLLATE utf8mb4_unicode_ci,
+  `youtube_video_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `correct_answer_hash` char(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reward_type` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reward_value` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `timer_ttl_minutes` int unsigned DEFAULT NULL,
+  `qr_code_id` bigint unsigned DEFAULT NULL,
+  `encrypted_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('ACTIVE','PAUSED','DEACTIVATED','SCANNED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
+  `scanned_count` int unsigned NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `spot_id` (`spot_id`),
+  KEY `idx_qr_batch_item` (`batch_id`,`status`),
+  KEY `qr_code_id` (`qr_code_id`),
+  CONSTRAINT `qr_batch_items_ibfk_1` FOREIGN KEY (`batch_id`) REFERENCES `qr_batches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `qr_batch_items_ibfk_2` FOREIGN KEY (`qr_code_id`) REFERENCES `hunt_qr_codes` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `qr_batch_items`
+--
+
+LOCK TABLES `qr_batch_items` WRITE;
+/*!40000 ALTER TABLE `qr_batch_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `qr_batch_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1975,31 +2422,59 @@ INSERT INTO `question_attempts` VALUES (1,22,3,NULL,'SPOT_4120c86a','watch',1,0.
 UNLOCK TABLES;
 
 --
--- Table structure for table `question_collection_items`
+-- Table structure for table `spot_campaigns`
 --
 
-DROP TABLE IF EXISTS `question_collection_items`;
+DROP TABLE IF EXISTS `spot_campaigns`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `question_collection_items` (
-  `collection_id` bigint unsigned NOT NULL,
-  `riddle_id` bigint unsigned NOT NULL,
-  `question_order` int unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`collection_id`,`riddle_id`),
-  UNIQUE KEY `uq_collection_order` (`collection_id`,`question_order`),
-  KEY `riddle_id` (`riddle_id`),
-  CONSTRAINT `question_collection_items_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `question_collections` (`collection_id`) ON DELETE CASCADE,
-  CONSTRAINT `question_collection_items_ibfk_2` FOREIGN KEY (`riddle_id`) REFERENCES `riddle_pool` (`riddle_id`) ON DELETE CASCADE
+CREATE TABLE `spot_campaigns` (
+  `spot_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `master_token_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `spot_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_id` bigint unsigned DEFAULT NULL,
+  `question_mode` enum('SINGLE','COLLECTION') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SINGLE',
+  `question_id` bigint unsigned DEFAULT NULL,
+  `collection_id` bigint unsigned DEFAULT NULL,
+  `target_scope` enum('ALL_PUBLIC','WHITELIST','NEW_USER') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ALL_PUBLIC',
+  `whitelisted_users` json DEFAULT NULL,
+  `city_zone` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `venue_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gps_mode` enum('GPS_REQUIRED','DESK_STUDY') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'GPS_REQUIRED',
+  `latitude` decimal(10,7) NOT NULL,
+  `longitude` decimal(10,7) NOT NULL,
+  `proximity_alert_radius` int unsigned NOT NULL DEFAULT '30',
+  `scanner_unlock_radius` int unsigned NOT NULL DEFAULT '20',
+  `indoor_micro_clue` text COLLATE utf8mb4_unicode_ci,
+  `reward_type` enum('PROMO_CASH','COUPON_VOUCHER','DIRECT_CASH','MILESTONE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PROMO_CASH',
+  `reward_amount` decimal(18,2) NOT NULL DEFAULT '15.00',
+  `min_cart_value` decimal(18,2) NOT NULL DEFAULT '300.00',
+  `ttl_minutes` int unsigned NOT NULL DEFAULT '30',
+  `auto_reversal` tinyint(1) NOT NULL DEFAULT '1',
+  `max_budget_scans` int unsigned NOT NULL DEFAULT '500',
+  `scan_frequency_policy` enum('PER_DEVICE','SINGLE_USE','DAILY','POOL') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PER_DEVICE',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_by` int unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`spot_id`),
+  UNIQUE KEY `master_token_hash` (`master_token_hash`),
+  KEY `category_id` (`category_id`),
+  KEY `created_by` (`created_by`),
+  KEY `idx_spot_active` (`is_active`,`category_id`),
+  CONSTRAINT `spot_campaigns_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `video_categories` (`id`),
+  CONSTRAINT `spot_campaigns_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `question_collection_items`
+-- Dumping data for table `spot_campaigns`
 --
 
-LOCK TABLES `question_collection_items` WRITE;
-/*!40000 ALTER TABLE `question_collection_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `question_collection_items` ENABLE KEYS */;
+LOCK TABLES `spot_campaigns` WRITE;
+/*!40000 ALTER TABLE `spot_campaigns` DISABLE KEYS */;
+INSERT INTO `spot_campaigns` VALUES ('DEMO_SPOT_MALL_001','0b1c0f0b616aca8641b55e695d1b44d8696cbb074958c5125d86ddb5c8274c3c','Demo Mall Lift Lobby',1,'SINGLE',NULL,NULL,'ALL_PUBLIC','[]','Patna','Demo Mall','GPS_REQUIRED',25.6120450,85.1440210,30,20,'First floor → red pillar','PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,1,'2026-08-29 11:58:00','2026-08-29 11:58:00'),('SPOT_2a0bf7e2','b5545dab6256d08d50226b4c2d3465c57a29606d72de25d9517a07594f1c6d20','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,17,'2026-10-18 09:25:15','2026-10-18 09:25:15'),('SPOT_32a00416','b4ceb61763b8bc96a2a7ebedcc246dc0fbaaf64e15f2be8b677f047bd77a8ccc','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,13,'2026-10-17 21:38:31','2026-10-17 21:38:31'),('SPOT_4120c86a','2613621b5baca40b9902836f1f77d74b4a7505823da8af8cc689a65506bbc66f','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,12,'2026-10-17 21:37:27','2026-10-17 21:37:27'),('SPOT_4f67df73','c59ebf98f1b2c2f7d260e818f05936c8112a10c7597ce3703e3197de870da49c','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,15,'2026-10-17 22:51:21','2026-10-17 22:51:21');
+/*!40000 ALTER TABLE `spot_campaigns` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2039,125 +2514,6 @@ LOCK TABLES `question_collections` WRITE;
 /*!40000 ALTER TABLE `question_collections` DISABLE KEYS */;
 INSERT INTO `question_collections` VALUES (1,'Test','DEMO_SPOT_MALL_001','Test','RANDOM',1,0,NULL,'ACTIVE',2,'2026-08-30 16:39:22','2026-08-30 16:39:22'),(2,'Test Col','SPOT_4120c86a',NULL,'RANDOM',1,5,'Collection-Fallback-Offer','ACTIVE',12,'2026-10-17 21:37:27','2026-10-17 21:37:27'),(3,'Test Col','SPOT_32a00416',NULL,'RANDOM',1,5,'Collection-Fallback-Offer','ACTIVE',13,'2026-10-17 21:38:31','2026-10-17 21:38:31'),(4,'Test Col','SPOT_4f67df73',NULL,'RANDOM',1,5,'Collection-Fallback-Offer','ACTIVE',15,'2026-10-17 22:51:21','2026-10-17 22:51:21'),(5,'Test Col','SPOT_2a0bf7e2',NULL,'RANDOM',1,5,'Collection-Fallback-Offer','ACTIVE',17,'2026-10-18 09:25:15','2026-10-18 09:25:15');
 /*!40000 ALTER TABLE `question_collections` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `reward_approvals`
---
-
-DROP TABLE IF EXISTS `reward_approvals`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `reward_approvals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `reward_id` bigint unsigned NOT NULL,
-  `admin_id` int unsigned NOT NULL,
-  `action` enum('APPROVED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_reward_decision` (`reward_id`),
-  KEY `admin_id` (`admin_id`),
-  CONSTRAINT `reward_approvals_ibfk_1` FOREIGN KEY (`reward_id`) REFERENCES `rewards` (`id`),
-  CONSTRAINT `reward_approvals_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `reward_approvals`
---
-
-LOCK TABLES `reward_approvals` WRITE;
-/*!40000 ALTER TABLE `reward_approvals` DISABLE KEYS */;
-INSERT INTO `reward_approvals` VALUES (1,1,1,'APPROVED',NULL,'2026-08-23 19:08:23'),(2,2,4,'APPROVED',NULL,'2026-10-17 18:37:52'),(3,3,5,'APPROVED',NULL,'2026-10-17 18:38:35'),(4,4,6,'APPROVED',NULL,'2026-10-17 18:38:57'),(5,5,8,'APPROVED',NULL,'2026-10-17 19:57:25'),(6,6,9,'APPROVED',NULL,'2026-10-17 21:21:26'),(7,7,14,'APPROVED',NULL,'2026-10-17 21:38:34'),(8,8,16,'APPROVED',NULL,'2026-10-17 22:51:25'),(9,9,18,'APPROVED',NULL,'2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `reward_approvals` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `reward_codes`
---
-
-DROP TABLE IF EXISTS `reward_codes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `reward_codes` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `code_reference` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `gift_id` bigint unsigned NOT NULL,
-  `status` enum('ACTIVE','REDEEMED','EXPIRED','CANCELLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `expires_at` datetime DEFAULT NULL,
-  `created_by` int unsigned NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `redeemed_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `code_reference` (`code_reference`),
-  UNIQUE KEY `code_hash` (`code_hash`),
-  KEY `idx_reward_code_user` (`user_id`,`status`),
-  KEY `gift_id` (`gift_id`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `reward_codes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `reward_codes_ibfk_2` FOREIGN KEY (`gift_id`) REFERENCES `gifts` (`id`),
-  CONSTRAINT `reward_codes_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `reward_codes`
---
-
-LOCK TABLES `reward_codes` WRITE;
-/*!40000 ALTER TABLE `reward_codes` DISABLE KEYS */;
-INSERT INTO `reward_codes` VALUES (1,'GFT-VALID','6aede01191b0eeecebceb0e169f2ef12e930648fbabed460bb6c21564fd513be',1,1,'REDEEMED','2026-08-24 19:08:23',1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'GFT-EXPIRED','b36bd8ba65928f5db9f879878cd37d0fd9753ef32962876208a3a6a3e54d0e76',1,1,'ACTIVE','2026-08-22 19:08:23',1,'2026-08-23 19:08:23',NULL),(3,'GFT-VAL-1BAC2A6B','4c881a8cd62d77eb868e23ef3ea1bc4910b10b54e4e240f656dcee24306c52a3',11,2,'REDEEMED','2026-10-18 18:38:58',6,'2026-10-17 18:38:58','2026-10-17 18:38:58'),(4,'GFT-EXP-1BAC2A6B','307a9d128f34cce09b18172002a4e273c3e1a70254d8325bc7cca0bba30e7e99',11,2,'ACTIVE','2026-10-16 18:38:58',6,'2026-10-17 18:38:58',NULL),(5,'GFT-VAL-97790886','19135d650ac346d0f2207fce3b4c46a53a13fd8435f7739de1535d30b84ddb6a',15,3,'REDEEMED','2026-10-18 19:57:26',8,'2026-10-17 19:57:26','2026-10-17 19:57:26'),(6,'GFT-EXP-97790886','450d0508dfe5cb912d2d256ca6c5329bd97006e73983e13cdce3406aa18a2bc7',15,3,'ACTIVE','2026-10-16 19:57:26',8,'2026-10-17 19:57:26',NULL),(7,'GFT-VAL-6415B496','c8a347e37257a3ad19262be976cd472c305755ca673425a06f259b7199e8ba71',18,4,'REDEEMED','2026-10-18 21:21:26',9,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(8,'GFT-EXP-6415B496','f8678842558b61460e5524845c553fdea9bedf07d058b56a424a5ee43a05bb32',18,4,'ACTIVE','2026-10-16 21:21:26',9,'2026-10-17 21:21:26',NULL),(9,'GFT-VAL-D1411073','810dbeeff86390eeae0442d1fc9942829b679cf363d191d569e3ebc407525ca5',25,5,'REDEEMED','2026-10-18 21:38:34',14,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(10,'GFT-EXP-D1411073','9426b6d8e22a1c21b9826be1b10bbdb3f8ef05a02adb7f29c5e7462cf7f39a85',25,5,'ACTIVE','2026-10-16 21:38:34',14,'2026-10-17 21:38:34',NULL),(11,'GFT-VAL-3439D2E2','ea5adf3afa19b336c8f9c27bdffa3c0776965dd459429918dfdd39c1f21604df',29,6,'REDEEMED','2026-10-18 22:51:25',16,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(12,'GFT-EXP-3439D2E2','c5f5c29856df7e43341cd7d8817b1b036c13b5cb9061b6d476cc61ff2869ed2a',29,6,'ACTIVE','2026-10-16 22:51:25',16,'2026-10-17 22:51:25',NULL),(13,'GFT-VAL-86F7090E','07a8f5fa36eb368eadfdca03f35bcb06ebc0fa40fa33003240ff695b0996b1d1',33,7,'REDEEMED','2026-10-19 09:25:19',18,'2026-10-18 09:25:19','2026-10-18 09:25:19'),(14,'GFT-EXP-86F7090E','c7ed0d983ae0e937a595e79d942c8da514ad7b357109078bf7bcf6ff8c34a06a',33,7,'ACTIVE','2026-10-17 09:25:19',18,'2026-10-18 09:25:19',NULL);
-/*!40000 ALTER TABLE `reward_codes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `rewards`
---
-
-DROP TABLE IF EXISTS `rewards`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rewards` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `reward_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `hunt_id` bigint unsigned NOT NULL,
-  `scan_id` bigint unsigned NOT NULL,
-  `scratch_session_id` bigint unsigned NOT NULL,
-  `amount` decimal(18,2) NOT NULL,
-  `status` enum('PENDING','APPROVED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
-  `rejection_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `wallet_transaction_id` bigint unsigned DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `decided_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `reward_id` (`reward_id`),
-  UNIQUE KEY `scan_id` (`scan_id`),
-  UNIQUE KEY `scratch_session_id` (`scratch_session_id`),
-  UNIQUE KEY `wallet_transaction_id` (`wallet_transaction_id`),
-  KEY `idx_reward_status_date` (`status`,`created_at`),
-  KEY `user_id` (`user_id`),
-  KEY `hunt_id` (`hunt_id`),
-  CONSTRAINT `rewards_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `rewards_ibfk_2` FOREIGN KEY (`hunt_id`) REFERENCES `hunts` (`id`),
-  CONSTRAINT `rewards_ibfk_3` FOREIGN KEY (`scan_id`) REFERENCES `hunt_scans` (`id`),
-  CONSTRAINT `rewards_ibfk_4` FOREIGN KEY (`scratch_session_id`) REFERENCES `hunt_scratch_sessions` (`id`),
-  CONSTRAINT `rewards_ibfk_5` FOREIGN KEY (`wallet_transaction_id`) REFERENCES `wallet_transactions` (`id`),
-  CONSTRAINT `rewards_chk_1` CHECK ((`amount` > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `rewards`
---
-
-LOCK TABLES `rewards` WRITE;
-/*!40000 ALTER TABLE `rewards` DISABLE KEYS */;
-INSERT INTO `rewards` VALUES (1,'RWD-20260823-B77B5D1F',1,1,1,1,500.00,'APPROVED',NULL,1,'2026-08-23 19:08:23','2026-08-23 19:08:23'),(2,'RWD-20261017-4702DB16',7,5,2,2,500.00,'APPROVED',NULL,16,'2026-10-17 18:37:52','2026-10-17 18:37:52'),(3,'RWD-20261017-6E570504',9,6,3,3,500.00,'APPROVED',NULL,18,'2026-10-17 18:38:35','2026-10-17 18:38:35'),(4,'RWD-20261017-67F876EC',11,7,4,4,500.00,'APPROVED',NULL,20,'2026-10-17 18:38:57','2026-10-17 18:38:57'),(5,'RWD-20261017-CBFDBB1D',15,9,5,5,500.00,'APPROVED',NULL,28,'2026-10-17 19:57:25','2026-10-17 19:57:25'),(6,'RWD-20261017-52C89046',18,11,6,6,500.00,'APPROVED',NULL,36,'2026-10-17 21:21:26','2026-10-17 21:21:26'),(7,'RWD-20261017-B5094C11',25,13,7,7,500.00,'APPROVED',NULL,54,'2026-10-17 21:38:34','2026-10-17 21:38:34'),(8,'RWD-20261017-2FD64895',29,15,8,8,500.00,'APPROVED',NULL,67,'2026-10-17 22:51:25','2026-10-17 22:51:25'),(9,'RWD-20261018-E32C8E21',33,17,9,9,500.00,'APPROVED',NULL,80,'2026-10-18 09:25:18','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `rewards` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2201,6 +2557,66 @@ LOCK TABLES `riddle_pool` WRITE;
 /*!40000 ALTER TABLE `riddle_pool` DISABLE KEYS */;
 INSERT INTO `riddle_pool` VALUES (1,'DEMO_SPOT_MALL_001','SINGLE','Mujhe pehno toh waqt rukta nahi, main kaun?',NULL,'Ghadi','[\"watch\", \"clock\", \"samay\"]','dQw4w9WgXcQ',NULL,60,'COINS',50.00,7,NULL,NULL,100,'ACTIVE','2026-08-29 11:58:00','2026-08-30 16:37:58'),(2,'DEMO_SPOT_MALL_001','SINGLE','Mujhe pehno toh waqt rukta nahi, batao main kaun?','Submit one answer within the time limit.','Watch','[\"ghadi\", \"clock\", \"samay\"]','dQw4w9WgXcQ','https://youtube.com/@example',60,'COINS',50.00,7,NULL,NULL,100,'ACTIVE','2026-09-01 17:42:36','2026-09-01 17:42:36'),(3,'SPOT_4120c86a','SINGLE','Mujhe pehno toh waqt rukta nahi?','Scan QR','Ghadi','[\"watch\", \"clock\", \"samay\"]','vid123','',60,'COINS',50.00,7,'Q-Fallback-Offer',NULL,100,'ACTIVE','2026-10-17 21:37:27','2026-10-17 21:37:27'),(4,'SPOT_4120c86a','SINGLE','Question 2',NULL,'Right','[]',NULL,NULL,60,'COINS',30.00,7,NULL,2,100,'ACTIVE','2026-10-17 21:37:27','2026-10-17 21:37:27'),(5,'SPOT_32a00416','SINGLE','Mujhe pehno toh waqt rukta nahi?','Scan QR','Ghadi','[\"watch\", \"clock\", \"samay\"]','vid123','',60,'COINS',50.00,7,'Q-Fallback-Offer',NULL,100,'ACTIVE','2026-10-17 21:38:31','2026-10-17 21:38:31'),(6,'SPOT_32a00416','SINGLE','Question 2',NULL,'Right','[]',NULL,NULL,60,'COINS',30.00,7,NULL,3,100,'ACTIVE','2026-10-17 21:38:31','2026-10-17 21:38:31'),(7,'SPOT_4f67df73','SINGLE','Mujhe pehno toh waqt rukta nahi?','Scan QR','Ghadi','[\"watch\", \"clock\", \"samay\"]','vid123','',60,'COINS',50.00,7,'Q-Fallback-Offer',NULL,100,'ACTIVE','2026-10-17 22:51:21','2026-10-17 22:51:21'),(8,'SPOT_4f67df73','SINGLE','Question 2',NULL,'Right','[]',NULL,NULL,60,'COINS',30.00,7,NULL,4,100,'ACTIVE','2026-10-17 22:51:21','2026-10-17 22:51:21'),(9,'SPOT_2a0bf7e2','SINGLE','Mujhe pehno toh waqt rukta nahi?','Scan QR','Ghadi','[\"watch\", \"clock\", \"samay\"]','vid123','',60,'COINS',50.00,7,'Q-Fallback-Offer',NULL,100,'ACTIVE','2026-10-18 09:25:15','2026-10-18 09:25:15'),(10,'SPOT_2a0bf7e2','SINGLE','Question 2',NULL,'Right','[]',NULL,NULL,60,'COINS',30.00,7,NULL,5,100,'ACTIVE','2026-10-18 09:25:15','2026-10-18 09:25:15');
 /*!40000 ALTER TABLE `riddle_pool` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `question_collection_items`
+--
+
+DROP TABLE IF EXISTS `question_collection_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `question_collection_items` (
+  `collection_id` bigint unsigned NOT NULL,
+  `riddle_id` bigint unsigned NOT NULL,
+  `question_order` int unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`collection_id`,`riddle_id`),
+  UNIQUE KEY `uq_collection_order` (`collection_id`,`question_order`),
+  KEY `riddle_id` (`riddle_id`),
+  CONSTRAINT `question_collection_items_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `question_collections` (`collection_id`) ON DELETE CASCADE,
+  CONSTRAINT `question_collection_items_ibfk_2` FOREIGN KEY (`riddle_id`) REFERENCES `riddle_pool` (`riddle_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `question_collection_items`
+--
+
+LOCK TABLES `question_collection_items` WRITE;
+/*!40000 ALTER TABLE `question_collection_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `question_collection_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reward_approvals`
+--
+
+DROP TABLE IF EXISTS `reward_approvals`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reward_approvals` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `reward_id` bigint unsigned NOT NULL,
+  `admin_id` int unsigned NOT NULL,
+  `action` enum('APPROVED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_reward_decision` (`reward_id`),
+  KEY `admin_id` (`admin_id`),
+  CONSTRAINT `reward_approvals_ibfk_1` FOREIGN KEY (`reward_id`) REFERENCES `rewards` (`id`),
+  CONSTRAINT `reward_approvals_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reward_approvals`
+--
+
+LOCK TABLES `reward_approvals` WRITE;
+/*!40000 ALTER TABLE `reward_approvals` DISABLE KEYS */;
+INSERT INTO `reward_approvals` VALUES (1,1,1,'APPROVED',NULL,'2026-08-23 19:08:23'),(2,2,4,'APPROVED',NULL,'2026-10-17 18:37:52'),(3,3,5,'APPROVED',NULL,'2026-10-17 18:38:35'),(4,4,6,'APPROVED',NULL,'2026-10-17 18:38:57'),(5,5,8,'APPROVED',NULL,'2026-10-17 19:57:25'),(6,6,9,'APPROVED',NULL,'2026-10-17 21:21:26'),(7,7,14,'APPROVED',NULL,'2026-10-17 21:38:34'),(8,8,16,'APPROVED',NULL,'2026-10-17 22:51:25'),(9,9,18,'APPROVED',NULL,'2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `reward_approvals` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2277,62 +2693,6 @@ LOCK TABLES `security_events` WRITE;
 /*!40000 ALTER TABLE `security_events` DISABLE KEYS */;
 INSERT INTO `security_events` VALUES (1,1,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-1','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-1\"}','2026-08-23 19:08:22'),(2,1,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-1','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-1\"}','2026-08-23 19:08:22'),(3,1,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-1','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 1, \"device_id\": \"device-1\"}','2026-08-23 19:08:22'),(4,1,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 1}','2026-08-23 19:08:23'),(5,1,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 1}','2026-08-23 19:08:23'),(6,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','::1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36','Failed admin login','{\"identity_hash\": \"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\"}','2026-08-23 19:12:42'),(7,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','::1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36','Failed admin login','{\"identity_hash\": \"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\"}','2026-08-23 19:12:54'),(8,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','::1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36','Failed admin login','{\"identity_hash\": \"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\"}','2026-08-23 19:13:12'),(9,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','Failed vendor login','{\"identity_hash\": \"da5653469d0e01da4eda96d361ff6dbd8fd499ea8883c679f57a66e0f3fad756\"}','2026-09-11 19:16:29'),(10,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','Failed vendor login','{\"identity_hash\": \"eb92cc52a766c500e001d02f1eaa78784da47f8c96b019ce874d3e3c205b4e3c\"}','2026-09-11 19:24:21'),(11,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','Failed vendor login','{\"identity_hash\": \"5d1ce093d11f093703a4eb9903c720a1b97b838c0ae4fcef561d6edc243d5b45\"}','2026-09-11 19:32:55'),(12,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-09-11 19:44:05'),(13,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','Failed vendor login','{\"identity_hash\": \"d502cfcfc4860af6b0ed6144fde9f1182b491694ddf48c13fb08ab9660a426d6\"}','2026-09-11 19:44:31'),(14,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'curl/8.7.1','Failed admin login','{\"identity_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}','2026-09-13 15:47:06'),(15,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'curl/8.7.1','Failed admin login','{\"identity_hash\": \"4fe686dee93e405cf724a6de299e1a1fe906e5a147dfc46d414048d4b1738f21\"}','2026-09-13 15:50:20'),(16,7,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-7','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-7\"}','2026-10-17 18:37:52'),(17,7,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-7','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-7\"}','2026-10-17 18:37:52'),(18,7,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-7','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 2, \"device_id\": \"device-7\"}','2026-10-17 18:37:52'),(19,9,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-9','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-9\"}','2026-10-17 18:38:35'),(20,9,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-9','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-9\"}','2026-10-17 18:38:35'),(21,9,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-9','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 3, \"device_id\": \"device-9\"}','2026-10-17 18:38:35'),(22,11,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-11','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-11\"}','2026-10-17 18:38:57'),(23,11,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-11','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-11\"}','2026-10-17 18:38:57'),(24,11,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-11','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 4, \"device_id\": \"device-11\"}','2026-10-17 18:38:57'),(25,11,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 4}','2026-10-17 18:38:58'),(26,11,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 4}','2026-10-17 18:38:58'),(27,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-17 18:57:21'),(28,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-17 18:57:44'),(29,4,'LOGIN_SUCCESS','LOW','127.0.0.1','api-test-device-01','unknown','Mobile API login successful','{\"device_id\": \"api-test-device-01\"}','2026-10-17 18:58:32'),(30,4,'WITHDRAWAL_CREATED','LOW','127.0.0.1','api-test-device-01','unknown','Withdrawal requested','{\"device_id\": \"api-test-device-01\", \"withdrawal_id\": \"WD-20261017-FA143BD5\"}','2026-10-17 18:58:32'),(31,4,'LOGOUT','LOW','127.0.0.1','api-test-device-01','unknown','Mobile API session revoked','{\"device_id\": \"api-test-device-01\"}','2026-10-17 18:58:32'),(32,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-17 19:56:35'),(33,15,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-15','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-15\"}','2026-10-17 19:57:25'),(34,15,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-15','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-15\"}','2026-10-17 19:57:25'),(35,15,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-15','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 5, \"device_id\": \"device-15\"}','2026-10-17 19:57:25'),(36,15,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 5}','2026-10-17 19:57:26'),(37,15,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 5}','2026-10-17 19:57:26'),(38,4,'LOGIN_SUCCESS','LOW','127.0.0.1','api-test-device-01','unknown','Mobile API login successful','{\"device_id\": \"api-test-device-01\"}','2026-10-17 19:58:00'),(39,4,'LOGOUT','LOW','127.0.0.1','api-test-device-01','unknown','Mobile API session revoked','{\"device_id\": \"api-test-device-01\"}','2026-10-17 19:58:00'),(40,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-17 20:12:44'),(41,18,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-18','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-18\"}','2026-10-17 21:21:25'),(42,18,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-18','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-18\"}','2026-10-17 21:21:25'),(43,18,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-18','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 6, \"device_id\": \"device-18\"}','2026-10-17 21:21:25'),(44,18,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 6}','2026-10-17 21:21:26'),(45,18,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 6}','2026-10-17 21:21:26'),(46,25,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-25','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-25\"}','2026-10-17 21:38:34'),(47,25,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-25','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-25\"}','2026-10-17 21:38:34'),(48,25,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-25','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 7, \"device_id\": \"device-25\"}','2026-10-17 21:38:34'),(49,25,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 7}','2026-10-17 21:38:34'),(50,25,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 7}','2026-10-17 21:38:34'),(51,29,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-29','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-29\"}','2026-10-17 22:51:24'),(52,29,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-29','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-29\"}','2026-10-17 22:51:24'),(53,29,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-29','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 8, \"device_id\": \"device-29\"}','2026-10-17 22:51:25'),(54,29,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 8}','2026-10-17 22:51:25'),(55,29,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 8}','2026-10-17 22:51:25'),(56,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36','Failed admin login','{\"identity_hash\": \"186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae\"}','2026-10-17 23:13:35'),(57,NULL,'ADMIN_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36','Failed admin login','{\"identity_hash\": \"186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae\"}','2026-10-17 23:13:57'),(58,33,'HUNT_SCAN_REJECTED','HIGH','127.0.0.1','device-33','Hunter integration test','User is outside the allowed GPS radius.','{\"device_id\": \"device-33\"}','2026-10-18 09:25:18'),(59,33,'HUNT_SCAN_DUPLICATE','HIGH','127.0.0.1','device-33','Hunter integration test','QR was already claimed by this user','{\"device_id\": \"device-33\"}','2026-10-18 09:25:18'),(60,33,'HUNT_SECRET_FAILED','MEDIUM','127.0.0.1','device-33','Hunter integration test','Invalid hunt secret submitted','{\"scan_id\": 9, \"device_id\": \"device-33\"}','2026-10-18 09:25:18'),(61,33,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code is not active.','{\"vendor_id\": 9}','2026-10-18 09:25:19'),(62,33,'GIFT_REDEMPTION_REJECTED','MEDIUM','127.0.0.1',NULL,'Hunter integration test','Code has expired.','{\"vendor_id\": 9}','2026-10-18 09:25:19'),(63,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-18 09:40:00'),(64,NULL,'VENDOR_LOGIN_FAILED','MEDIUM','127.0.0.1',NULL,'unknown','Failed vendor login','{\"identity_hash\": \"36035da416089b0f1a075642fa959d4ed6e956002f1d40057f44bfe4d845dd8b\"}','2026-10-18 10:35:58');
 /*!40000 ALTER TABLE `security_events` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `spot_campaigns`
---
-
-DROP TABLE IF EXISTS `spot_campaigns`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `spot_campaigns` (
-  `spot_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `master_token_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `spot_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category_id` bigint unsigned DEFAULT NULL,
-  `question_mode` enum('SINGLE','COLLECTION') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SINGLE',
-  `question_id` bigint unsigned DEFAULT NULL,
-  `collection_id` bigint unsigned DEFAULT NULL,
-  `target_scope` enum('ALL_PUBLIC','WHITELIST','NEW_USER') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ALL_PUBLIC',
-  `whitelisted_users` json DEFAULT NULL,
-  `city_zone` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `venue_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gps_mode` enum('GPS_REQUIRED','DESK_STUDY') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'GPS_REQUIRED',
-  `latitude` decimal(10,7) NOT NULL,
-  `longitude` decimal(10,7) NOT NULL,
-  `proximity_alert_radius` int unsigned NOT NULL DEFAULT '30',
-  `scanner_unlock_radius` int unsigned NOT NULL DEFAULT '20',
-  `indoor_micro_clue` text COLLATE utf8mb4_unicode_ci,
-  `reward_type` enum('PROMO_CASH','COUPON_VOUCHER','DIRECT_CASH','MILESTONE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PROMO_CASH',
-  `reward_amount` decimal(18,2) NOT NULL DEFAULT '15.00',
-  `min_cart_value` decimal(18,2) NOT NULL DEFAULT '300.00',
-  `ttl_minutes` int unsigned NOT NULL DEFAULT '30',
-  `auto_reversal` tinyint(1) NOT NULL DEFAULT '1',
-  `max_budget_scans` int unsigned NOT NULL DEFAULT '500',
-  `scan_frequency_policy` enum('PER_DEVICE','SINGLE_USE','DAILY','POOL') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PER_DEVICE',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_by` int unsigned NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`spot_id`),
-  UNIQUE KEY `master_token_hash` (`master_token_hash`),
-  KEY `category_id` (`category_id`),
-  KEY `created_by` (`created_by`),
-  KEY `idx_spot_active` (`is_active`,`category_id`),
-  CONSTRAINT `spot_campaigns_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `video_categories` (`id`),
-  CONSTRAINT `spot_campaigns_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `spot_campaigns`
---
-
-LOCK TABLES `spot_campaigns` WRITE;
-/*!40000 ALTER TABLE `spot_campaigns` DISABLE KEYS */;
-INSERT INTO `spot_campaigns` VALUES ('DEMO_SPOT_MALL_001','0b1c0f0b616aca8641b55e695d1b44d8696cbb074958c5125d86ddb5c8274c3c','Demo Mall Lift Lobby',1,'SINGLE',NULL,NULL,'ALL_PUBLIC','[]','Patna','Demo Mall','GPS_REQUIRED',25.6120450,85.1440210,30,20,'First floor → red pillar','PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,1,'2026-08-29 11:58:00','2026-08-29 11:58:00'),('SPOT_2a0bf7e2','b5545dab6256d08d50226b4c2d3465c57a29606d72de25d9517a07594f1c6d20','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,17,'2026-10-18 09:25:15','2026-10-18 09:25:15'),('SPOT_32a00416','b4ceb61763b8bc96a2a7ebedcc246dc0fbaaf64e15f2be8b677f047bd77a8ccc','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,13,'2026-10-17 21:38:31','2026-10-17 21:38:31'),('SPOT_4120c86a','2613621b5baca40b9902836f1f77d74b4a7505823da8af8cc689a65506bbc66f','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,12,'2026-10-17 21:37:27','2026-10-17 21:37:27'),('SPOT_4f67df73','c59ebf98f1b2c2f7d260e818f05936c8112a10c7597ce3703e3197de870da49c','Test Spot',NULL,'SINGLE',NULL,NULL,'ALL_PUBLIC',NULL,NULL,NULL,'GPS_REQUIRED',25.5940950,85.1375660,30,20,NULL,'PROMO_CASH',15.00,300.00,30,1,500,'PER_DEVICE',1,15,'2026-10-17 22:51:21','2026-10-17 22:51:21');
-/*!40000 ALTER TABLE `spot_campaigns` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2581,51 +2941,6 @@ INSERT INTO `user_sessions` VALUES (1,4,'34860571f697dd3149f1fe5185d6db318fcca60
 UNLOCK TABLES;
 
 --
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mobile` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('ACTIVE','BLOCKED','SUSPENDED','PENDING') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
-  `status_reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
-  `balance_privacy_enabled` tinyint(1) NOT NULL DEFAULT '0',
-  `risk_level` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'LOW',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `last_login_at` datetime DEFAULT NULL,
-  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `settlement_upi` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_number` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_ifsc` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `mobile` (`mobile`),
-  UNIQUE KEY `email` (`email`),
-  KEY `idx_users_status` (`status`),
-  KEY `idx_users_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Hunt User','9000000001','hunt-user@example.test','$2y$12$aJxjDah2o4ush8TkCsQ.I.dgMcGVRaSus55lCeZaBj2g7ex/RCRSS',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:21','2026-08-23 19:08:21',NULL,NULL,NULL,NULL,NULL,NULL),(2,'Paid User','9000000002','paid-user@example.test','$2y$12$UF1XKn0V3sqB6ietomUWSOV19sOi2T9RBE9A2Q4FV1SGgqQiUgIoe',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:22','2026-08-23 19:08:22',NULL,NULL,NULL,NULL,NULL,NULL),(3,'Bonus QR User','9000000099','bonus-qr@example.test','$2y$12$zKWIO8uJY7FRR2RSnMVkleHruTKPf/KdTwSYtMdUCYyg0PC.UMw8S',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-23 19:08:23','2026-08-23 19:08:23',NULL,NULL,NULL,NULL,NULL,NULL),(4,'Demo Customer','9000000003','customer.demo@example.test','$2y$12$77vNCiHbtcN/WMCqDMnmcumd.05N0tfONuDLzhw1kmMIg229nb.xm',NULL,'ACTIVE',NULL,1,0,'LOW','2026-08-29 11:29:07','2026-10-17 19:58:00','2026-10-17 19:58:00','127.0.0.1',NULL,NULL,NULL,NULL),(6,'Bonus QR User','9151874501','bonus-qr-b59f52db@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:36:24','2026-10-17 18:36:24',NULL,NULL,NULL,NULL,NULL,NULL),(7,'Hunt User','9351198761','hunt-user-8ce8ea53@example.test','$2y$12$wszlupqbNBEtGqNL4.kauOX4t1BVKmcjaQ/VqISiJ8YFvHAuDX5.y',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:37:51','2026-10-17 18:37:51',NULL,NULL,NULL,NULL,NULL,NULL),(8,'Paid User','9764784136','paid-user-8ce8ea53@example.test','$2y$12$2pde2VRudOIxLW9iTCuPbekW0rAo7CfJwqDL6UGecW9/TMvK5Meh6',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:37:51','2026-10-17 18:37:51',NULL,NULL,NULL,NULL,NULL,NULL),(9,'Hunt User','9794857634','hunt-user-129b73ae@example.test','$2y$12$n8cYsWFwPAlhxkqBkMwc7uJqnn5TwjWtKeA2P9xGKS0lrmniZooJ.',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:34','2026-10-17 18:38:34',NULL,NULL,NULL,NULL,NULL,NULL),(10,'Paid User','9505514906','paid-user-129b73ae@example.test','$2y$12$G6epx9w/SBY3...bwhrvxObyaOo9cnA4KUXCTO2z3wkIxchCW6gGS',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:34','2026-10-17 18:38:34',NULL,NULL,NULL,NULL,NULL,NULL),(11,'Hunt User','9893391939','hunt-user-1bac2a6b@example.test','$2y$12$RObUo2DzrFwUhhm5fev3s.VcvHz6XHcVSCGNDVWMUfAujDUtyF/QW',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:56','2026-10-17 18:38:56',NULL,NULL,NULL,NULL,NULL,NULL),(12,'Paid User','9289900374','paid-user-1bac2a6b@example.test','$2y$12$D0jRklkUhpcgoUuJT5so1eIU/fZ3Zp.AuExSkmj2zDN2OcndCnbT2',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 18:38:56','2026-10-17 18:38:56',NULL,NULL,NULL,NULL,NULL,NULL),(14,'Bonus QR User','9343327683','bonus-qr-93bd279a@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:16','2026-10-17 19:57:16',NULL,NULL,NULL,NULL,NULL,NULL),(15,'Hunt User','9841233522','hunt-user-97790886@example.test','$2y$12$Zwkz4YtnMdAiuks.yEdud.giFjQrY73tCDtoPzhYuW5/X7w2MSEs2',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:24','2026-10-17 19:57:24',NULL,NULL,NULL,NULL,NULL,NULL),(16,'Paid User','9361448607','paid-user-97790886@example.test','$2y$12$4flOImG9/BJz1VPYuF81B.TwV9U980kAlJhIWbnkvkYPs582Q5SlC',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 19:57:24','2026-10-17 19:57:24',NULL,NULL,NULL,NULL,NULL,NULL),(17,'Bonus QR User','9714817511','bonus-qr-84aaf380@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:24','2026-10-17 21:21:24',NULL,NULL,NULL,NULL,NULL,NULL),(18,'Hunt User','9207242091','hunt-user-6415b496@example.test','$2y$12$No5o.tLd4as6nahupPxgoe/UzwKLBZTj007VJ4ojmh.Nwut33y3qO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:25','2026-10-17 21:21:25',NULL,NULL,NULL,NULL,NULL,NULL),(19,'Paid User','9244910501','paid-user-6415b496@example.test','$2y$12$d2Y.oZ8jJYFUvbJD9tDmlueZCmOU51gBU6oar6XCZUqNFR9KJdraG',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:21:25','2026-10-17 21:21:25',NULL,NULL,NULL,NULL,NULL,NULL),(20,'Test Hunter User','9126476008','hunter-353d6fb1@example.test','$2y$12$R3QQaf0DA.uenYKMtx3uG.So4IBkh5Ka0uEWSwhCkBLk56vIFadWO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:32:33','2026-10-17 21:32:33',NULL,NULL,NULL,NULL,NULL,NULL),(21,'Test Hunter User','9912568339','hunter-183d672e@example.test','$2y$12$d/6FKG/oLsBEWlDSrmOJP.s3TebkpQu8H2ZQ5LtD9.mheT5QXkPXG',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:35:19','2026-10-17 21:35:19',NULL,NULL,NULL,NULL,NULL,NULL),(22,'Test Hunter User','9776647490','hunter-4120c86a@example.test','$2y$12$HH6oa7ydeuBJdo78o92ZTucu36.Dj.sFmOg31X8cEFOktZyOd/WkO',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:37:26','2026-10-17 21:37:26',NULL,NULL,NULL,NULL,NULL,NULL),(23,'Test Hunter User','9618427617','hunter-32a00416@example.test','$2y$12$ddJRt7eeX3TUY3zgA34xqOumDwBk7x7aSBLV0Wav4icDgs2vxzYvq',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:31','2026-10-17 21:38:31',NULL,NULL,NULL,NULL,NULL,NULL),(24,'Bonus QR User','9707941641','bonus-qr-eefa6591@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:32','2026-10-17 21:38:32',NULL,NULL,NULL,NULL,NULL,NULL),(25,'Hunt User','9357672963','hunt-user-d1411073@example.test','$2y$12$fbgNb4Q4L1CTZyt4O4jFn.xtvq66N/lXqi1.Xa0qzt1Dbbaz1Ja92',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:33','2026-10-17 21:38:33',NULL,NULL,NULL,NULL,NULL,NULL),(26,'Paid User','9655108464','paid-user-d1411073@example.test','$2y$12$.6N.SfjAZFa4T6SpUGh3uu3a4JqgtZbzPrRuDzPxGJzDEFJb/ql1O',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 21:38:33','2026-10-17 21:38:33',NULL,NULL,NULL,NULL,NULL,NULL),(27,'Test Hunter User','9493748861','hunter-4f67df73@example.test','$2y$12$GnglaHurz0iXt39ZO9qWjeOnLzkz6fHpNDCLJXjtJCB9vtwhklH7i',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:21','2026-10-17 22:51:21',NULL,NULL,NULL,NULL,NULL,NULL),(28,'Bonus QR User','9997246256','bonus-qr-c4b8a794@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:23','2026-10-17 22:51:23',NULL,NULL,NULL,NULL,NULL,NULL),(29,'Hunt User','9253513119','hunt-user-3439d2e2@example.test','$2y$12$U4i0ao50kNcOIXSgZeeZVuSIuCj8naRR1ZyFBF0bvkpNurKP38QAa',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:24','2026-10-17 22:51:24',NULL,NULL,NULL,NULL,NULL,NULL),(30,'Paid User','9297591627','paid-user-3439d2e2@example.test','$2y$12$ekBqxV2AaODJEdTwxTdLcuBR3XGBCgq5oegxzHvH7Vp8yzm9XEZcC',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-17 22:51:24','2026-10-17 22:51:24',NULL,NULL,NULL,NULL,NULL,NULL),(31,'Test Hunter User','9555157815','hunter-2a0bf7e2@example.test','$2y$12$ZqsE2PPhAjqFjGcYvW5eUuuvL8x1HdkyFSJ2SCzWr6Mz24pbyrdF6',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:15','2026-10-18 09:25:15',NULL,NULL,NULL,NULL,NULL,NULL),(32,'Bonus QR User','9218912204','bonus-qr-8d4dc97f@example.test','UserPassword123!',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:16','2026-10-18 09:25:16',NULL,NULL,NULL,NULL,NULL,NULL),(33,'Hunt User','9450325936','hunt-user-86f7090e@example.test','$2y$12$Yb1feA2khTG1k.O8jqBNGeQhmCg8YwndKITydhvNXv4UqyLmrtblK',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:17','2026-10-18 09:25:17',NULL,NULL,NULL,NULL,NULL,NULL),(34,'Paid User','9802126334','paid-user-86f7090e@example.test','$2y$12$3qr1dTBc8pOQAfFVVbDx8OMB0sALyzJ9Hd0Oxo08y2CAOr.PT/sTa',NULL,'ACTIVE',NULL,1,0,'LOW','2026-10-18 09:25:18','2026-10-18 09:25:18',NULL,NULL,NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `vendor_login_attempts`
 --
 
@@ -2725,81 +3040,6 @@ LOCK TABLES `vendor_otp_challenges` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `vendor_payout_requests`
---
-
-DROP TABLE IF EXISTS `vendor_payout_requests`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `vendor_payout_requests` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `vendor_id` bigint unsigned NOT NULL,
-  `amount` decimal(18,2) NOT NULL,
-  `status` enum('PENDING','UNDER_REVIEW','APPROVED','PROCESSING','PAID','REJECTED','HELD') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
-  `requested_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `paid_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_vendor_payout_status` (`vendor_id`,`status`),
-  CONSTRAINT `vendor_payout_requests_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendor_payout_requests`
---
-
-LOCK TABLES `vendor_payout_requests` WRITE;
-/*!40000 ALTER TABLE `vendor_payout_requests` DISABLE KEYS */;
-INSERT INTO `vendor_payout_requests` VALUES (1,1,500.00,'PENDING','2026-10-17 19:44:06',NULL);
-/*!40000 ALTER TABLE `vendor_payout_requests` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `vendor_products`
---
-
-DROP TABLE IF EXISTS `vendor_products`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `vendor_products` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `vendor_id` bigint unsigned NOT NULL,
-  `category_id` bigint unsigned DEFAULT NULL,
-  `product_code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `price` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `metadata` json DEFAULT NULL,
-  `status` enum('PENDING_REVIEW','APPROVED','REJECTED','DISABLED','RESUBMITTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING_REVIEW',
-  `admin_note` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `moderated_by` int unsigned DEFAULT NULL,
-  `moderated_at` datetime DEFAULT NULL,
-  `submitted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `product_code` (`product_code`),
-  KEY `moderated_by` (`moderated_by`),
-  KEY `idx_vendor_product_status` (`status`,`submitted_at`),
-  KEY `idx_vendor_product_vendor` (`vendor_id`),
-  KEY `fk_vendor_product_category` (`category_id`),
-  CONSTRAINT `fk_vendor_product_category` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `vendor_products_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`),
-  CONSTRAINT `vendor_products_ibfk_2` FOREIGN KEY (`moderated_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendor_products`
---
-
-LOCK TABLES `vendor_products` WRITE;
-/*!40000 ALTER TABLE `vendor_products` DISABLE KEYS */;
-INSERT INTO `vendor_products` VALUES (1,3,NULL,'PRD-TEST-001','Test Product 1','Sample fixture product',299.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-17 19:53:19','2026-10-17 19:53:19'),(2,3,NULL,'PRD-FIT-001','Smart Fitness Tracker Band','Real-time heart rate and step tracking with OLED screen.',1499.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(3,3,NULL,'PRD-EAR-002','Wireless Noise-Canceling Earbuds','Bluetooth 5.3 with 30-hour playback and deep bass.',2299.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(4,3,NULL,'PRD-TEA-003','Organic Green Tea Herbal Pack','100% natural Darjeeling whole leaf herbal green tea.',350.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53'),(5,3,NULL,'PRD-TSH-004','Premium Cotton Graphic T-Shirt','Breathable combed cotton tee with modern minimalist print.',699.00,NULL,NULL,'APPROVED',NULL,NULL,NULL,'2026-10-18 09:50:53','2026-10-18 09:50:53');
-/*!40000 ALTER TABLE `vendor_products` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `vendor_sessions`
 --
 
@@ -2831,112 +3071,6 @@ LOCK TABLES `vendor_sessions` WRITE;
 /*!40000 ALTER TABLE `vendor_sessions` DISABLE KEYS */;
 INSERT INTO `vendor_sessions` VALUES (1,2,NULL,'b43b5f126a7385a6418917292cd3d26af9613f5200cd6fd17d757ae8a4af247f','127.0.0.1','2026-09-12 03:51:44','2026-09-11 21:41:06','2026-09-11 19:51:44'),(2,2,NULL,'f564500f0dfb7161f51b8001e78e38ab02c808063c56a96511ad7172512da602','127.0.0.1','2026-09-12 05:33:06',NULL,'2026-09-11 21:33:06'),(3,2,NULL,'f0f44da665844ffbff955e30ea6e73219df29126a34237665e13290a613c5019','127.0.0.1','2026-09-12 05:41:30',NULL,'2026-09-11 21:41:30'),(4,2,NULL,'1dac591389da34996c16177f72fedaa31b4a42bacf26fd9eb06c0711317621df','127.0.0.1','2026-09-13 00:33:17',NULL,'2026-09-12 16:33:17'),(5,2,NULL,'034e664536ade2a8c35f9fc398dfb7fb644a63382289b7ebe4dc8f78b51024b5','127.0.0.1','2026-09-13 20:08:23',NULL,'2026-09-13 12:08:23'),(6,2,NULL,'fe43e1c5d390b5c13ec63a8e5cd9a10d6ec7efd0e28480e7e67aac3e52eb23f4','127.0.0.1','2026-09-13 22:36:01',NULL,'2026-09-13 14:36:01'),(7,2,NULL,'b40490bd8e7bb94720acae59e88b0badedd36d03054d3425e952f22f21d02126','127.0.0.1','2026-10-18 02:57:21','2026-10-17 18:57:21','2026-10-17 18:57:21'),(8,2,NULL,'cb8d262a331b28ef93d6f2eb78c41dd347ef3d32bc1a391ee522b4a57d7f11a9','127.0.0.1','2026-10-18 02:57:45','2026-10-17 18:57:45','2026-10-17 18:57:45'),(9,2,NULL,'be66509fcd69a263709ad644b880e6486fadaa88c8c1e2ae10613a19a66ddbbf','127.0.0.1','2026-10-18 02:59:12',NULL,'2026-10-17 18:59:12'),(10,2,NULL,'e958f279746d158c861b00294281c22717e7f6c6e9bdbbab522ab815a8fadaec','127.0.0.1','2026-10-18 02:59:29',NULL,'2026-10-17 18:59:29'),(11,2,NULL,'88ca663f15db8b981ac1a2953aa9397d67f4a24884c596bce8abcaf712fdacea','127.0.0.1','2026-10-18 03:36:35',NULL,'2026-10-17 19:36:35'),(12,2,NULL,'c2712ea953c0a711fe2bc4d089f13ed4a32ce4404895fd95b1f26595a3adca7f','127.0.0.1','2026-10-18 03:53:00',NULL,'2026-10-17 19:53:00'),(13,2,NULL,'66a53e7b3c3785283777778a910aab232c32b415ee71ef9d0b1b5a128dd5cab5','127.0.0.1','2026-10-18 03:54:32',NULL,'2026-10-17 19:54:32'),(14,2,NULL,'1497a0e28e8815dde6d715e6d522826f1da6c86feddecc7cd5ef74a9806f7fab','127.0.0.1','2026-10-18 03:55:32',NULL,'2026-10-17 19:55:32'),(15,2,NULL,'2b3bdf15a01e08c29c72f638addb068fd1d8d435eb29004896bd7c5bbc4e27fd','127.0.0.1','2026-10-18 03:56:01',NULL,'2026-10-17 19:56:01'),(16,2,NULL,'1a60cd609f98ccb35285eaa5dcce0ef63f6c0d8bc48bcbb6a2c965bb98c6e149','127.0.0.1','2026-10-18 03:56:35','2026-10-17 19:56:35','2026-10-17 19:56:35'),(17,2,NULL,'35a8ca72dc289f2f63e52fa4063f93ff37fdf17510688c59a7c57a5bd3806c41','127.0.0.1','2026-10-18 04:12:44','2026-10-17 20:12:44','2026-10-17 20:12:44'),(18,2,NULL,'aa53478ec327e9951aded39ff6dc7dc9395d4917b16cc0e4f0ae73a1db8df597','127.0.0.1','2026-10-18 04:18:16',NULL,'2026-10-17 20:18:16'),(19,2,NULL,'9753e2f513f5a8b8d69d74620c62d1e8eb8bce1e6ca2349c760a1bf148d0498c','127.0.0.1','2026-10-18 05:37:57',NULL,'2026-10-17 21:37:57'),(20,2,NULL,'9a60c855a8291a2b54a36f8728b9e34e2143f397d2e14d2de9f4ebb0e654ce52','127.0.0.1','2026-10-18 05:38:18',NULL,'2026-10-17 21:38:18'),(21,2,NULL,'f450ea3cd0b72587ddfd9723f16ebbead9f2f57217b89a1c871b091c1fd86a3e','127.0.0.1','2026-10-18 06:51:31',NULL,'2026-10-17 22:51:31'),(22,2,NULL,'3e16f85c486bfe9b55a3bc20874c2a8d6992f8b74282b3c7acf11026e4fbdbcf','127.0.0.1','2026-10-18 17:40:00','2026-10-18 09:40:00','2026-10-18 09:40:00'),(23,2,NULL,'8aabc99f8e322ad0cafc869c00a630ba270b2b54bb52c6764fcca862e562f0fa','127.0.0.1','2026-10-18 17:42:12',NULL,'2026-10-18 09:42:12'),(24,2,NULL,'59c6ea24bd9053c97df49d97b459d52d4d0d8478cf7f688a817df54149bf71d8','127.0.0.1','2026-10-18 17:53:10',NULL,'2026-10-18 09:53:10'),(25,2,NULL,'fbbb5126fad6abc5db2eb1a752ffefe68662fb3b25b3abe234b1786f0f5bf102','127.0.0.1','2026-10-18 17:53:43',NULL,'2026-10-18 09:53:43'),(26,2,NULL,'ae73f582728f348c5f5af6859f8446f15c46ce7cf6394b5faddd4c28cf1fb06d','127.0.0.1','2026-10-18 17:56:04',NULL,'2026-10-18 09:56:04'),(27,2,NULL,'5d8da276450a1af9bdbb58d1b1bc70ffc0d2b19f8486e6f7813e161df1be484a','127.0.0.1','2026-10-18 18:31:34',NULL,'2026-10-18 10:31:34'),(28,2,NULL,'ecabe8d6ff8ba7b04f5eff9d2766a484c720ba980998c34686474912061a609b','127.0.0.1','2026-10-18 18:32:28',NULL,'2026-10-18 10:32:28'),(29,2,NULL,'4a549b27d364bdfde1460975a42f34d09c46864e6faf521170b0179687d3d1e5','127.0.0.1','2026-10-18 18:35:58','2026-10-18 10:35:58','2026-10-18 10:35:58'),(30,2,NULL,'12dda1e09f9531784df739801e587a231f67c80ca64f8de4cf90b49b5e86bcaa','127.0.0.1','2026-10-18 18:44:37','2026-10-18 10:47:16','2026-10-18 10:44:37');
 /*!40000 ALTER TABLE `vendor_sessions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `vendor_users`
---
-
-DROP TABLE IF EXISTS `vendor_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `vendor_users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `vendor_id` bigint unsigned NOT NULL,
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('ACTIVE','BLOCKED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `last_login_at` datetime DEFAULT NULL,
-  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `mfa_enabled` tinyint(1) NOT NULL DEFAULT '0',
-  `mfa_secret_encrypted` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`),
-  KEY `vendor_id` (`vendor_id`),
-  CONSTRAINT `vendor_users_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendor_users`
---
-
-LOCK TABLES `vendor_users` WRITE;
-/*!40000 ALTER TABLE `vendor_users` DISABLE KEYS */;
-INSERT INTO `vendor_users` VALUES (1,1,'Clerk','clerk-test',NULL,'$2y$12$/WR382F6PBlX8.tP/BKDbum2SEF/mIzzCeEPjV3pBgmNIyuXGbLa6','ACTIVE',NULL,NULL,'2026-08-23 19:08:23',0,NULL),(2,3,'Demo Vendor User','vendor.test','vendor.test@hunterwallet.test','$2y$12$GWbW297o.LMekrFP4ivSyOJRHTP9LFRdy.ZMYR5ktWLjOio2FJiPW','ACTIVE','2026-10-18 10:44:37','127.0.0.1','2026-09-11 19:51:13',0,NULL),(3,4,'Clerk','clerk-1bac2a6b',NULL,'$2y$12$5vIFsx3Z0Fha1yLx8DrVh.z9Ls2443y4V5l8z7TaCxJSrUV.eJP36','ACTIVE',NULL,NULL,'2026-10-17 18:38:58',0,NULL),(4,5,'Clerk','clerk-97790886',NULL,'$2y$12$ijUWm1j00kPSm02O7SREeOaSrwH6IHPtdJilTY2T0/So7RRR2ySDS','ACTIVE',NULL,NULL,'2026-10-17 19:57:26',0,NULL),(5,6,'Clerk','clerk-6415b496',NULL,'$2y$12$lQOoMUvU.pjRPqt90POS2e62VowpIxaKegZRnc4UycTgelFZ5oV96','ACTIVE',NULL,NULL,'2026-10-17 21:21:26',0,NULL),(6,7,'Clerk','clerk-d1411073',NULL,'$2y$12$tlPzaelFQs5Bb5fxxe72cO9ps/OYvUuA7jkyWQ3Uw8vl.1BS5vX36','ACTIVE',NULL,NULL,'2026-10-17 21:38:34',0,NULL),(7,8,'Clerk','clerk-3439d2e2',NULL,'$2y$12$MTOIa67MXoUDMZ5c9gxBo.5WpOSLELnl0iHWz.qVSdeaGgp8DOmEW','ACTIVE',NULL,NULL,'2026-10-17 22:51:25',0,NULL),(8,9,'Clerk','clerk-86f7090e',NULL,'$2y$12$2u9N5u5H0Fhwo8QEqW2a9eNp/Tvf83TESzX9sXtvMtwZbMTpo9lq.','ACTIVE',NULL,NULL,'2026-10-18 09:25:19',0,NULL);
-/*!40000 ALTER TABLE `vendor_users` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `vendors`
---
-
-DROP TABLE IF EXISTS `vendors`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `vendors` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `vendor_code` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `shop_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `business_category` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `owner_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `owner_address` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gstin` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gst_document_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identity_proof_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address_proof_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cancelled_cheque_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_holder` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_number` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_ifsc` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_branch` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `settlement_upi` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `commission_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `commission_type` enum('PERCENTAGE','CUSTOM_RULE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PERCENTAGE',
-  `commission_rule` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `onboarding_notes` text COLLATE utf8mb4_unicode_ci,
-  `vendor_qr_payload` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `escrow_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `settlement_cycle` enum('DAILY','WEEKLY','MONTHLY') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DAILY',
-  `bank_verification_status` enum('PENDING','VERIFIED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
-  `email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mobile` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mobile_otp_verified` tinyint(1) NOT NULL DEFAULT '0',
-  `address` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(10,7) DEFAULT NULL,
-  `proximity_radius_m` int unsigned NOT NULL DEFAULT '300',
-  `logo_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cover_image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `youtube_promo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('DRAFT','PENDING_KYC','PENDING_BANK','PENDING_APPROVAL','VERIFIED','ACTIVE','REJECTED','SUSPENDED','CLOSED','BLOCKED','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
-  `created_by` int unsigned NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `kyc_status` enum('PENDING','APPROVED','VERIFIED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
-  `kyc_document_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `vendor_code` (`vendor_code`),
-  KEY `idx_vendor_status` (`status`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `vendors_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendors`
---
-
-LOCK TABLES `vendors` WRITE;
-/*!40000 ALTER TABLE `vendors` DISABLE KEYS */;
-INSERT INTO `vendors` VALUES (1,'VND-TEST','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-08-23 19:08:23','2026-08-23 19:08:23','PENDING',NULL,NULL),(2,'DEMO-VENDOR','Demo Merchant','Demo Retail Counter',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING','merchant.demo@example.test','9000000099',0,'Patna Central Mall',NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','APPROVED',NULL,NULL),(3,'VND-TEST-001','Demo Retail Counter','Demo Retail Counter','Retail','Rajesh Kumar','Shop #12, Ground Floor, Central Plaza, Frazer Road, Patna','10ABCDE1234F1Z5',NULL,NULL,NULL,NULL,'Demo Retail Counter','50100456789123','HDFC0001234','Frazer Road, Patna','demoretail@hdfcbank',2.00,'PERCENTAGE',NULL,NULL,NULL,14500.00,'DAILY','VERIFIED','store@democounter.com','9876543210',0,'Demo retail counter for testing',NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',1,'2026-09-11 19:51:13','2026-10-18 09:50:53','VERIFIED',NULL,'HDFC Bank'),(4,'VND-1BAC2A6B','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',6,'2026-10-17 18:38:57','2026-10-17 18:38:57','PENDING',NULL,NULL),(5,'VND-97790886','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',8,'2026-10-17 19:57:25','2026-10-17 19:57:25','PENDING',NULL,NULL),(6,'VND-6415B496','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',9,'2026-10-17 21:21:26','2026-10-17 21:21:26','PENDING',NULL,NULL),(7,'VND-D1411073','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',14,'2026-10-17 21:38:34','2026-10-17 21:38:34','PENDING',NULL,NULL),(8,'VND-3439D2E2','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',16,'2026-10-17 22:51:25','2026-10-17 22:51:25','PENDING',NULL,NULL),(9,'VND-86F7090E','Test Vendor','Test Shop',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.00,'PERCENTAGE',NULL,NULL,NULL,0.00,'DAILY','PENDING',NULL,NULL,0,NULL,NULL,NULL,300,NULL,NULL,NULL,'ACTIVE',18,'2026-10-18 09:25:18','2026-10-18 09:25:18','PENDING',NULL,NULL);
-/*!40000 ALTER TABLE `vendors` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2975,49 +3109,6 @@ CREATE TABLE `video_ads` (
 LOCK TABLES `video_ads` WRITE;
 /*!40000 ALTER TABLE `video_ads` DISABLE KEYS */;
 /*!40000 ALTER TABLE `video_ads` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `video_categories`
---
-
-DROP TABLE IF EXISTS `video_categories`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `video_categories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `commission_type` enum('PERCENTAGE','FIXED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PERCENTAGE',
-  `platform_commission_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `customer_reward_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `status` enum('ACTIVE','INACTIVE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `created_by` int unsigned NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `character_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `character_asset_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `channel_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `teaser_video_id` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `broadcast_message` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `overlay_asset_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `capacity_limit` int unsigned NOT NULL DEFAULT '500',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  KEY `created_by` (`created_by`),
-  KEY `idx_video_category_status` (`status`),
-  CONSTRAINT `video_categories_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `video_categories`
---
-
-LOCK TABLES `video_categories` WRITE;
-/*!40000 ALTER TABLE `video_categories` DISABLE KEYS */;
-INSERT INTO `video_categories` VALUES (1,'Shopping Mall & Retail Hunt','shopping-mall','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Shopping Robot Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,1000),(2,'Patna Zoo & Wildlife Safari','patna-zoo','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Zoo Explorer Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,500),(3,'Mobile Recharge & Utility Deals','recharge','PERCENTAGE',0.00,0.00,'ACTIVE',1,'2026-08-29 11:29:07','2026-08-29 11:29:07','Recharge Lightning Mascot',NULL,'https://youtube.com/@HunterWalletRetail','demo_teaser_v1','Demo notice: hidden reward spots are live!',NULL,2000);
-/*!40000 ALTER TABLE `video_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -3127,130 +3218,6 @@ INSERT INTO `wallet_expiry_jobs` VALUES (1,'BONUS',3,50.00,'test-bonus','2026-08
 UNLOCK TABLES;
 
 --
--- Table structure for table `wallet_transactions`
---
-
-DROP TABLE IF EXISTS `wallet_transactions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `wallet_transactions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `transaction_id` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `wallet_id` bigint unsigned NOT NULL,
-  `type` enum('CREDIT','DEBIT','WITHDRAWAL','REFUND','ADJUSTMENT','REVERSAL','BONUS_CREDIT','PROMO_CREDIT','PROMO_DEBIT','BONUS_DEBIT','CHECKOUT','PROMO_REVERSAL') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bucket` enum('REAL','BONUS','PROMO') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'REAL',
-  `amount` decimal(18,2) NOT NULL,
-  `previous_balance` decimal(18,2) NOT NULL,
-  `new_balance` decimal(18,2) NOT NULL,
-  `status` enum('PENDING','PROCESSING','SUCCESS','FAILED','REVERSED') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reference` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `original_transaction_id` bigint unsigned DEFAULT NULL,
-  `created_by` int unsigned DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `transaction_id` (`transaction_id`),
-  UNIQUE KEY `uq_wallet_idempotency` (`idempotency_key`),
-  UNIQUE KEY `uq_reversal_original` (`original_transaction_id`),
-  KEY `idx_txn_user_date` (`user_id`,`created_at`),
-  KEY `idx_txn_status` (`status`),
-  KEY `wallet_id` (`wallet_id`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `wallet_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `wallet_transactions_ibfk_2` FOREIGN KEY (`wallet_id`) REFERENCES `wallets` (`id`),
-  CONSTRAINT `wallet_transactions_ibfk_3` FOREIGN KEY (`original_transaction_id`) REFERENCES `wallet_transactions` (`id`),
-  CONSTRAINT `wallet_transactions_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
-  CONSTRAINT `wallet_transactions_chk_1` CHECK ((`amount` > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `wallet_transactions`
---
-
-LOCK TABLES `wallet_transactions` WRITE;
-/*!40000 ALTER TABLE `wallet_transactions` DISABLE KEYS */;
-INSERT INTO `wallet_transactions` VALUES (1,'TXN-20260823-2F5BDF11',1,1,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20260823-B77B5D1F','Approved Hunt reward','reward-credit:1',NULL,1,'2026-08-23 19:08:23'),(2,'TXN-20260823-E6E17A3E',1,1,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20260823-480AADBC','Withdrawal approved',NULL,NULL,1,'2026-08-23 19:08:23'),(3,'TXN-20260823-1DF87A39',3,3,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus','Signup bonus','bonus-integration-key-01',NULL,1,'2026-08-23 19:08:23'),(4,'TXN-20260823-3FC6DBC3',3,3,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo','QR promo','promo-integration-key-01',NULL,1,'2026-08-23 19:08:23'),(5,'TXN-20260823-EB18996B',3,3,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20260823-EBFDB531','Promo cash checkout','checkout-integration-key-01:promo',NULL,NULL,'2026-08-23 19:08:23'),(6,'TXN-20260823-AE9289A9',3,3,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20260823-EBFDB531','Bonus balance checkout','checkout-integration-key-01:bonus',NULL,NULL,'2026-08-23 19:08:23'),(7,'TXN-20260823-2A2FE0A1',3,3,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20260823-EBFDB531','Real cash checkout','checkout-integration-key-01:real',NULL,NULL,'2026-08-23 19:08:23'),(8,'TXN-20260823-9DB4A201',3,3,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus','Expired BONUS balance','expiry-wallet:1',NULL,NULL,'2026-08-23 19:08:23'),(9,'TXN-20260829-28D93928',4,6,'PROMO_CREDIT','PROMO',100.00,15.00,115.00,'SUCCESS','admin-grant:d76969cf7e034f4b','Administrator PROMO grant','wallet-bonus:37ea6bb98eeb88838ada4712cb5bec0aa624e3fccc44293f',NULL,2,'2026-08-29 11:53:08'),(10,'TXN-20261017-F62672BC',6,10,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-b59f52db','Signup bonus','bonus-key-b59f52db',NULL,1,'2026-10-17 18:36:24'),(11,'TXN-20261017-F868BCF4',6,10,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-b59f52db','QR promo','promo-key-b59f52db',NULL,1,'2026-10-17 18:36:24'),(12,'TXN-20261017-A17EF19F',6,10,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-64FFEBEF','Promo cash checkout','checkout-key-b59f52db:promo',NULL,NULL,'2026-10-17 18:36:24'),(13,'TXN-20261017-1BEF6CF1',6,10,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-64FFEBEF','Bonus balance checkout','checkout-key-b59f52db:bonus',NULL,NULL,'2026-10-17 18:36:24'),(14,'TXN-20261017-31106199',6,10,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-64FFEBEF','Real cash checkout','checkout-key-b59f52db:real',NULL,NULL,'2026-10-17 18:36:24'),(15,'TXN-20261017-6E941F7A',6,10,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-b59f52db','Expired BONUS balance','expiry-wallet:3',NULL,NULL,'2026-10-17 18:36:24'),(16,'TXN-20261017-31C7DB0B',7,11,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-4702DB16','Approved Hunt reward','reward-credit:2',NULL,4,'2026-10-17 18:37:52'),(17,'TXN-20261017-ED440090',7,11,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-F2A348B4','Withdrawal approved',NULL,NULL,4,'2026-10-17 18:37:52'),(18,'TXN-20261017-F9317167',9,13,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-6E570504','Approved Hunt reward','reward-credit:3',NULL,5,'2026-10-17 18:38:35'),(19,'TXN-20261017-7F7FC787',9,13,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-E12F6F02','Withdrawal approved',NULL,NULL,5,'2026-10-17 18:38:35'),(20,'TXN-20261017-BA281808',11,15,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-67F876EC','Approved Hunt reward','reward-credit:4',NULL,6,'2026-10-17 18:38:57'),(21,'TXN-20261017-17A09476',11,15,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-77212D11','Withdrawal approved',NULL,NULL,6,'2026-10-17 18:38:57'),(22,'TXN-20261017-FAB881E0',14,18,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-93bd279a','Signup bonus','bonus-key-93bd279a',NULL,1,'2026-10-17 19:57:16'),(23,'TXN-20261017-91BAA4CC',14,18,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-93bd279a','QR promo','promo-key-93bd279a',NULL,1,'2026-10-17 19:57:16'),(24,'TXN-20261017-2C068BCB',14,18,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-3ABC9757','Promo cash checkout','checkout-key-93bd279a:promo',NULL,NULL,'2026-10-17 19:57:16'),(25,'TXN-20261017-38EF6D16',14,18,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-3ABC9757','Bonus balance checkout','checkout-key-93bd279a:bonus',NULL,NULL,'2026-10-17 19:57:16'),(26,'TXN-20261017-FE7A332A',14,18,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-3ABC9757','Real cash checkout','checkout-key-93bd279a:real',NULL,NULL,'2026-10-17 19:57:16'),(27,'TXN-20261017-D5AE036C',14,18,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-93bd279a','Expired BONUS balance','expiry-wallet:5',NULL,NULL,'2026-10-17 19:57:16'),(28,'TXN-20261017-3199843E',15,19,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-CBFDBB1D','Approved Hunt reward','reward-credit:5',NULL,8,'2026-10-17 19:57:25'),(29,'TXN-20261017-B130BF75',15,19,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-321A1E1D','Withdrawal approved',NULL,NULL,8,'2026-10-17 19:57:25'),(30,'TXN-20261017-773BBD40',17,21,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-84aaf380','Signup bonus','bonus-key-84aaf380',NULL,1,'2026-10-17 21:21:24'),(31,'TXN-20261017-D77A4180',17,21,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-84aaf380','QR promo','promo-key-84aaf380',NULL,1,'2026-10-17 21:21:24'),(32,'TXN-20261017-FA994048',17,21,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-E6443186','Promo cash checkout','checkout-key-84aaf380:promo',NULL,NULL,'2026-10-17 21:21:24'),(33,'TXN-20261017-91BF8390',17,21,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-E6443186','Bonus balance checkout','checkout-key-84aaf380:bonus',NULL,NULL,'2026-10-17 21:21:24'),(34,'TXN-20261017-23220CC1',17,21,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-E6443186','Real cash checkout','checkout-key-84aaf380:real',NULL,NULL,'2026-10-17 21:21:24'),(35,'TXN-20261017-B120E840',17,21,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-84aaf380','Expired BONUS balance','expiry-wallet:7',NULL,NULL,'2026-10-17 21:21:24'),(36,'TXN-20261017-A3A615C0',18,22,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-52C89046','Approved Hunt reward','reward-credit:6',NULL,9,'2026-10-17 21:21:26'),(37,'TXN-20261017-4EDB0FF4',18,22,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-369DF997','Withdrawal approved',NULL,NULL,9,'2026-10-17 21:21:26'),(38,'TXN-20261017-E6F9D1D4',22,26,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-3','Reward for solving riddle #3','attempt-correct-4120c86a:reward',NULL,NULL,'2026-10-17 21:37:27'),(39,'TXN-20261017-8C1FBB19',22,26,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-3','Negative marking penalty for wrong answer on riddle #3','attempt-wrong1-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(40,'TXN-20261017-5A8D59EF',22,26,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-4','Negative marking penalty for wrong answer on riddle #4','attempt-wrong2-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(41,'TXN-20261017-D024BCDF',22,26,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-4','Negative marking penalty for wrong answer on riddle #4','attempt-wrong-cap-4120c86a:penalty',NULL,NULL,'2026-10-17 21:37:27'),(42,'TXN-20261017-BECE13B5',22,26,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-7F536C34','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-4120c86a:credit',NULL,NULL,'2026-10-17 21:37:28'),(43,'TXN-20261017-FB1322C5',23,27,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-5','Reward for solving riddle #5','attempt-correct-32a00416:reward',NULL,NULL,'2026-10-17 21:38:31'),(44,'TXN-20261017-23A9C839',23,27,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-5','Negative marking penalty for wrong answer on riddle #5','attempt-wrong1-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(45,'TXN-20261017-33F14E5D',23,27,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-6','Negative marking penalty for wrong answer on riddle #6','attempt-wrong2-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(46,'TXN-20261017-800E769B',23,27,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-6','Negative marking penalty for wrong answer on riddle #6','attempt-wrong-cap-32a00416:penalty',NULL,NULL,'2026-10-17 21:38:31'),(47,'TXN-20261017-4B10523C',23,27,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-18E583C6','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-32a00416:credit',NULL,NULL,'2026-10-17 21:38:32'),(48,'TXN-20261017-0C4A423C',24,28,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-eefa6591','Signup bonus','bonus-key-eefa6591',NULL,1,'2026-10-17 21:38:32'),(49,'TXN-20261017-44ED7031',24,28,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-eefa6591','QR promo','promo-key-eefa6591',NULL,1,'2026-10-17 21:38:32'),(50,'TXN-20261017-E706E141',24,28,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-3B503ED1','Promo cash checkout','checkout-key-eefa6591:promo',NULL,NULL,'2026-10-17 21:38:32'),(51,'TXN-20261017-9C0F1DE0',24,28,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-3B503ED1','Bonus balance checkout','checkout-key-eefa6591:bonus',NULL,NULL,'2026-10-17 21:38:32'),(52,'TXN-20261017-5C876CF0',24,28,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-3B503ED1','Real cash checkout','checkout-key-eefa6591:real',NULL,NULL,'2026-10-17 21:38:32'),(53,'TXN-20261017-C89F7A5B',24,28,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-eefa6591','Expired BONUS balance','expiry-wallet:9',NULL,NULL,'2026-10-17 21:38:32'),(54,'TXN-20261017-B496FCDB',25,29,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-B5094C11','Approved Hunt reward','reward-credit:7',NULL,14,'2026-10-17 21:38:34'),(55,'TXN-20261017-D395C43B',25,29,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-5345617E','Withdrawal approved',NULL,NULL,14,'2026-10-17 21:38:34'),(56,'TXN-20261017-1D6E3B99',27,31,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-7','Reward for solving riddle #7','attempt-correct-4f67df73:reward',NULL,NULL,'2026-10-17 22:51:21'),(57,'TXN-20261017-91D8A83F',27,31,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-7','Negative marking penalty for wrong answer on riddle #7','attempt-wrong1-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(58,'TXN-20261017-D572E843',27,31,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-8','Negative marking penalty for wrong answer on riddle #8','attempt-wrong2-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(59,'TXN-20261017-063DCF5A',27,31,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-8','Negative marking penalty for wrong answer on riddle #8','attempt-wrong-cap-4f67df73:penalty',NULL,NULL,'2026-10-17 22:51:21'),(60,'TXN-20261017-A5FE85F5',27,31,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-1BF16619','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-4f67df73:credit',NULL,NULL,'2026-10-17 22:51:23'),(61,'TXN-20261017-86F76CA9',28,32,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-c4b8a794','Signup bonus','bonus-key-c4b8a794',NULL,1,'2026-10-17 22:51:23'),(62,'TXN-20261017-8A09FDD6',28,32,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-c4b8a794','QR promo','promo-key-c4b8a794',NULL,1,'2026-10-17 22:51:23'),(63,'TXN-20261017-4FCD5A0E',28,32,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261017-87D55E18','Promo cash checkout','checkout-key-c4b8a794:promo',NULL,NULL,'2026-10-17 22:51:23'),(64,'TXN-20261017-1D443967',28,32,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261017-87D55E18','Bonus balance checkout','checkout-key-c4b8a794:bonus',NULL,NULL,'2026-10-17 22:51:23'),(65,'TXN-20261017-ECB55418',28,32,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261017-87D55E18','Real cash checkout','checkout-key-c4b8a794:real',NULL,NULL,'2026-10-17 22:51:23'),(66,'TXN-20261017-42F9745C',28,32,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-c4b8a794','Expired BONUS balance','expiry-wallet:11',NULL,NULL,'2026-10-17 22:51:23'),(67,'TXN-20261017-CDAFC903',29,33,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261017-2FD64895','Approved Hunt reward','reward-credit:8',NULL,16,'2026-10-17 22:51:25'),(68,'TXN-20261017-BB60EC00',29,33,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261017-81EBCEA0','Withdrawal approved',NULL,NULL,16,'2026-10-17 22:51:25'),(69,'TXN-20261018-8FB5F447',31,35,'BONUS_CREDIT','BONUS',50.00,20.00,70.00,'SUCCESS','RDL-9','Reward for solving riddle #9','attempt-correct-2a0bf7e2:reward',NULL,NULL,'2026-10-18 09:25:15'),(70,'TXN-20261018-DEE763D5',31,35,'BONUS_DEBIT','BONUS',5.00,70.00,65.00,'SUCCESS','PENALTY-RDL-9','Negative marking penalty for wrong answer on riddle #9','attempt-wrong1-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(71,'TXN-20261018-133F4B0F',31,35,'BONUS_DEBIT','BONUS',5.00,65.00,60.00,'SUCCESS','PENALTY-RDL-10','Negative marking penalty for wrong answer on riddle #10','attempt-wrong2-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(72,'TXN-20261018-B4DB91C9',31,35,'BONUS_DEBIT','BONUS',2.00,2.00,0.00,'SUCCESS','PENALTY-RDL-10','Negative marking penalty for wrong answer on riddle #10','attempt-wrong-cap-2a0bf7e2:penalty',NULL,NULL,'2026-10-18 09:25:15'),(73,'TXN-20261018-82BDB0E0',31,35,'BONUS_CREDIT','BONUS',200.00,50.00,250.00,'SUCCESS','HB-BC-CA3EC623','Broadcast hunt reward: Red dress wali ladki ke paas QR code hai, jao a...','claim-valid-2a0bf7e2:credit',NULL,NULL,'2026-10-18 09:25:16'),(74,'TXN-20261018-5483EA3B',32,36,'BONUS_CREDIT','BONUS',50.00,0.00,50.00,'SUCCESS','test-bonus-8d4dc97f','Signup bonus','bonus-key-8d4dc97f',NULL,1,'2026-10-18 09:25:16'),(75,'TXN-20261018-141B60AC',32,36,'PROMO_CREDIT','PROMO',15.00,0.00,15.00,'SUCCESS','test-promo-8d4dc97f','QR promo','promo-key-8d4dc97f',NULL,1,'2026-10-18 09:25:16'),(76,'TXN-20261018-31FD1D5F',32,36,'PROMO_DEBIT','PROMO',15.00,15.00,0.00,'SUCCESS','CHK-20261018-9DD2DC45','Promo cash checkout','checkout-key-8d4dc97f:promo',NULL,NULL,'2026-10-18 09:25:17'),(77,'TXN-20261018-7C65934F',32,36,'BONUS_DEBIT','BONUS',10.00,50.00,40.00,'SUCCESS','CHK-20261018-9DD2DC45','Bonus balance checkout','checkout-key-8d4dc97f:bonus',NULL,NULL,'2026-10-18 09:25:17'),(78,'TXN-20261018-807078A2',32,36,'ADJUSTMENT','REAL',75.00,100.00,25.00,'SUCCESS','CHK-20261018-9DD2DC45','Real cash checkout','checkout-key-8d4dc97f:real',NULL,NULL,'2026-10-18 09:25:17'),(79,'TXN-20261018-0608CA73',32,36,'BONUS_DEBIT','BONUS',40.00,40.00,0.00,'SUCCESS','test-bonus-8d4dc97f','Expired BONUS balance','expiry-wallet:13',NULL,NULL,'2026-10-18 09:25:17'),(80,'TXN-20261018-D28353E8',33,37,'CREDIT','REAL',500.00,0.00,500.00,'SUCCESS','RWD-20261018-E32C8E21','Approved Hunt reward','reward-credit:9',NULL,18,'2026-10-18 09:25:18'),(81,'TXN-20261018-78DAC312',33,37,'WITHDRAWAL','REAL',150.00,500.00,350.00,'SUCCESS','WDL-20261018-430336C2','Withdrawal approved',NULL,NULL,18,'2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `wallet_transactions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `wallets`
---
-
-DROP TABLE IF EXISTS `wallets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `wallets` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `balance` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `bonus_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `promo_balance` decimal(18,2) NOT NULL DEFAULT '0.00',
-  `bonus_expires_at` datetime DEFAULT NULL,
-  `promo_expires_at` datetime DEFAULT NULL,
-  `currency` char(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INR',
-  `status` enum('ACTIVE','FROZEN','CLOSED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_id` (`user_id`),
-  CONSTRAINT `wallets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `wallets_chk_1` CHECK ((`balance` >= 0)),
-  CONSTRAINT `wallets_chk_2` CHECK ((`bonus_balance` >= 0)),
-  CONSTRAINT `wallets_chk_3` CHECK ((`promo_balance` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `wallets`
---
-
-LOCK TABLES `wallets` WRITE;
-/*!40000 ALTER TABLE `wallets` DISABLE KEYS */;
-INSERT INTO `wallets` VALUES (1,1,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:21','2026-08-23 19:08:23'),(2,2,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:22','2026-08-23 19:08:22'),(3,3,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-08-23 19:08:23','2026-10-17 18:36:24'),(6,4,500.00,25.00,115.00,NULL,NULL,'INR','ACTIVE','2026-08-29 11:29:07','2026-10-17 18:58:25'),(10,6,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:36:24','2026-10-17 19:57:16'),(11,7,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:37:51','2026-10-17 18:37:52'),(12,8,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:37:51','2026-10-17 18:37:51'),(13,9,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:34','2026-10-17 18:38:35'),(14,10,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:34','2026-10-17 18:38:34'),(15,11,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:56','2026-10-17 18:38:57'),(16,12,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 18:38:56','2026-10-17 18:38:56'),(18,14,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:16','2026-10-17 21:21:24'),(19,15,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:24','2026-10-17 19:57:25'),(20,16,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 19:57:24','2026-10-17 19:57:24'),(21,17,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:24','2026-10-17 22:51:23'),(22,18,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:25','2026-10-17 21:21:26'),(23,19,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:21:25','2026-10-17 21:21:25'),(24,20,100.00,20.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:32:33','2026-10-17 21:32:33'),(25,21,100.00,20.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:35:19','2026-10-17 21:35:19'),(26,22,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:37:26','2026-10-17 21:37:28'),(27,23,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:31','2026-10-17 21:38:32'),(28,24,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:32','2026-10-17 22:51:23'),(29,25,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:33','2026-10-17 21:38:34'),(30,26,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 21:38:33','2026-10-17 21:38:33'),(31,27,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:21','2026-10-17 22:51:23'),(32,28,25.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:23','2026-10-18 09:25:17'),(33,29,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:24','2026-10-17 22:51:25'),(34,30,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-17 22:51:24','2026-10-17 22:51:24'),(35,31,100.00,250.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:15','2026-10-18 09:25:16'),(36,32,25.00,0.00,0.00,NULL,'2026-10-18 10:25:16','INR','ACTIVE','2026-10-18 09:25:16','2026-10-18 09:25:17'),(37,33,350.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:17','2026-10-18 09:25:18'),(38,34,0.00,0.00,0.00,NULL,NULL,'INR','ACTIVE','2026-10-18 09:25:18','2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `wallets` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `withdrawal_attempts`
---
-
-DROP TABLE IF EXISTS `withdrawal_attempts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `withdrawal_attempts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `withdrawal_id` bigint unsigned DEFAULT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `amount` decimal(18,2) DEFAULT NULL,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `outcome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_wda_user_date` (`user_id`,`created_at`),
-  KEY `withdrawal_id` (`withdrawal_id`),
-  CONSTRAINT `withdrawal_attempts_ibfk_1` FOREIGN KEY (`withdrawal_id`) REFERENCES `withdrawals` (`id`),
-  CONSTRAINT `withdrawal_attempts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `withdrawal_attempts`
---
-
-LOCK TABLES `withdrawal_attempts` WRITE;
-/*!40000 ALTER TABLE `withdrawal_attempts` DISABLE KEYS */;
-INSERT INTO `withdrawal_attempts` VALUES (1,1,1,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-08-23 19:08:23'),(2,1,1,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-08-23 19:08:23'),(3,2,7,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:37:52'),(4,2,7,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:37:52'),(5,3,9,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:38:35'),(6,3,9,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:38:35'),(7,4,11,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:38:57'),(8,4,11,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:38:57'),(9,5,4,'integration-api-key-000001',150.00,'127.0.0.1','api-test-device-01','CREATED',NULL,'2026-10-17 18:58:32'),(10,6,15,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 19:57:25'),(11,6,15,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 19:57:25'),(12,7,18,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 21:21:26'),(13,7,18,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 21:21:26'),(14,8,25,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 21:38:34'),(15,8,25,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 21:38:34'),(16,9,29,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 22:51:25'),(17,9,29,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 22:51:25'),(18,10,33,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-18 09:25:18'),(19,10,33,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-18 09:25:18');
-/*!40000 ALTER TABLE `withdrawal_attempts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `withdrawals`
 --
 
@@ -3299,6 +3266,42 @@ INSERT INTO `withdrawals` VALUES (1,'WDL-20260823-480AADBC',1,1,150.00,'UPI','XX
 UNLOCK TABLES;
 
 --
+-- Table structure for table `withdrawal_attempts`
+--
+
+DROP TABLE IF EXISTS `withdrawal_attempts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `withdrawal_attempts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `withdrawal_id` bigint unsigned DEFAULT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` decimal(18,2) DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `device_id` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `outcome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_wda_user_date` (`user_id`,`created_at`),
+  KEY `withdrawal_id` (`withdrawal_id`),
+  CONSTRAINT `withdrawal_attempts_ibfk_1` FOREIGN KEY (`withdrawal_id`) REFERENCES `withdrawals` (`id`),
+  CONSTRAINT `withdrawal_attempts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `withdrawal_attempts`
+--
+
+LOCK TABLES `withdrawal_attempts` WRITE;
+/*!40000 ALTER TABLE `withdrawal_attempts` DISABLE KEYS */;
+INSERT INTO `withdrawal_attempts` VALUES (1,1,1,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-08-23 19:08:23'),(2,1,1,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-08-23 19:08:23'),(3,2,7,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:37:52'),(4,2,7,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:37:52'),(5,3,9,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:38:35'),(6,3,9,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:38:35'),(7,4,11,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 18:38:57'),(8,4,11,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 18:38:57'),(9,5,4,'integration-api-key-000001',150.00,'127.0.0.1','api-test-device-01','CREATED',NULL,'2026-10-17 18:58:32'),(10,6,15,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 19:57:25'),(11,6,15,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 19:57:25'),(12,7,18,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 21:21:26'),(13,7,18,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 21:21:26'),(14,8,25,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 21:38:34'),(15,8,25,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 21:38:34'),(16,9,29,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-17 22:51:25'),(17,9,29,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-17 22:51:25'),(18,10,33,NULL,150.00,'127.0.0.1',NULL,'ADMIN_UNDER_REVIEW',NULL,'2026-10-18 09:25:18'),(19,10,33,NULL,150.00,'127.0.0.1',NULL,'ADMIN_APPROVED',NULL,'2026-10-18 09:25:18');
+/*!40000 ALTER TABLE `withdrawal_attempts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'hunter_wallet'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -3312,3 +3315,6 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-10-18 10:51:46
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET UNIQUE_CHECKS = 1;
