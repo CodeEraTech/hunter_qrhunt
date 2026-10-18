@@ -10,18 +10,40 @@ if (!function_exists('load_env')) {
             if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) continue;
             [$key, $value] = array_map('trim', explode('=', $line, 2));
             $value = trim($value, "\"'");
-            if (getenv($key) === false) putenv("{$key}={$value}");
+            $GLOBALS['__APP_ENV'][$key] = $value;
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+            if (function_exists('putenv')) {
+                @putenv("{$key}={$value}");
+            }
         }
     }
 }
 
-load_env(dirname(__DIR__) . '/.env');
+$baseDir = dirname(__DIR__);
+if (is_file($baseDir . '/.env')) {
+    load_env($baseDir . '/.env');
+} elseif (is_file($baseDir . '/.env.example')) {
+    load_env($baseDir . '/.env.example');
+}
 
 if (!function_exists('env')) {
     function env(string $key, mixed $default = null): mixed
     {
-        $value = getenv($key);
-        return $value === false ? $default : $value;
+        if (isset($GLOBALS['__APP_ENV'][$key])) {
+            return $GLOBALS['__APP_ENV'][$key];
+        }
+        if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+        }
+        if (isset($_SERVER[$key])) {
+            return $_SERVER[$key];
+        }
+        if (function_exists('getenv')) {
+            $val = getenv($key);
+            if ($val !== false) return $val;
+        }
+        return $default;
     }
 }
 
