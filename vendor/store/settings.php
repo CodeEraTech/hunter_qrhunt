@@ -33,7 +33,7 @@ require APP_ROOT.'/includes/vendor_header.php';
         </div>
         <div class="field">
             <label>Commission Rate (%)</label>
-            <input value="<?=e(number_format($store['commission_rate'] ?? 0, 2))?>" readonly tabindex="-1">
+            <input value="<?=e(number_format((float) ($store['commission_rate'] ?? 0), 2))?>" readonly tabindex="-1">
         </div>
         <?php if($isDev): ?>
         <div class="field full"><button class="btn" type="submit">Save preferences</button></div>

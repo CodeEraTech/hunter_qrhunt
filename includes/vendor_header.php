@@ -39,7 +39,6 @@ $navSections = [
         'icon' => '🛒',
         'items' => [
             ['label' => 'Orders', 'href' => '/vendor/orders/index.php'],
-            ['label' => 'Order Details', 'href' => '/vendor/orders/view.php'],
             ['label' => 'Customer Payments', 'href' => '/vendor/orders/payments.php'],
             ['label' => 'Checkout / Staff Verification', 'href' => '/vendor/orders/checkout.php'],
         ],
@@ -88,7 +87,6 @@ $navSections = [
         'items' => [
             ['label' => 'My Profile', 'href' => '/vendor/profile/index.php'],
             ['label' => 'Login & Security', 'href' => '/vendor/profile/security.php'],
-            ['label' => 'Bank Details', 'href' => '/vendor/profile/bank.php'],
             ['label' => 'Documents', 'href' => '/vendor/profile/documents.php'],
             ['label' => 'Devices / Sessions', 'href' => '/vendor/profile/devices.php'],
         ],

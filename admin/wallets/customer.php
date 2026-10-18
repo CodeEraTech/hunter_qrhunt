@@ -6,17 +6,31 @@ require_once APP_ROOT.'/includes/wallet_console.php';
 require_once APP_ROOT.'/includes/finance_directory.php';
 
 $id = filter_var(input('id'), FILTER_VALIDATE_INT);
-if (!$id) { http_response_code(404); exit('Customer not found'); }
+if (!$id) {
+    $firstUser = (int) db()->query('SELECT user_id FROM wallets ORDER BY id ASC LIMIT 1')->fetchColumn();
+    if ($firstUser > 0) {
+        $id = $firstUser;
+    } else {
+        flash('error', 'No customer wallets found.');
+        redirect('/admin/users/index.php');
+    }
+}
 
 $s = db()->prepare('SELECT id,name,email,mobile,is_verified,status,risk_level,created_at FROM users WHERE id=?');
 $s->execute([$id]);
 $user = $s->fetch();
-if (!$user) { http_response_code(404); exit('Customer not found'); }
+if (!$user) {
+    flash('error', 'Customer not found.');
+    redirect('/admin/users/index.php');
+}
 
 $s = db()->prepare('SELECT * FROM wallets WHERE user_id=?');
 $s->execute([$id]);
 $wallet = $s->fetch();
-if (!$wallet) { http_response_code(404); exit('Wallet not found'); }
+if (!$wallet) {
+    flash('error', 'Wallet not found for this customer.');
+    redirect('/admin/users/index.php');
+}
 
 $s = db()->prepare('SELECT COUNT(*) FROM user_devices WHERE user_id=? AND status="ACTIVE"');
 $s->execute([$id]);

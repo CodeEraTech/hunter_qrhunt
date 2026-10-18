@@ -33,25 +33,28 @@ if (input('export') !== '') {
             $ifsc = '';
             
             if ($r['source'] === 'CUSTOMER') {
-                // Try to get UPI/bank from users table
-                $uStmt = db()->prepare("SELECT settlement_upi, bank_account_number, bank_ifsc, bank_name FROM users WHERE id = ?");
-                $uStmt->execute([str_replace('USR_','', $r['party_id'])]);
+                // Try to get UPI/bank from user_payment_methods table
+                $uid = (int) str_replace('USR_','', $r['party_id']);
+                $uStmt = db()->prepare("SELECT method_type, account_holder, account_masked, ifsc FROM user_payment_methods WHERE user_id = ? AND status='ACTIVE' ORDER BY id DESC LIMIT 1");
+                $uStmt->execute([$uid]);
                 $u = $uStmt->fetch();
                 if ($u) {
-                    $upi = $u['settlement_upi'] ?? '';
-                    $bankName = $u['bank_name'] ?? '';
-                    $bankAccount = $u['bank_account_number'] ? payment_account_mask($u['bank_account_number']) : '';
-                    $ifsc = $u['bank_ifsc'] ?? '';
+                    if (($u['method_type'] ?? '') === 'UPI') {
+                        $upi = $u['account_masked'] ?? '';
+                    } else {
+                        $bankAccount = $u['account_masked'] ?? '';
+                        $ifsc = $u['ifsc'] ?? '';
+                    }
                 }
             } elseif ($r['source'] === 'VENDOR') {
                 // Get vendor bank details
-                $vStmt = db()->prepare("SELECT settlement_upi, bank_account_number, bank_ifsc, bank_name FROM vendors WHERE vendor_code = ?");
+                $vStmt = db()->prepare("SELECT settlement_upi, bank_account_number, bank_ifsc, bank_branch, bank_account_holder FROM vendors WHERE vendor_code = ?");
                 $vStmt->execute([$r['party_id']]);
                 $v = $vStmt->fetch();
                 if ($v) {
                     $upi = $v['settlement_upi'] ?? '';
-                    $bankName = $v['bank_name'] ?? '';
-                    $bankAccount = $v['bank_account_number'] ? payment_account_mask($v['bank_account_number']) : '';
+                    $bankName = $v['bank_branch'] ?? '';
+                    $bankAccount = !empty($v['bank_account_number']) ? payment_account_mask($v['bank_account_number']) : '';
                     $ifsc = $v['bank_ifsc'] ?? '';
                 }
             }
@@ -103,37 +106,37 @@ $yearStart = date('Y-01-01');
 $totalStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests");
 $totalStmt->execute();
 $totalAmount = 0;
-while ($row = $totalStmt->fetch()) $totalAmount += (float) $row[0];
+while ($val = $totalStmt->fetchColumn()) $totalAmount += (float) $val;
 
 // Today Pending
 $pendingStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status IN ('PENDING','UNDER_REVIEW') AND DATE(requested_at)=? UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests WHERE status IN ('PENDING','UNDER_REVIEW') AND DATE(requested_at)=?");
 $pendingStmt->execute([$today,$today]);
 $todayPending = 0;
-while ($row = $pendingStmt->fetch()) $todayPending += (float) $row[0];
+while ($val = $pendingStmt->fetchColumn()) $todayPending += (float) $val;
 
 // Today Settled
 $settledStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status IN ('PAID','SETTLED') AND DATE(processed_at)=? UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests WHERE status IN ('PAID','SETTLED') AND DATE(paid_at)=?");
 $settledStmt->execute([$today,$today]);
 $todaySettled = 0;
-while ($row = $settledStmt->fetch()) $todaySettled += (float) $row[0];
+while ($val = $settledStmt->fetchColumn()) $todaySettled += (float) $val;
 
 // Today Rejected/Fraud
 $rejectedStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status IN ('REJECTED','CANCELLED') AND DATE(processed_at)=? UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests WHERE status='REJECTED' AND DATE(paid_at)=?");
 $rejectedStmt->execute([$today,$today]);
 $todayRejected = 0;
-while ($row = $rejectedStmt->fetch()) $todayRejected += (float) $row[0];
+while ($val = $rejectedStmt->fetchColumn()) $todayRejected += (float) $val;
 
 // This Month Settled
 $monthStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status IN ('PAID','SETTLED') AND DATE(processed_at)>=? UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests WHERE status IN ('PAID','SETTLED') AND DATE(paid_at)>=?");
 $monthStmt->execute([$monthStart,$monthStart]);
 $monthSettled = 0;
-while ($row = $monthStmt->fetch()) $monthSettled += (float) $row[0];
+while ($val = $monthStmt->fetchColumn()) $monthSettled += (float) $val;
 
 // This Year Settled
 $yearStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status IN ('PAID','SETTLED') AND DATE(processed_at)>=? UNION ALL SELECT COALESCE(SUM(amount),0) FROM vendor_payout_requests WHERE status IN ('PAID','SETTLED') AND DATE(paid_at)>=?");
 $yearStmt->execute([$yearStart,$yearStart]);
 $yearSettled = 0;
-while ($row = $yearStmt->fetch()) $yearSettled += (float) $row[0];
+while ($val = $yearStmt->fetchColumn()) $yearSettled += (float) $val;
 
 // Escrow Vault Reserves (vendor escrow balances)
 $escrowStmt = $pdo->prepare("SELECT COALESCE(SUM(escrow_balance),0) FROM vendors WHERE status='ACTIVE'");
@@ -144,7 +147,7 @@ $escrowReserves = (float) $escrowStmt->fetchColumn();
 $usersPaidStmt = $pdo->prepare("SELECT COALESCE(COUNT(DISTINCT user_id),0) FROM withdrawals WHERE status IN ('PAID','SETTLED') UNION ALL SELECT COALESCE(COUNT(DISTINCT vendor_id),0) FROM vendor_payout_requests WHERE status IN ('PAID','SETTLED')");
 $usersPaidStmt->execute();
 $totalUsersPaid = 0;
-while ($row = $usersPaidStmt->fetch()) $totalUsersPaid += (int) $row[0];
+while ($val = $usersPaidStmt->fetchColumn()) $totalUsersPaid += (int) $val;
 
 // --- Pagination ---
 $countStmt = $pdo->prepare('SELECT COUNT(*) total'.$base);
@@ -172,84 +175,22 @@ if (is_post() && input('action') === 'transition') {
 
     if (!$id || !in_array($source, ['CUSTOMER','VENDOR'], true)) {
         flash('error', 'Invalid request');
-    } elseif ($status === 'REJECTED' && $reason === '' && !can('withdrawals.reject')) {
+    } elseif ($status === 'REJECTED' && $reason === '') {
         flash('error', 'Rejection reason required');
-    } elseif (!in_array($status, ['UNDER_REVIEW','APPROVE','REJECTED','CANCELLED','PROCESSING','PAID'], true)) {
-        flash('error', 'Invalid status transition');
     } else {
         try {
             if ($source === 'CUSTOMER') {
                 require_permission($status === 'REJECTED' ? 'withdrawals.reject' : 'withdrawals.approve');
-                $pdo = db();
-                $pdo->beginTransaction();
-                $stmt = $pdo->prepare("SELECT * FROM withdrawals WHERE id = ? FOR UPDATE");
-                $stmt->execute([$id]);
-                $w = $stmt->fetch();
-                if (!$w) throw new RuntimeException('Withdrawal not found');
-
-                $current = $w['status'];
-                $valid = [
-                    'PENDING' => ['UNDER_REVIEW','REJECTED','CANCELLED'],
-                    'UNDER_REVIEW' => ['APPROVED','REJECTED'],
-                    'APPROVED' => ['PROCESSING'],
-                    'PROCESSING' => ['PAID'],
-                ];
-                if (!in_array($status, $current[$current] ?? [], true)) {
-                    throw new RuntimeException("Invalid transition from {$current} to {$status}");
-                }
-
-                if ($status === 'PAID' && $reference === '') throw new RuntimeException('UTR/Reference required for settlement');
-
-                $pdo->prepare("UPDATE withdrawals SET status=?, rejection_reason=?, processed_at=IF(?='PAID',NOW(),processed_at), reviewed_at=IF(? IN ('APPROVED','REJECTED'),NOW(),reviewed_at), reviewed_by=? WHERE id=?")
-                    ->execute([$status, $reason ?: null, $status, $status, $adminId, $id]);
-
-                if ($reference && finance_ready()) {
-                    $pdo->prepare("INSERT INTO finance_payout_records (kind, request_id, reference, note, admin_id) VALUES ('CUSTOMER', ?, ?, ?, ?)")
-                        ->execute([$id, $reference, $reason ?: 'UTR recorded', $adminId]);
-                }
-
-                // Create withdrawal_attempt
-                $pdo->prepare("INSERT INTO withdrawal_attempts (withdrawal_id, outcome, reason, ip_address) VALUES (?, ?, ?, ?)")
-                    ->execute([$id, $status, $reason ?: $status, client_ip()]);
-
-                $pdo->commit();
-                audit_log($adminId, 'WITHDRAWAL_'.$status, 'withdrawals', $w['withdrawal_id'], ['reason' => $reason, 'reference' => $reference]);
+                transition_withdrawal($id, $status, $reason, $adminId, $reference);
+                flash('success', 'Customer withdrawal updated to ' . $status);
             } else {
-                require_permission($status === 'REJECTED' ? 'vendor_settlements.reject' : 'vendor_settlements.approve');
-                $pdo = db();
-                $pdo->beginTransaction();
-                $stmt = $pdo->prepare("SELECT * FROM vendor_payout_requests WHERE id = ? FOR UPDATE");
-                $stmt->execute([$id]);
-                $w = $stmt->fetch();
-                if (!$w) throw new RuntimeException('Payout request not found');
-
-                $current = $w['status'];
-                $valid = [
-                    'PENDING' => ['UNDER_REVIEW','REJECTED','HELD'],
-                    'UNDER_REVIEW' => ['APPROVED','REJECTED'],
-                    'APPROVED' => ['PROCESSING'],
-                    'PROCESSING' => ['PAID'],
-                ];
-                if (!in_array($status, $current[$current] ?? [], true)) {
-                    throw new RuntimeException("Invalid transition from {$current} to {$status}");
-                }
-
-                if ($status === 'PAID' && $reference === '') throw new RuntimeException('UTR/Reference required for settlement');
-
-                $pdo->prepare("UPDATE vendor_payout_requests SET status=?, paid_at=IF(?='PAID',NOW(),paid_at) WHERE id=?")
-                    ->execute([$status, $status, $id]);
-
-                if ($reference && finance_ready()) {
-                    $pdo->prepare("INSERT INTO finance_payout_records (kind, request_id, reference, note, admin_id) VALUES ('VENDOR', ?, ?, ?, ?)")
-                        ->execute([$id, $reference, $reason ?: 'UTR recorded', $adminId]);
-                }
-
-                $pdo->commit();
-                audit_log($adminId, 'VENDOR_PAYOUT_'.$status, 'vendor_payout_requests', 'VWD-'.$id, ['reason' => $reason, 'reference' => $reference]);
+                require_permission('vendor_settlements.approve');
+                require_once APP_ROOT.'/includes/finance_withdrawals.php';
+                finance_vendor_withdrawal($id, $status, $reason ?: ($status === 'PAID' ? 'Settled payout' : 'Status updated: '.$status), $reference, $adminId);
+                flash('success', 'Vendor payout request updated to ' . $status);
             }
-            flash('success', 'Status updated to '.$status);
         } catch (Throwable $e) {
-            flash('error', $e->getMessage());
+            flash('error', $e instanceof PDOException ? 'Could not update withdrawal.' : $e->getMessage());
         }
     }
     redirect('/admin/withdrawals/index.php?tab='.urlencode($tab).'&'.http_build_query($filters));
@@ -323,7 +264,7 @@ require APP_ROOT.'/includes/header.php';
                 <td><strong><?=e($r['code'])?></strong></td>
                 <td><?=e($r['created_at'])?></td>
                 <td><?=e($r['party_id'])?><br><small><?=e($r['party'])?></small></td>
-                <td><?=e($r['mobile']??'—')?><?= ($r['source']==='CUSTOMER') ? '<br><span class="badge '.($r['is_verified']??0?'success':'warning').'">'.($r['is_verified']?'Verified':'Pending KYC').'</span>' : '' ?></td>
+                <td><?=e($r['mobile']??'—')?><?= ($r['source']==='CUSTOMER') ? '<br><span class="badge '.(!empty($r['is_verified'])?'success':'warning').'">'.(!empty($r['is_verified'])?'Verified':'Pending KYC').'</span>' : '' ?></td>
                 <td><?=money($r['amount'])?></td>
                 <td>
                     <?=e($r['method'])?><br>
@@ -470,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const action = this.dataset.action || this.textContent.trim().toUpperCase();
                     // Reuse action logic
                     // For simplicity, redirect to view.php for actions
-                    window.location.href = `/admin/withdrawals/view.php?id=${mid}&source=${msource}`;
+                    window.location.href = (msource === 'VENDOR' || msource === 'MONEY') ? `/admin/withdrawals/vendor.php?source=${msource}&id=${mid}` : `/admin/withdrawals/view.php?id=${mid}`;
                 });
             });
         } catch (e) {

@@ -1,6 +1,4 @@
 <?php declare(strict_types=1);
-// The complete four-section workflow lives in Master Category Campaigns.
-if ($_SERVER['REQUEST_METHOD'] === 'GET') { header('Location: ../campaigns/index.php'); exit; }
 require dirname(__DIR__,2).'/includes/bootstrap.php';
 require_permission('qr_campaigns.manage');
 if(is_post()){

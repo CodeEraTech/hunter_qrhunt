@@ -117,12 +117,15 @@ if (is_post()) {
             }
 
             if ($data['generate_qr'] === '1') {
-                $qrStmt = db()->prepare('SELECT id FROM vendor_qr_codes WHERE vendor_id=? AND reference_type="PRODUCT" AND reference_id=? LIMIT 1');
+                $qrStmt = db()->prepare('SELECT id FROM product_qr_codes WHERE vendor_id=? AND product_code=? LIMIT 1');
                 $qrStmt->execute([$vendorId, $data['product_code']]);
                 if (!$qrStmt->fetch()) {
+                    $prodStmt = db()->prepare('SELECT id FROM vendor_products WHERE vendor_id=? AND product_code=? LIMIT 1');
+                    $prodStmt->execute([$vendorId, $data['product_code']]);
+                    $prodId = (int) $prodStmt->fetchColumn();
                     $qrId = 'QR-' . gmdate('Ymd') . '-' . strtoupper(bin2hex(random_bytes(4)));
-                    db()->prepare('INSERT INTO vendor_qr_codes (vendor_id, qr_code, reference_type, reference_id, payload, created_at) VALUES (?,?,?,?,?,NOW())')
-                        ->execute([$vendorId, $qrId, 'PRODUCT', $data['product_code'], safe_json(['product_code' => $data['product_code']])]);
+                    db()->prepare('INSERT INTO product_qr_codes (qr_code, vendor_id, product_id, product_code, payload, status, created_at) VALUES (?,?,?,?,?,"ACTIVE",NOW())')
+                        ->execute([$qrId, $vendorId, $prodId, $data['product_code'], safe_json(['product_code' => $data['product_code']])]);
                 }
             }
 

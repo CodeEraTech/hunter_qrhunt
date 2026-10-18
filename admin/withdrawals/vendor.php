@@ -3,7 +3,10 @@ declare(strict_types=1);
 require dirname(__DIR__,2).'/includes/bootstrap.php';require_permission('vendor_settlements.view');
 require_once APP_ROOT.'/includes/finance_directory.php';require_once APP_ROOT.'/includes/finance_withdrawals.php';
 $source=(string)input('source','VENDOR');$id=filter_var(input('id'),FILTER_VALIDATE_INT);
-if(!$id || !in_array($source,['VENDOR','MONEY','SETTLEMENT'],true)){http_response_code(404);exit('Not found');}
+if(!$id || !in_array($source,['VENDOR','MONEY','SETTLEMENT'],true)){
+    flash('error','Invalid withdrawal request parameters.');
+    redirect('/admin/withdrawals/index.php');
+}
 if(is_post()) {
     verify_csrf();require_permission('vendor_settlements.approve');
     try {
@@ -25,7 +28,11 @@ if(is_post()) {
     redirect('/admin/withdrawals/vendor.php?source='.$source.'&id='.$id);
 }
 $sql=finance_withdrawals_sql($source==='MONEY'?'money':($source==='SETTLEMENT'?'settlements':'withdrawals'));
-$s=db()->prepare('SELECT * FROM ('.$sql.') directory WHERE source=? AND id=?');$s->execute([$source,$id]);$r=$s->fetch();if(!$r){http_response_code(404);exit('Request not found');}
+$s=db()->prepare('SELECT * FROM ('.$sql.') directory WHERE source=? AND id=?');$s->execute([$source,$id]);$r=$s->fetch();
+if(!$r){
+    flash('error','Withdrawal request not found.');
+    redirect('/admin/withdrawals/index.php');
+}
 $pageTitle=$r['code'];$pageSubtitle='Vendor request and settlement details';require APP_ROOT.'/includes/header.php'; ?>
 <section class="panel"><div class="panel-head"><h2><?=e($r['party'])?> · <?=e($r['party_id'])?></h2><a class="btn secondary" href="<?=e(app_url('/admin/withdrawals/index.php'))?>">Withdrawals</a></div>
 <?php foreach(['source'=>'Record type','status'=>'Status','created_at'=>'Requested','method'=>'Payout mode','destination'=>'Destination','reference'=>'UTR / Reference','settled_at'=>'Processed','note'=>'Audit note'] as $key=>$label):?><div class="kv"><span><?=$label?></span><strong><?=e($r[$key]??'Not recorded')?></strong></div><?php endforeach?><div class="kv"><span>Requested / settlement amount</span><strong><?=money($r['amount'])?></strong></div><div class="kv"><span>Current vendor balance</span><strong><?=money($r['balance'])?></strong></div>

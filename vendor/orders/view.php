@@ -10,8 +10,15 @@ $vendorId = (int) $vendor['vendor_id'];
 
 $checkoutId = trim((string) ($_GET['checkout_id'] ?? ''));
 if ($checkoutId === '') {
-    flash('error', 'Order not specified.');
-    redirect('/vendor/orders/index.php');
+    $stmtLast = db()->prepare("SELECT checkout_id FROM wallet_checkout_transactions WHERE merchant_id = ? ORDER BY id DESC LIMIT 1");
+    $stmtLast->execute([$vendorId]);
+    $lastId = $stmtLast->fetchColumn();
+    if ($lastId) {
+        $checkoutId = (string) $lastId;
+    } else {
+        flash('info', 'No orders found for your store.');
+        redirect('/vendor/orders/index.php');
+    }
 }
 
 // Load order, verify merchant_id matches vendor_id from session only

@@ -277,18 +277,24 @@ function product_audit_log(int $productId, string $productCode, int $vendorId, s
         ]);
 }
 
-function product_audit_history(int $productId, int $page = 1, int $perPage = 20): array
+function product_audit_history(int $productId = 0, int $page = 1, int $perPage = 20): array
 {
     $pdo = db();
-    $total = (int) $pdo->prepare('SELECT COUNT(*) FROM product_audit_log WHERE product_id = ?')->execute([$productId]) ? $pdo->query('SELECT FOUND_ROWS()')->fetchColumn() : 0;
-    // Simplified count
-    $totalStmt = $pdo->prepare('SELECT COUNT(*) FROM product_audit_log WHERE product_id = ?');
-    $totalStmt->execute([$productId]);
-    $total = (int) $totalStmt->fetchColumn();
+    if ($productId > 0) {
+        $totalStmt = $pdo->prepare('SELECT COUNT(*) FROM product_audit_log WHERE product_id = ?');
+        $totalStmt->execute([$productId]);
+        $total = (int) $totalStmt->fetchColumn();
 
-    $stmt = $pdo->prepare("SELECT pal.*, a.name admin_name, u.name user_name FROM product_audit_log pal LEFT JOIN admins a ON a.id = pal.admin_id LEFT JOIN users u ON u.id = pal.user_id WHERE pal.product_id = ? ORDER BY pal.created_at DESC, pal.id DESC LIMIT ? OFFSET ?");
-    $stmt->execute([$productId, $perPage, ($page - 1) * $perPage]);
-    $rows = $stmt->fetchAll();
+        $stmt = $pdo->prepare("SELECT pal.*, vp.title AS product_title, a.name AS admin_name, u.name AS user_name FROM product_audit_log pal LEFT JOIN vendor_products vp ON vp.id = pal.product_id LEFT JOIN admins a ON a.id = pal.admin_id LEFT JOIN users u ON u.id = pal.user_id WHERE pal.product_id = ? ORDER BY pal.created_at DESC, pal.id DESC LIMIT ? OFFSET ?");
+        $stmt->execute([$productId, $perPage, ($page - 1) * $perPage]);
+        $rows = $stmt->fetchAll();
+    } else {
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM product_audit_log')->fetchColumn();
+
+        $stmt = $pdo->prepare("SELECT pal.*, vp.title AS product_title, a.name AS admin_name, u.name AS user_name FROM product_audit_log pal LEFT JOIN vendor_products vp ON vp.id = pal.product_id LEFT JOIN admins a ON a.id = pal.admin_id LEFT JOIN users u ON u.id = pal.user_id ORDER BY pal.created_at DESC, pal.id DESC LIMIT ? OFFSET ?");
+        $stmt->execute([$perPage, ($page - 1) * $perPage]);
+        $rows = $stmt->fetchAll();
+    }
 
     return ['rows' => $rows, 'total' => $total, 'page' => $page, 'perPage' => $perPage, 'lastPage' => max(1, (int) ceil($total / $perPage))];
 }

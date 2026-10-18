@@ -2,7 +2,12 @@
 declare(strict_types=1);
 
 function e(mixed $value): string { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
-function app_url(string $path = ''): string { global $config; return ($config['url'] ?: '') . '/' . ltrim($path, '/'); }
+function app_url(string $path = ''): string {
+    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+        return $path;
+    }
+    return '/' . ltrim($path, '/');
+}
 function redirect(string $path): never { header('Location: ' . app_url($path)); exit; }
 function is_post(): bool { return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'; }
 function input(string $key, mixed $default = ''): mixed { return $_POST[$key] ?? $_GET[$key] ?? $default; }

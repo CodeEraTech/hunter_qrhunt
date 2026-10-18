@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require dirname(__DIR__, 2) . '/includes/bootstrap.php';
 require_vendor();
+require_once APP_ROOT . '/includes/vendor_dashboard.php';
 require_get();
 header('Cache-Control: private, no-store');
 
@@ -62,7 +63,7 @@ function get_meta(array $product, string $key): ?string
 
 function has_qr(int $vendorId, string $productCode): bool
 {
-    $stmt = db()->prepare('SELECT 1 FROM vendor_qr_codes WHERE vendor_id = ? AND reference_type = "PRODUCT" AND reference_id = ? LIMIT 1');
+    $stmt = db()->prepare('SELECT 1 FROM product_qr_codes WHERE vendor_id = ? AND product_code = ? AND status = "ACTIVE" LIMIT 1');
     $stmt->execute([$vendorId, $productCode]);
     return (bool) $stmt->fetchColumn();
 }

@@ -43,7 +43,7 @@ try {
     // 2. Login page should render with CSRF token and security headers
     [$code, $headers, $login] = web_request($base, '/vendor/login.php', $cookieFile);
     check($code === 200, 'Login page did not return 200.');
-    check(preg_match('/name="csrf_token" value="([a-f0-9]{64})"/', $login, $match), 'CSRF token missing from login form.');
+    check(preg_match('/name="csrf_token" value="([a-f0-9]{64})"/', $login, $match) === 1, 'CSRF token missing from login form.');
     check(str_contains($headers, 'Content-Security-Policy:'), 'Security headers missing on login page.');
     check(str_contains($login, 'Store Portal'), 'Vendor branding missing from login page.');
     $csrf = $match[1];
@@ -72,11 +72,11 @@ try {
     check(!str_contains($body, 'SECRET'), 'Cross-vendor data leaked via URL parameter.');
 
     // 7. Logout via POST should redirect
-    [$code, , $logout] = web_request($base, '/vendor/logout.php', $cookieFile, 'POST', [
+    [$code, $logoutHeaders, ] = web_request($base, '/vendor/logout.php', $cookieFile, 'POST', [
         'csrf_token' => $csrf
     ]);
     check($code === 302, 'Vendor logout did not redirect.');
-    check(str_contains($logout, 'http'), 'Logout redirect missing Location header.');
+    check(str_contains($logoutHeaders, 'Location:'), 'Logout redirect missing Location header.');
 
     // 8. After logout, dashboard should redirect again
     [$code] = web_request($base, '/vendor/dashboard.php', $cookieFile);

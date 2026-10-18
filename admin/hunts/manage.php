@@ -1,4 +1,19 @@
-<?php declare(strict_types=1);require dirname(__DIR__,2).'/includes/bootstrap.php';require_permission('hunts.view');$id=(int)input('id');$s=db()->prepare('SELECT * FROM hunts WHERE id=?');$s->execute([$id]);$hunt=$s->fetch();if(!$hunt){http_response_code(404);exit('Hunt not found');}
+<?php declare(strict_types=1);require dirname(__DIR__,2).'/includes/bootstrap.php';require_permission('hunts.view');
+$id = (int)input('id');
+if ($id <= 0) {
+    $firstId = (int)db()->query('SELECT id FROM hunts ORDER BY id ASC LIMIT 1')->fetchColumn();
+    if ($firstId > 0) {
+        $id = $firstId;
+    } else {
+        flash('info', 'No hunts found. Please create a hunt first.');
+        redirect('/admin/hunts/edit.php');
+    }
+}
+$s=db()->prepare('SELECT * FROM hunts WHERE id=?');$s->execute([$id]);$hunt=$s->fetch();
+if(!$hunt){
+    flash('error', 'Hunt not found.');
+    redirect('/admin/hunts/index.php');
+}
 if(is_post()){require_permission('hunts.manage');verify_csrf();$action=(string)input('action');try{$pdo=db();$pdo->beginTransaction();if($action==='location'){$lat=(string)input('latitude');$lon=(string)input('longitude');$radius=(int)input('radius_meters');if(!is_numeric($lat)||!is_numeric($lon)||(float)$lat < -90||(float)$lat > 90||(float)$lon < -180||(float)$lon > 180||$radius<1)throw new InvalidArgumentException('Invalid coordinates or radius.');$pdo->prepare('INSERT INTO hunt_locations(hunt_id,name,address,latitude,longitude,radius_meters,sort_order,status) VALUES(?,?,?,?,?,?,?,?)')->execute([$id,trim((string)input('name')),trim((string)input('address')),$lat,$lon,$radius,(int)input('sort_order'),'ACTIVE']);$record=(string)$pdo->lastInsertId();}
 elseif($action==='qr'){$location=(int)input('location_id');$check=$pdo->prepare('SELECT id FROM hunt_locations WHERE id=? AND hunt_id=?');$check->execute([$location,$id]);if(!$check->fetch())throw new InvalidArgumentException('Invalid hunt location.');$token=bin2hex(random_bytes(32));$expires=trim((string)input('expires_at'));$expires=$expires?str_replace('T',' ',$expires):null;$max=trim((string)input('max_scans'));$pdo->prepare('INSERT INTO hunt_qr_codes(hunt_id,location_id,token_hash,label,status,expires_at,max_scans,created_by) VALUES(?,?,?, ?,"ACTIVE",?,?,?)')->execute([$id,$location,hash('sha256',$token),trim((string)input('label')),$expires,$max===''?null:(int)$max,admin()['id']]);$record=(string)$pdo->lastInsertId();$_SESSION['_qr_once']='hunter://scan?t='.$token;}
 elseif($action==='video'){$url=trim((string)input('video_url'));if(!filter_var($url,FILTER_VALIDATE_URL))throw new InvalidArgumentException('A valid HTTPS video URL is required.');$pdo->prepare('INSERT INTO hunt_videos(hunt_id,location_id,title,video_url,sort_order,status) VALUES(?,?,?,?,?,"ACTIVE")')->execute([$id,(int)input('location_id')?:null,trim((string)input('title')),$url,(int)input('sort_order')]);$record=(string)$pdo->lastInsertId();}

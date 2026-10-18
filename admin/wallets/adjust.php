@@ -252,7 +252,7 @@ if ($p && $p['admin_id'] === (int) admin()['id'] && $p['expires'] >= time()):
             <?=csrf_field()?>
             <input type="hidden" name="action" value="confirm">
             <input type="hidden" name="customer" value="USR_<?=e($p['user_id'])?>">
-            <button class="btn <?=$p['type']==='DEBIT'?'danger':'success'?>">Confirm <?=e(strtolower($p['type']))?></button>
+            <button class="btn <?=$p['type']==='DEBIT'?'danger':'success'?>">Confirm adjustment (<?=e(strtolower($p['type']))?>)</button>
         </form>
         <form method="post">
             <?=csrf_field()?>

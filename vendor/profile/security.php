@@ -71,8 +71,8 @@ foreach ($notices as $n): ?>
     <div class="form-grid" style="margin-top:16px">
         <div class="field">
             <label>Multi-Factor Authentication</label>
-            <span class="store-status status-<?=e((int)$vendor['mfa_enabled'] === 1 ? 'approved' : 'pending')?>">
-                <?=e((int)$vendor['mfa_enabled'] === 1 ? 'Enabled' : 'Disabled')?>
+            <span class="store-status status-<?=e((int)($vendor['mfa_enabled'] ?? 0) === 1 ? 'approved' : 'pending')?>">
+                <?=e((int)($vendor['mfa_enabled'] ?? 0) === 1 ? 'Enabled' : 'Disabled')?>
             </span>
         </div>
         <div class="field">
@@ -119,7 +119,7 @@ foreach ($notices as $n): ?>
     <div class="panel-head">
         <h2 id="mfa-heading">Two-Factor Authentication</h2>
     </div>
-    <?php if ((int)$vendor['mfa_enabled'] === 1): ?>
+    <?php if ((int)($vendor['mfa_enabled'] ?? 0) === 1): ?>
         <p class="help" style="margin-bottom:14px">Authenticator app is active. You can disable it below.</p>
         <form method="post" class="stack" style="max-width:400px">
             <?=csrf_field()?>

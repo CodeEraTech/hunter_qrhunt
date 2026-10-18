@@ -10,7 +10,7 @@
 <details open><summary>Wallet & Ledger</summary>
 <?php if(can('wallet.master.view')): ?><a class="nav-sub" href="<?=e(app_url('/admin/wallets/admin.php'))?>">Admin Wallet</a><?php endif ?>
 <?php if(can('wallet.view') || can('wallet.master.view') || can('vendor_settlements.view')): ?><a class="nav-sub" href="<?=e(app_url('/admin/wallets/index.php'))?>">All Transactions</a><?php endif ?>
-<?php if(can('wallet.view')): ?><a class="nav-sub" href="<?=e(app_url('/admin/wallets/customer.php?id=1'))?>">Customer Wallets</a><?php endif ?>
+<?php if(can('wallet.view')): ?><a class="nav-sub" href="<?=e(app_url('/admin/wallets/customer.php'))?>">Customer Wallets</a><?php endif ?>
 <?php if(can('wallet.credit') || can('wallet.debit')): ?><a class="nav-sub" href="<?=e(app_url('/admin/wallets/adjust.php'))?>">Wallet Adjustments</a><?php endif ?>
 <?php if(can('withdrawals.view') || can('vendor_settlements.view')): ?><a class="nav-sub" href="<?=e(app_url('/admin/withdrawals/index.php'))?>">Withdrawals</a><?php endif ?>
 </details>
@@ -40,27 +40,35 @@
 <?php if(can('video_categories.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/categories/index.php'))?>">Category & Character Hub</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/manage.php'))?>">Manage Category Buckets</a><a class="nav-sub" href="<?=e(app_url('/admin/categories/commission.php'))?>">Shop Categories & Commission</a><?php endif?>
 
 <?php if(can('hunts.view')):?><a href="<?=e(app_url('/admin/hunts/index.php'))?>">Hunt Management</a><?php endif?>
-<?php if(can('hunts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions.php'))?>">Question Manager</a><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions_bulk.php'))?>">Bulk Question Upload</a><a class="nav-sub" href="<?=e(app_url('/admin/hunts/collections.php'))?>">Question Collections</a><?php endif?>
+<?php if(can('hunts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions.php'))?>">Question Manager</a><a class="nav-sub" href="<?=e(app_url('/admin/hunts/questions_bulk.php'))?>">Bulk Question Upload</a><a class="nav-sub" href="<?=e(app_url('/admin/hunts/collections.php'))?>">Question Collections</a><a class="nav-sub" href="<?=e(app_url('/admin/hunts/broadcast.php'))?>">Broadcast Messaging</a><?php endif?>
 <?php if(can('campaigns.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/campaigns/index.php'))?>">Master Category Campaigns</a><?php endif?>
 <?php if(can('hunts.activate')):?><a class="nav-sub" href="<?=e(app_url('/admin/hunts/activations.php'))?>">User Activations</a><?php endif?>
 <?php if(can('payments.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/payments/index.php'))?>">Hunt Payments</a><?php endif?>
 
-<?php if(can('rewards.view')):?><a href="<?=e(app_url('/admin/rewards/index.php'))?>">Reward Approvals</a><?php endif?>
+<?php if(can('rewards.view')):?><a href="<?=e(app_url('/admin/rewards/index.php'))?>">Reward Approvals</a><a class="nav-sub" href="<?=e(app_url('/admin/rewards/targeted_offers.php'))?>">Targeted Bonus & Offers</a><?php endif?>
 
-<?php if(can('vendors.view')):?><a href="<?=e(app_url('/admin/vendors/index.php'))?>">Vendors & Merchants</a><?php if(can('vendors.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/onboarding.php'))?>">Master Vendor Onboarding & KYC</a><?php endif?><?php if(can('vendors.kyc.approve')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/verification.php'))?>">Vendor Verification & Activation</a><?php endif?><?php if(can('vendor_products.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/products.php'))?>">Product Approval & Moderation</a><?php endif?><?php endif?>
+<?php if(can('vendors.view')):?><a href="<?=e(app_url('/admin/vendors/index.php'))?>">Vendors & Merchants</a><?php if(can('vendors.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/onboarding.php'))?>">Vendor Onboarding & KYC</a><?php endif?><?php if(can('vendors.kyc.approve')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/verification.php'))?>">Vendor Verification & Activation</a><?php endif?><?php if(can('vendor_settlements.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/vendors/settlements.php'))?>">Vendor Settlements</a><?php endif?><?php endif?>
 
 <?php if(can('gifts.manage')):?><a class="nav-sub" href="<?=e(app_url('/admin/gifts/index.php'))?>">Gifts & Reward Codes</a><a class="nav-sub" href="<?=e(app_url('/admin/rewards/coupons.php'))?>">Coupons & Cart Rules</a><?php endif?>
 
-<?php if(can('security.view')):?><a href="<?=e(app_url('/admin/fraud/index.php'))?>">Security</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/devices.php'))?>">Devices</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/login-attempts.php'))?>">Login attempts</a><?php endif?>
-
 <?php if(can('notifications.manage')):?><a href="<?=e(app_url('/admin/notifications/index.php'))?>">Notifications</a><?php endif?>
 
-<?php if(can('security.view')):?><div class="nav-section-label">SECURITY & GOVERNANCE</div><a href="<?=e(app_url('/admin/security/index.php'))?>">Security Dashboard</a><?php if(can('staff.kyc')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/staff.php'))?>">Staff Management</a><?php endif?><a class="nav-sub" href="<?=e(app_url('/admin/admins/roles.php'))?>">Roles & Permissions</a><a class="nav-sub" href="<?=e(app_url('/admin/audit/index.php'))?>">Staff Activity Logs</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/login-attempts.php'))?>">Login & 2FA Logs</a><a class="nav-sub" href="<?=e(app_url('/admin/fraud/devices.php'))?>">Devices & Sessions</a><?php endif?>
+<?php if(can('security.view')):?>
+<div class="nav-section-label">SECURITY & FRAUD DEFENSE</div>
+<a href="<?=e(app_url('/admin/security/index.php'))?>">Security Dashboard</a>
+<a class="nav-sub" href="<?=e(app_url('/admin/fraud/index.php'))?>">Fraud & Risk Rules</a>
+<a class="nav-sub" href="<?=e(app_url('/admin/fraud/devices.php'))?>">Devices & Sessions</a>
+<a class="nav-sub" href="<?=e(app_url('/admin/fraud/login-attempts.php'))?>">Login & 2FA Logs</a>
+<?php endif?>
 
+<?php if(can('admins.view') || can('staff.kyc') || can('audit.view')):?>
+<div class="nav-section-label">ADMINISTRATION</div>
 <?php if(can('admins.view')):?><a href="<?=e(app_url('/admin/admins/index.php'))?>">Administrators</a><?php endif?>
 <?php if(can('staff.kyc')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/staff.php'))?>">Staff Verification & OTP</a><?php endif?>
 <?php if(can('admins.edit')):?><a class="nav-sub" href="<?=e(app_url('/admin/admins/roles.php'))?>">Roles & Permissions</a><?php endif?>
-<?php if(can('audit.view')):?><a href="<?=e(app_url('/admin/audit/index.php'))?>">Audit & Activity Log</a><?php endif?>
+<?php if(can('audit.view')):?><a class="nav-sub" href="<?=e(app_url('/admin/audit/index.php'))?>">Audit & Activity Log</a><?php endif?>
+<?php endif?>
+
 <?php if(can('settings.edit')):?><a href="<?=e(app_url('/admin/settings/index.php'))?>">System Settings</a><?php endif?>
 
 </nav><a class="sidebar-foot" href="<?=e(app_url('/admin/admins/profile.php'))?>"><div class="avatar"><?=e(strtoupper(substr($current['name'],0,1)))?></div><div><strong><?=e($current['name'])?></strong><small><?=e($current['role_name'])?></small></div></a></aside>

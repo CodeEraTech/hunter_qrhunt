@@ -10,11 +10,15 @@ require_once APP_ROOT . '/includes/auth.php';
 require_once APP_ROOT . '/includes/permissions.php';
 require_once APP_ROOT . '/includes/audit.php';
 require_once APP_ROOT . '/includes/wallet.php';
+require_once APP_ROOT . '/includes/wallet_console.php';
 require_once APP_ROOT . '/includes/withdrawals.php';
 require_once APP_ROOT . '/includes/hunts.php';
 require_once APP_ROOT . '/includes/payments.php';
 require_once APP_ROOT . '/includes/vendors.php';
 require_once APP_ROOT . '/includes/video.php';
+require_once APP_ROOT . '/includes/question_service.php';
+require_once APP_ROOT . '/includes/broadcast_service.php';
+require_once APP_ROOT . '/includes/targeted_offers_service.php';
 
 ini_set('display_errors', $config['env'] === 'development' ? '1' : '0');
 ini_set('log_errors', '1');
