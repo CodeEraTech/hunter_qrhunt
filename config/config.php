@@ -52,8 +52,8 @@ date_default_timezone_set((string) env('APP_TIMEZONE', 'Asia/Kolkata'));
 
 return [
     'env' => env('APP_ENV', 'production'),
-    'url' => rtrim((string) env('APP_URL', ''), '/'),
-    'key' => (string) env('APP_KEY', ''),
+    'url' => rtrim((string) env('APP_URL', 'https://scancash.online'), '/'),
+    'key' => (string) env('APP_KEY', '5c0e35560256548dc53d84f26307b0263724067b679d0bd4ce0facab3f4f7f49'),
     'session_timeout' => (int) env('SESSION_TIMEOUT', 1800),
     'cookie_secure' => filter_var(env('COOKIE_SECURE', '1'), FILTER_VALIDATE_BOOL),
     'razorpay_webhook_secret' => (string) env('RAZORPAY_WEBHOOK_SECRET', ''),
