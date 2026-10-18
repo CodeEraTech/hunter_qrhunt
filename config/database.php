@@ -6,9 +6,9 @@ function db(): PDO
     static $pdo;
     if ($pdo instanceof PDO) return $pdo;
 
-    $name = (string) env('DB_NAME', 'scancash_hunter_wallet');
-    $user = (string) env('DB_USER', 'scancash_hunter_admin');
-    $pass = (string) env('DB_PASS', '%hy%KCgVvj~Jeh*$');
+    $name = (string) env('DB_NAME', 'scancash_db');
+    $user = (string) env('DB_USER', 'scancash_user');
+    $pass = (string) env('DB_PASS', 'W0#,m}pVt[_sKGJ(');
     $port = (string) env('DB_PORT', '3306');
     $configuredHost = (string) env('DB_HOST', 'localhost');
 
