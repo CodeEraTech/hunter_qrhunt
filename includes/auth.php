@@ -5,10 +5,14 @@ function admin(): ?array
 {
     static $cached = false;
     if ($cached !== false) return $cached;
-    if (empty($_SESSION['admin_id'])) return $cached = null;
-    $stmt = db()->prepare('SELECT a.*, r.name role_name FROM admins a JOIN admin_roles r ON r.id=a.role_id WHERE a.id=? AND a.status="ACTIVE"');
-    $stmt->execute([(int) $_SESSION['admin_id']]);
-    return $cached = ($stmt->fetch() ?: null);
+    try {
+        $stmt = db()->prepare('SELECT a.*, r.name role_name FROM admins a JOIN admin_roles r ON r.id=a.role_id WHERE a.id=? AND a.status="ACTIVE"');
+        $stmt->execute([(int) $_SESSION['admin_id']]);
+        return $cached = ($stmt->fetch() ?: null);
+    } catch (Throwable $e) {
+        error_log('admin() lookup failed: ' . $e->getMessage());
+        return $cached = null;
+    }
 }
 function require_admin(): void { if (!admin()) { flash('error', 'Please sign in.'); redirect('/admin/login.php'); } }
 function enforce_session_timeout(int $seconds): void

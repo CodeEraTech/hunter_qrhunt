@@ -6,10 +6,15 @@ function vendor_user(): ?array
     static $cached=false;
     if($cached!==false)return $cached;
     if(empty($_SESSION['vendor_user_id'])||empty($_SESSION['vendor_session_token']))return $cached=null;
-    $hash=hash('sha256',$_SESSION['vendor_session_token']);
-    $s=db()->prepare("SELECT vu.*,v.name vendor_name,v.shop_name,v.vendor_code,v.status vendor_status FROM vendor_sessions vs JOIN vendor_users vu ON vu.id=vs.vendor_user_id JOIN vendors v ON v.id=vu.vendor_id WHERE vs.vendor_user_id=? AND vs.php_session_hash=? AND vs.revoked_at IS NULL AND vs.expires_at>NOW() AND vu.status='ACTIVE' AND v.status='ACTIVE'");
-    $s->execute([$_SESSION['vendor_user_id'],$hash]);
-    return $cached=$s->fetch()?:null;
+    try {
+        $hash=hash('sha256',$_SESSION['vendor_session_token']);
+        $s=db()->prepare("SELECT vu.*,v.name vendor_name,v.shop_name,v.vendor_code,v.status vendor_status FROM vendor_sessions vs JOIN vendor_users vu ON vu.id=vs.vendor_user_id JOIN vendors v ON v.id=vu.vendor_id WHERE vs.vendor_user_id=? AND vs.php_session_hash=? AND vs.revoked_at IS NULL AND vs.expires_at>NOW() AND vu.status='ACTIVE' AND v.status='ACTIVE'");
+        $s->execute([$_SESSION['vendor_user_id'],$hash]);
+        return $cached=$s->fetch()?:null;
+    } catch (Throwable $e) {
+        error_log('vendor_user() lookup failed: ' . $e->getMessage());
+        return $cached=null;
+    }
 }
 
 function require_vendor(): void
