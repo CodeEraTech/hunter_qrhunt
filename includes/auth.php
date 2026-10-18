@@ -5,6 +5,7 @@ function admin(): ?array
 {
     static $cached = false;
     if ($cached !== false) return $cached;
+    if (empty($_SESSION['admin_id'])) return $cached = null;
     try {
         $stmt = db()->prepare('SELECT a.*, r.name role_name FROM admins a JOIN admin_roles r ON r.id=a.role_id WHERE a.id=? AND a.status="ACTIVE"');
         $stmt->execute([(int) $_SESSION['admin_id']]);
